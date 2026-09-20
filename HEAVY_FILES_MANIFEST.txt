@@ -1,0 +1,15 @@
+# Heavy files excluded from this push — for auditor / next team
+# Generated: 2026-09-20  See UNPUSHED_ASSETS.md for restore.
+
+archive/                               12G  192312 JPGs  MSIMUT 75039 + MSS 117273  (tcga_coad_msi_mss_jpg)
+archive.zip                            11G  same zipped
+data/clean_tensors/                    1.2G  653 × .pt  vision [N,1024] + text [768]
+data/clean_tensors/TCGA-*.pt           1-17M each
+data/MSIMUT_JPEG/*.jpg                 2.3G  via symlink to archive/MSIMUT_JPEG
+data/MSS_JPEG/*.jpg                    3.6G  via symlink to archive/MSS_JPEG
+models/best_fusion_model.pth           21M  PUSHED (primary alternative)
+models/fusion_model_v1_1.pth           21M  PUSHED (primary ★ best AUC 0.915)
+models/fusion_model_v1_0.pth           21M  PUSHED
+models/fusion_model_v1_2.pth           21M  PUSHED
+models/late_fusion_model.pth           5.1M PUSHED
+models/late_fusion_model_v1_0.pth      5.1M PUSHED

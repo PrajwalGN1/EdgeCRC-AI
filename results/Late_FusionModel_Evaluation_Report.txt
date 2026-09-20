@@ -1,0 +1,15 @@
+=== MULTIMODAL FUSION NETWORK - EVALUATION REPORT ===
+
+Evaluated on 66 patients.
+Overall Accuracy: 0.8333
+ROC-AUC Score: 0.8875
+
+Classification Report:
+               precision    recall  f1-score   support
+
+MSS (Class 0)       0.84      0.96      0.90        50
+MSI (Class 1)       0.78      0.44      0.56        16
+
+     accuracy                           0.83        66
+    macro avg       0.81      0.70      0.73        66
+ weighted avg       0.83      0.83      0.82        66

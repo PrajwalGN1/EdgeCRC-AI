@@ -1,0 +1,63 @@
+# ── Heavy dataset — 10GB+ (Kaggle tcga_coad_msi_mss_jpg) ──
+# Archive dump (12G) — see data/DATASET.md for download & placement
+archive/
+archive.zip
+*.zip
+*.crdownload
+Unconfirmed*.crdownload
+
+# Clean tensors — 1.2G (653 × .pt) — regenerate or download via Kaggle + Phikon-v2/ClinicalBERT encoding
+data/clean_tensors/
+# Keep registry (13MB) but tensors are heavy — see UNPUSHED.md
+
+# Raw JPEG patches — 192k images (6GB) — symlinked to archive, excluded
+data/MSIMUT_JPEG/*.jpg
+data/MSS_JPEG/*.jpg
+data/MSIMUT_JPEG/*.jpeg
+data/MSS_JPEG/*.jpeg
+# Keep placeholders
+!data/MSIMUT_JPEG/.gitkeep
+!data/MSIMUT_JPEG/README.txt
+!data/MSS_JPEG/.gitkeep
+!data/MSS_JPEG/README.txt
+
+# Large model checkpoints — keep primary (21MB) but exclude duplicates if repo limit hit
+# Uncomment to exclude all .pth and use Releases/LFS:
+# models/*.pth
+# Keep at least fusion_model_v1_1.pth (primary) — 21MB < 100MB limit
+# To use Git LFS: git lfs track "*.pth" && git lfs track "*.pt"
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.venv/
+venv/
+.env
+*.egg-info/
+.ipynb_checkpoints/
+.pytest_cache/
+.mypy_cache/
+
+# Logs & temp
+*.log
+logs/
+tmp/
+.tmp/
+.streamlit/secrets.toml
+/tmp/
+
+# OS
+.DS_Store
+Thumbs.db
+*.swp
+*~
+
+# IDE
+.vscode/
+.idea/
+*.code-workspace
+
+# Huggingface cache (local)
+.cache/

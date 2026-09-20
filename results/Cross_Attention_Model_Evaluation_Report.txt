@@ -1,0 +1,15 @@
+=== MULTIMODAL CROSS-ATTENTION FUSION - EVALUATION REPORT ===
+
+Evaluated on 66 isolated validation patients.
+Overall Accuracy: 0.8939
+ROC-AUC Score: 0.9150
+
+Classification Report:
+               precision    recall  f1-score   support
+
+MSS (Class 0)       0.92      0.94      0.93        50
+MSI (Class 1)       0.80      0.75      0.77        16
+
+     accuracy                           0.89        66
+    macro avg       0.86      0.84      0.85        66
+ weighted avg       0.89      0.89      0.89        66
