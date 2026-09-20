@@ -24,10 +24,9 @@
 5. [Explainable AI Stack](#explainable-ai-stack)
 6. [Project Structure](#project-structure)
 7. [Quick Start](#quick-start)
-8. [Dataset Resync](#dataset-resync)
-9. [All Diagrams](#all-diagrams)
+ 8. [Dataset Resync](#dataset-resync)
+ 9. [All Diagrams](#all-diagrams)
 10. [Documentation](#documentation)
-11. [Roadmap for Next Team](#roadmap-for-next-team)
 
 ---
 
@@ -284,25 +283,14 @@ Regenerate: `python docs/generate_diagrams.py` (pure matplotlib, no Graphviz).
 |----------|---------|----------|
 | **Report (89 pp)** | Full paper — Ch.4–5 are the technical/metrics backbone | `PB05_Report_8thSem.pdf` |
 | **Architecture** | System, model, data, XAI, file map — 13 sections with file:line refs | `docs/ARCHITECTURE.md` |
-| **Handoff** | Operational playbook: what works, limits, roadmap (Tier 1–3), dataset resync, gotchas | `docs/HANDOFF.md` |
+| **Handoff** | Technical documentation: what works, limits, dataset resync, gotchas | `docs/HANDOFF.md` |
 | **Diagrams** | 10 PNGs (300 dpi) + generator script | `docs/diagrams/` |
-
----
-
-## Roadmap for Next Team
-
-See `docs/HANDOFF.md:5` for scoped extensiveness. **Recommendation (1–2 person, 3 months):**
-
-- **Tier 1 quick wins** (1–2 weeks): Batch CSV inference, threshold slider, more XAI samples
-- **Tier 2 core** (1–2 months): Replace ClinicalBERT truncation (512 → Longformer 4096), heatmap caching, external cohort validation
-
-Tier 3 (joint fine-tune, WSI stitching, federated) is 3–6 months, paper-grade — defer.
 
 ---
 
 ## Citation & Provenance
 
-- **Authors:** Mohnish S Shetty (22ETCS002158), Mokshith C (22ETCS002159), Nagesh H N (22ETCS002162), Yatish R (22ETCS002180) — CSE, RUAS
+- **Mentor:** Mr Nageshwara Guptha
 - **Stack:** PyTorch 2.9, HuggingFace Transformers, Phikon-v2, ClinicalBERT, Streamlit 1.52, Ollama Qwen 2.5, OpenCV
 
 ---

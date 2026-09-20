@@ -1,6 +1,6 @@
-# Handoff Guide — For the Next Team
+# Technical Documentation — System Handoff
 
-> **Read this first if you are continuing PB05.** This is the operational playbook: what works, what's wired, what to touch (and what not to), and the exact limit/extensiveness to scope your next sprint.
+> **System documentation:** Operational playbook — what works, what's wired, what to touch (and what not to). Professional handover for deployment and maintenance.
 
 ---
 
@@ -99,39 +99,6 @@ python late_fusion_eval.py
 
 ---
 
-## 5. Extensiveness & Limits — Where to Invest Next
-
-This section is the **scope dial**: extensive vs limit, based on interest and team size. All are viable; pick 1–2 max per quarter.
-
-### Tier 1 — Quick Wins (1–2 weeks, low risk)
-| Idea | Effort | Impact | Notes |
-|------|--------|--------|-------|
-| Add batch inference (CSV upload → bulk predictions + download) | Small | High (clinical throughput) | Extend `app.py` with `st.file_uploader` CSV, loop inference, `st.download_button` |
-| Threshold slider exposed to clinician | Small | Medium | Add `st.slider(0.5,0.95,0.83)` and re-compute pred without re-forward |
-| More XAI samples | Small | Medium | Run `generate_xai.py` for 10 more patients → populate `assets/medical_images/` |
-| Model card + datasheet | Small | High (compliance) | Write `docs/MODEL_CARD.md` from report Ch.5 metrics |
-
-### Tier 2 — Medium (1–2 months, needs GPUs)
-| Idea | Effort | Impact | Notes |
-|------|--------|--------|-------|
-| Fix 512-token truncation (report §4.4.2) | Medium | High | Swap ClinicalBERT for Longformer/BigBird (4096 tokens) — pathology reports often >512; re-extract `*_text.pt` |
-| Attention heatmap caching | Medium | Medium | Cache Phikon-v2 heatmaps to `assets/cache/` keyed by patch hash; avoids 6-layer rollout per click |
-| MSS/MSI calibration (Platt/Isotonic) | Medium | Medium | Current τ=0.83 is fixed; calibrate per validation set for better confidence estimates |
-| Expand validation (external cohort) | Medium | High (publication) | TCGA only; test on CPTAC or in-house slides; expect AUC drop 3–7 pp |
-| FastAPI backend + React frontend | Medium | High (scale) | Decouple Streamlit for high-concurrency hospital deployment |
-
-### Tier 3 — Extensive / Research (3–6 months, paper-grade)
-| Idea | Effort | Impact | Notes |
-|------|--------|--------|-------|
-| Unfreeze & jointly fine-tune Phikon-v2 + ClinicalBERT | Large | High risk/high reward | Needs 24GB+ GPU, gradient checkpointing, careful LR scheduling; frozen approach was intentional due to <16GB constraint (report §4.1) |
-| Whole-slide spatial heatmaps (GigaPath tiling) | Large | High (spatial XAI) | Instead of Top-5 patch gallery, stitch WSI-level attention map |
-| Multimodal RAG (report retrieval) | Large | Medium | Replace flat text tensor with retrieval-augmented report chunks |
-| Federated learning across sites | Large | High (privacy) | TCGA→hospital federated; keep PHI on-prem |
-| FDA-style validation & bias audit | Large | Required for clinical | Subgroup analysis (age, sex, sidedness, stage) — report Table 5.2 hints but not done |
-
-**Recommendation for handoff (2-person, 3-month slot):**
-Do **Tier 1 quick wins + Longformer upgrade**. That gives a demonstrable product delta without re-architecting. Leave Tier 3 for a follow-up thesis.
-
 ---
 
 ## 6. Dataset Resync — Kaggle Link & Setup
@@ -196,23 +163,13 @@ docs/diagrams/*.png                 Generated — reproducible, but commit them 
 
 ---
 
-## 9. Checklist for the Next Team Lead
-
-- [ ] Run `streamlit run src/ui/app.py` and verify one patient inference (pick `TCGA-AA-3877` or first registry entry)
-- [ ] Decide: download raw JPEGs or keep placeholder? (see §6)
-- [ ] Decide: enable Ollama or keep template fallback? (`ollama serve` + `ollama pull qwen2.5-coder:7b`)
-- [ ] Lock `actual_validation_keys.json` in version control (tag it)
-- [ ] Pick scope from §5 (recommend Tier 1 + Longformer)
-- [ ] Read `PB05_Report_8thSem.pdf` Ch.4–5 for metrics justification before changing thresholds
-- [ ] Re-run `docs/generate_diagrams.py` if you change architecture — diagrams are code-generated, not hand-drawn
-
 ---
 
 ## 10. Contact & Provenance
 
-- **Authors:** Mohnish S Shetty (22ETCS002158), Mokshith C (22ETCS002159), Nagesh H N (22ETCS002162), Yatish R (22ETCS002180) — CSE, RUAS
-- **Report:** `PB05_Report_8thSem.pdf` (89 pages, 5.0 MB, June 2026) — source of all tables/figures
-- **Stack:** PyTorch 2.9, HuggingFace Transformers, Streamlit 1.52, Ollama, OpenCV, timm, MONAI
+- **Mentor:** Mr Nageshwara Guptha
+- **Report:** `PB05_Report_8thSem.pdf` (89 pages) — source of tables and figures
+- **Stack:** PyTorch 2.9, HuggingFace Transformers, Phikon-v2, ClinicalBERT, Streamlit 1.52, Ollama, OpenCV
 
 ---
 
