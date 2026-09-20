@@ -61,3 +61,7 @@ Thumbs.db
 
 # Huggingface cache (local)
 .cache/
+# Generated heatmap outputs
+Interactive_XAI*.png
+src/Interactive_XAI*.png
+src/*.png
