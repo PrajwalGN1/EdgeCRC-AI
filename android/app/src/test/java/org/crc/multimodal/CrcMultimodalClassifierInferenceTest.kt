@@ -233,4 +233,21 @@ class CrcMultimodalClassifierInferenceTest {
         assertTrue(result.probability in 0.0f..1.0f)
         assertEquals(3914, result.attentionWeights!!.size)
     }
+
+    @Test
+    fun testFromByteArrayInstantiationAndInference() {
+        val bytes = modelFile.readBytes()
+        val classifierFromBytes = CrcMultimodalClassifier.fromByteArray(bytes, numThreads = 1)
+        try {
+            val rng = Random(123)
+            val n = 5
+            val vision = FloatArray(n * 1024) { rng.nextFloat() }
+            val text = FloatArray(768) { rng.nextFloat() }
+            val res = classifierFromBytes.predict(vision, n, text)
+            assertTrue(res.probability in 0.0f..1.0f)
+            assertTrue(res.predictedClass in 0..1)
+        } finally {
+            classifierFromBytes.close()
+        }
+    }
 }

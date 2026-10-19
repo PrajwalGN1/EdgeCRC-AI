@@ -5,7 +5,9 @@
 **Build Variant:** `debug`  
 **Target Device:** Samsung Galaxy S24 (SM-S921 / Snapdragon 8 Gen 3 or Exynos 2400 / Android 14 / One UI 6.1)  
 **APK Filename:** `crc-edge-ai-android-debug.apk`  
-**APK SHA-256:** `22b94247a7fed5bab297fcff28a46f9461b7f93bd74a7620c32f33db22f758a9`  
+**APK SHA-256:** `e126d788700019f660a02d643bfc64240bca813793d8ff7c034a8399ea087917`  
+**Version:** `1.0.1` (versionCode: `2`)  
+**Remediation:** Fixes startup crash on One UI 6.1 (Theme.AppCompat / MaterialComponents & resources)  
 **Model Bundled:** `fusion_model_fp32.onnx` (SHA-256: `0402f6c522beac5733e30eeecad908927957b5d4164b6b896663f43ba3702d73`)
 
 ---

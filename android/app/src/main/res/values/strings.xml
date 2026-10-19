@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">CRC Multimodal Edge (Research)</string>
+    <string name="title_edge_ai">CRC Multimodal Edge AI</string>
+    <string name="subtitle_edge_ai">Cross-Attention Fusion · MSI/MSS Detection</string>
+    <string name="status_initializing">Initializing ONNX Runtime Engine…</string>
+    <string name="btn_run_smoke_test">Execute On-Device Live Inference</string>
+    <string name="disclaimer_heading">INVESTIGATIONAL RESEARCH DISCLAIMER</string>
+    <string name="disclaimer_content">This software is an investigational research demonstration. It is NOT cleared, certified, or approved for clinical diagnosis, treatment planning, or patient care.\n\nConsumes precomputed feature embeddings (Vision: [1, N, 1024], Text: [1, 768]). Foundation vision encoder (Phikon-v2) and clinical text encoder (ClinicalBERT) are evaluated via precomputed tensors.</string>
+</resources>
