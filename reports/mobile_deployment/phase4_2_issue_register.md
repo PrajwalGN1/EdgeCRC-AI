@@ -16,6 +16,7 @@
 | **2026-10-17** | Phase 4.2.1 | Remediation of Issue 7 (Protocol Scoping Contract & explicit `InferenceProtocol` policy). Separated evidence categories to prevent conflating reference parity with Android runtime execution. Formulated exact Android SDK installation prerequisites. | `CONDITIONAL GO` |
 | **2026-10-17** | Phase 4.2.2A | Forensic diagnosis of Gradle wrapper failure. Diagnosed IDE extension stale Gradle 8.6 cache and IDE embedded JRE 25 incompatibility (`Unsupported class file major version 69`). Verified wrapper distribution 8.10.2 connectivity and integrity. Validated Android SDK 34 and Build Tools 34.0.0. Executed `assembleDebug` (Exit code 0, APK produced) and `testDebugUnitTest` (22/22 passed). | `GO (BUILD VALIDATED)` |
 | **2026-10-17** | Phase 4.2.2B | Android runtime readiness and Kotlin ONNX Runtime inference verification. Inspected ADB devices and AVD configuration (no physical device or AVD present). Diagnosed host firmware hardware virtualization constraint (`VirtualizationFirmwareEnabled: False` on Intel i7-8650U). Executed actual Kotlin ONNX Runtime inference suite (`CrcMultimodalClassifierInferenceTest`, 6/6 tests passed, 28/28 unit tests total). Audited APK integrity (SHA-256 matched). Enforced strict non-falsification barrier on runtime/parity claims. | `GO (KOTLIN INFERENCE VERIFIED / AWAITING PHYSICAL DEVICE)` |
+| **2026-10-19** | Phase 4.2.2C | Forensic audit, staging, and public GitHub Release of the Android Edge AI APK (`v0.1.0`, 72.73 MB, SHA-256: `22b94247...`). Verified 100% bit-for-bit bundled model parity with frozen FP32 ONNX model (`0402f6c5...`). Staged release assets and created comprehensive Samsung Galaxy S24 installation and ADB instructions (`release/INSTALLATION.md`, `release_manifest.json`). Published to public GitHub release (tag `v0.1.0`) and confirmed public unauthenticated download availability. | `GO (RELEASE PUBLISHED & AUDITED)` |
 
 ---
 
@@ -32,6 +33,7 @@
 | `ISSUE-4.2-07` | Implicit Global Patch Cap & Ambiguous Protocol Scoping in Kotlin API | MEDIUM | `VERIFIED_FIXED` | `InferenceProtocol.kt`, `InputValidator.kt`, `CrcMultimodalClassifier.kt`, `InferenceResult.kt`, `InputValidatorTest.kt`, `test_mobile_inference_contract.py` |
 | `ISSUE-4.2-08` | Gradle Extension Stale 8.6 Target & Embedded JRE 25 Compatibility Conflict | HIGH | `VERIFIED_FIXED` | `.vscode/settings.json`, `gradle-wrapper.properties` |
 | `ISSUE-4.2-09` | Host BIOS Firmware Virtualization Disabled & Absence of Attached Android Device | MEDIUM / BLOCKER | `BLOCKED_PHYSICAL_DEVICE` | None (Host BIOS / Hardware limitation) |
+| `ISSUE-4.2-10` | Mobile APK Distribution & Samsung S24 Validation Handshake | LOW / RELEASE | `VERIFIED_PUBLISHED` | `release/`, `scripts/publish_release.py`, `reports/mobile_deployment/phase4_2_2C_apk_distribution_report.md` |
 
 ---
 

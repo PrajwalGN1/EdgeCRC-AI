@@ -71,6 +71,8 @@ src/*.png
 /android/build/
 /android/app/build/
 /android/local.properties
+*.apk
+release/*.apk
 
 # General build and environment artifacts
 .gradle/
@@ -79,3 +81,4 @@ src/*.png
 venv/
 __pycache__/
 .env
+
