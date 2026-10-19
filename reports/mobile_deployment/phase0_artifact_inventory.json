@@ -1,0 +1,256 @@
+{
+  "audit_metadata": {
+    "audit_phase": "Phase 0 - Master Audit",
+    "timestamp": "2026-10-16T17:15:38+05:30",
+    "auditor_role": "Senior ML Deployment Engineer, ONNX Conversion Specialist, Android Edge-AI Engineer, Software Auditor",
+    "repository_root": "d:/CRC Edge deployment/MULTIMODAL-FUSION-FOR-DETECTION-OF-COLORECTAL-CANCER-USING-CLINICAL-BERT-AND-PHIKONV2",
+    "git_branch": "edge-deployment",
+    "git_head_commit": "189b6638c31d80344ecc8c45133c7058c3e47fa1",
+    "overall_decision": "GO (FOR PHASE 1: FP32 REFERENCE BENCHMARK & BASELINE PREPARATION)"
+  },
+  "environment": {
+    "os": "Windows 11 (10.0.26200-SP0)",
+    "architecture": "AMD64",
+    "cpu": "Intel64 Family 6 Model 142 Stepping 10, GenuineIntel",
+    "ram_total_gb": 15.88,
+    "ram_available_gb": 3.91,
+    "disk_free_c_gb": 41.76,
+    "disk_free_d_gb": 193.78,
+    "python_version": "3.13.5 (64-bit)",
+    "python_executable": "C:\\Python313\\python.exe",
+    "pytorch_version": "2.9.1+cpu",
+    "cuda_available": false,
+    "onnx_packages": {
+      "onnx": null,
+      "onnxruntime": null,
+      "onnxscript": null,
+      "executorch": null
+    },
+    "android_toolchain": {
+      "java_version": "23.0.1 (Oracle Corporation)",
+      "java_binary": "C:\\Program Files\\Common Files\\Oracle\\Java\\javapath\\java.EXE",
+      "javac_binary": "C:\\Program Files\\Common Files\\Oracle\\Java\\javapath\\javac.EXE",
+      "adb_found": false,
+      "android_home_set": false,
+      "gradle_found": false,
+      "ndk_found": false
+    }
+  },
+  "model_checkpoints": [
+    {
+      "filename": "fusion_model_v1_1.pth",
+      "role": "Primary Cross-Attention Fusion Checkpoint",
+      "architecture": "SummaryToPatchCrossAttention",
+      "size_bytes": 21007347,
+      "sha256": "e9a7bbcdbe1713a0ed14b6ecd511ac65d046a52e2f03c69443f5bd3dcf12d453",
+      "parameters_total": 5250561,
+      "parameters_trainable": 5250561,
+      "weights_dtype": "torch.float32",
+      "strict_loading_verified": true
+    },
+    {
+      "filename": "best_fusion_model.pth",
+      "role": "Alternative Cross-Attention Fusion Milestone Checkpoint",
+      "architecture": "SummaryToPatchCrossAttention",
+      "size_bytes": 21007347,
+      "sha256": "fe408061100cf8d56d5a61fd7a5ede145f83eb31e95d802cf87d1c4275a05c0d",
+      "parameters_total": 5250561,
+      "parameters_trainable": 5250561,
+      "weights_dtype": "torch.float32",
+      "strict_loading_verified": true
+    },
+    {
+      "filename": "fusion_model_v1_0.pth",
+      "role": "Intermediate Cross-Attention Checkpoint v1.0",
+      "architecture": "SummaryToPatchCrossAttention",
+      "size_bytes": 21007347,
+      "sha256": "7b26b83b096465b67db28c6ae139ef0ce17341a08965b80b222cd835e6202d87",
+      "parameters_total": 5250561,
+      "parameters_trainable": 5250561,
+      "weights_dtype": "torch.float32",
+      "strict_loading_verified": true
+    },
+    {
+      "filename": "fusion_model_v1_2.pth",
+      "role": "Intermediate Cross-Attention Checkpoint v1.2",
+      "architecture": "SummaryToPatchCrossAttention",
+      "size_bytes": 21007347,
+      "sha256": "0cdf2f6728fdefd1b461629200c0fce9773c1a7ac701d674a777587efec0ce34",
+      "parameters_total": 5250561,
+      "parameters_trainable": 5250561,
+      "weights_dtype": "torch.float32",
+      "strict_loading_verified": true
+    },
+    {
+      "filename": "late_fusion_model_v1_0.pth",
+      "role": "Primary Late-Fusion Baseline Checkpoint",
+      "architecture": "MultimodalFusionNetwork",
+      "size_bytes": 5255861,
+      "sha256": "e98b945354578055aa691f2469390346753523ce7e50315f77098f33d2626ae7",
+      "parameters_total": 1312770,
+      "parameters_trainable": 1312770,
+      "weights_dtype": "torch.float32",
+      "strict_loading_verified": true
+    },
+    {
+      "filename": "late_fusion_model.pth",
+      "role": "Alternative Late-Fusion Milestone Checkpoint",
+      "architecture": "MultimodalFusionNetwork",
+      "size_bytes": 5255717,
+      "sha256": "0a73c2eb72dea6d41e2bd76cd78b21014494b69bede47777bf6ca90cdf64851e",
+      "parameters_total": 1312770,
+      "parameters_trainable": 1312770,
+      "weights_dtype": "torch.float32",
+      "strict_loading_verified": true
+    }
+  ],
+  "dataset_and_manifests": {
+    "patient_registry": {
+      "path": "data/patient_registry.json",
+      "total_patients": 326,
+      "class_distribution": {
+        "MSS_Class_0": 263,
+        "MSS_Class_0_pct": 80.67,
+        "MSI_Class_1": 63,
+        "MSI_Class_1_pct": 19.33,
+        "imbalance_ratio": 4.17
+      }
+    },
+    "holdout_manifest": {
+      "path": "results/actual_validation_keys.json",
+      "total_patients": 66,
+      "cohort_fraction_pct": 20.25,
+      "class_distribution": {
+        "MSS_Class_0": 50,
+        "MSS_Class_0_pct": 75.76,
+        "MSI_Class_1": 16,
+        "MSI_Class_1_pct": 24.24
+      },
+      "resolved_in_registry_pct": 100.0,
+      "patient_level_separation_verified": true
+    },
+    "inferred_train_split": {
+      "total_patients": 260,
+      "cohort_fraction_pct": 79.75,
+      "class_distribution": {
+        "MSS_Class_0": 213,
+        "MSS_Class_0_pct": 81.92,
+        "MSI_Class_1": 47,
+        "MSI_Class_1_pct": 18.08
+      },
+      "overlap_with_holdout": 0
+    },
+    "precomputed_tensor_store": {
+      "path": "data/clean_tensors",
+      "total_files": 652,
+      "vision_tensors_count": 326,
+      "text_tensors_count": 326,
+      "paired_patients_count": 326,
+      "pairing_rate_pct": 100.0,
+      "orphan_vision_tensors": 0,
+      "orphan_text_tensors": 0,
+      "text_tensor_shape": [1, 768],
+      "text_tensor_dtype": "torch.float32",
+      "vision_tensor_feature_dim": 1024,
+      "vision_tensor_dtype": "torch.float32",
+      "patch_count_distribution": {
+        "min": 6,
+        "max": 4305,
+        "mean": 531.89,
+        "median": 291.5,
+        "std": 706.88,
+        "cohort_patients_exceeding_1000_patches": 48,
+        "holdout_patients_exceeding_1000_patches": 8
+      },
+      "numerical_health": {
+        "nan_count": 0,
+        "inf_count": 0,
+        "empty_files": 0
+      }
+    }
+  },
+  "inference_contract": {
+    "architecture_class": "SummaryToPatchCrossAttention",
+    "inputs": {
+      "vision_features": {
+        "shape": "[1, N, 1024]",
+        "dtype": "float32",
+        "description": "Precomputed Phikon-v2 ViT-L/16 patch embeddings"
+      },
+      "text_features": {
+        "shape": "[1, 768]",
+        "dtype": "float32",
+        "description": "Precomputed ClinicalBERT summary CLS embedding"
+      }
+    },
+    "outputs": {
+      "probability": {
+        "shape": "[1, 1]",
+        "dtype": "float32",
+        "range": "[0.0, 1.0]",
+        "activation": "Sigmoid"
+      },
+      "attention_weights": {
+        "shape": "[1, 1, N]",
+        "dtype": "float32",
+        "description": "Cross-attention softmax distribution"
+      }
+    },
+    "decision_rule": {
+      "threshold": 0.83,
+      "class_0": "MSS (Microsatellite Stable) if probability < 0.83",
+      "class_1": "MSI (Microsatellite Instability) if probability >= 0.83"
+    },
+    "variable_patch_count_supported": true,
+    "dropout_training_only": "0.3 (in classifier head, disabled during eval mode)"
+  },
+  "reproducibility_benchmark": {
+    "validation_size": 66,
+    "reported_metrics": {
+      "accuracy": 0.8788,
+      "roc_auc": 0.925,
+      "mss_precision": 0.92,
+      "mss_recall": 0.92,
+      "mss_f1": 0.92,
+      "msi_precision": 0.75,
+      "msi_recall": 0.75,
+      "msi_f1": 0.75
+    },
+    "reproduced_uncapped_metrics": {
+      "accuracy": 0.8788,
+      "roc_auc": 0.9337,
+      "confusion_matrix": [[46, 4], [4, 12]],
+      "mss_f1": 0.92,
+      "msi_f1": 0.75
+    },
+    "reproduced_capped_1000_seed42": {
+      "accuracy": 0.8939,
+      "roc_auc": 0.9263,
+      "confusion_matrix": [[47, 3], [4, 12]],
+      "mss_f1": 0.9307,
+      "msi_f1": 0.7742
+    },
+    "dynamic_cap_fluctuation_range": {
+      "accuracy_min": 0.8788,
+      "accuracy_max": 0.8939,
+      "roc_auc_min": 0.925,
+      "roc_auc_max": 0.9337,
+      "cause": "Unseeded torch.randperm in MultimodalTCGADataset for 8 holdout patients with >1000 patches"
+    }
+  },
+  "fp16_preliminary_numerical_drift": {
+    "validation_size": 66,
+    "max_absolute_prob_difference": 0.000274,
+    "mean_absolute_prob_difference": 0.000061,
+    "clinical_decision_agreement_pct": 100.0,
+    "decision_discrepancies_count": 0
+  },
+  "unit_test_status": {
+    "test_framework": "pytest-9.1.1",
+    "total_collected": 27,
+    "passed": 27,
+    "failed": 0,
+    "skipped": 0,
+    "duration_seconds": 6.81
+  }
+}

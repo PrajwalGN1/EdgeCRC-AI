@@ -1,0 +1,266 @@
+{
+  "schema_version": "3.0.0",
+  "audit_timestamp_iso": "2026-10-16T15:42:44.280543+00:00",
+  "audit_phase": "Phase 3 \u2014 FP16 Conversion and Optimization Audit",
+  "gate_decision": "GO",
+  "host_environment": {
+    "repository_root": "D:\\CRC Edge deployment\\MULTIMODAL-FUSION-FOR-DETECTION-OF-COLORECTAL-CANCER-USING-CLINICAL-BERT-AND-PHIKONV2",
+    "python_version": "3.13.5",
+    "platform": "Windows 11 AMD64 (build 10.0.26100)",
+    "interpreter": "C:\\Python313\\python.exe",
+    "pytorch_version": "2.9.1+cpu",
+    "onnx_version": "1.23.2",
+    "onnxruntime_version": "1.31.0",
+    "pip_check_status": "No broken requirements found (exit 0)"
+  },
+  "git_environment": {
+    "branch": "edge-deployment",
+    "base_commit": "189b6638c31d80344ecc8c45133c7058c3e47fa1",
+    "working_tree_policy": "Preserve unrelated changes; no untracked file destruction"
+  },
+  "protected_assets_integrity": {
+    "fusion_model_v1_1.pth": {
+      "path": "models/fusion_model_v1_1.pth",
+      "sha256": "e9a7bbcdbe1713a0ed14b6ecd511ac65d046a52e2f03c69443f5bd3dcf12d453",
+      "size_bytes": 21007347,
+      "status": "UNMODIFIED_VERIFIED"
+    },
+    "fusion_model_fp32.onnx": {
+      "path": "models/fusion_model_fp32.onnx",
+      "sha256": "0402f6c522beac5733e30eeecad908927957b5d4164b6b896663f43ba3702d73",
+      "size_bytes": 21015452,
+      "status": "UNMODIFIED_VERIFIED"
+    },
+    "patient_registry.json": {
+      "path": "data/patient_registry.json",
+      "sha256": "7d1c92c51741e080787607733a8b34cb07252c804f527cd567937345a5b22ce2",
+      "size_bytes": 13158992,
+      "status": "UNMODIFIED_VERIFIED"
+    },
+    "actual_validation_keys.json": {
+      "path": "results/actual_validation_keys.json",
+      "sha256": "61d7f8d98388efbe9fc5e000d695b2f41022720a14a8308a6317bc9441930aa9",
+      "size_bytes": 1056,
+      "status": "UNMODIFIED_VERIFIED"
+    },
+    "protocol1_patch_selection_manifest.json": {
+      "path": "reports/mobile_deployment/protocol1_patch_selection_manifest.json",
+      "sha256": "e592f3e218169741fceae27deb75e305cf7549739cfd1fbdbb0087b05863e668",
+      "size_bytes": 138689,
+      "status": "UNMODIFIED_VERIFIED"
+    },
+    "governance_constants": {
+      "class_mapping": {
+        "0": "MSS",
+        "1": "MSI"
+      },
+      "decision_threshold": 0.83,
+      "status": "STRICTLY_PRESERVED"
+    }
+  },
+  "converted_fp16_model": {
+    "path": "models/fusion_model_fp16.onnx",
+    "sha256": "ea3f5fee8ed321b5e9af5e1294a8527093c440fb71837fd2ac54ed01ddd84916",
+    "size_bytes": 10519654,
+    "size_mib": 10.03,
+    "size_reduction_bytes": 10495798,
+    "size_reduction_pct": 49.94,
+    "opset_version": 17,
+    "ir_version": 8,
+    "total_nodes": 109,
+    "total_initializers": 16,
+    "parameter_count": 5250561,
+    "graph_checker_passed": true,
+    "input_signatures": {
+      "vision_seq": {
+        "type": "FLOAT16",
+        "shape": [
+          "batch_size",
+          "num_patches",
+          1024
+        ]
+      },
+      "text_summary": {
+        "type": "FLOAT16",
+        "shape": [
+          "batch_size",
+          768
+        ]
+      }
+    },
+    "output_signatures": {
+      "logit": {
+        "type": "FLOAT16",
+        "shape": [
+          "batch_size",
+          1
+        ]
+      },
+      "probability": {
+        "type": "FLOAT16",
+        "shape": [
+          "batch_size",
+          1
+        ]
+      },
+      "attention_weights": {
+        "type": "FLOAT16",
+        "shape": [
+          "batch_size",
+          1,
+          "num_patches"
+        ]
+      }
+    }
+  },
+  "fp16_numerical_drift_summary": {
+    "acceptance_criteria": {
+      "max_logit_error_limit": 0.005,
+      "max_prob_error_limit": 0.001,
+      "mean_prob_error_limit": 0.0001,
+      "required_agreement_pct": 100.0
+    },
+    "protocol_1_capped": {
+      "max_logit_drift": 0.001994609832763672,
+      "mean_logit_drift": 0.0007464048085790691,
+      "max_prob_drift": 0.0002524852752685547,
+      "mean_prob_drift": 5.226604866259026e-05,
+      "agreement_pct": 100.0,
+      "accuracy_pct": 89.39393939393939,
+      "flips_vs_fp32": 0,
+      "flips_vs_gt": 7
+    },
+    "protocol_2_uncapped": {
+      "max_logit_drift": 0.001994609832763672,
+      "mean_logit_drift": 0.0007572862686532917,
+      "max_prob_drift": 0.00029861927032470703,
+      "mean_prob_drift": 5.728457913254247e-05,
+      "agreement_pct": 100.0,
+      "accuracy_pct": 87.87878787878788,
+      "flips_vs_fp32": 0,
+      "flips_vs_gt": 8
+    }
+  },
+  "boundary_cases_audit": [
+    {
+      "deidentified_id": "CASE_36",
+      "protocol": "Protocol 1 & 2",
+      "ground_truth_label": 1,
+      "ground_truth_class": "MSI",
+      "fp32_prob": 0.830106,
+      "fp16_prob": 0.830078,
+      "prob_drift": 2.84e-05,
+      "distance_to_threshold_fp16": 7.8e-05,
+      "fp32_decision": 1,
+      "fp16_decision": 1,
+      "decision_match": true,
+      "classification_flip": false
+    },
+    {
+      "deidentified_id": "CASE_59",
+      "protocol": "Protocol 1 & 2",
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_prob": 0.817997,
+      "fp16_prob": 0.817871,
+      "prob_drift": 0.000126,
+      "distance_to_threshold_fp16": -0.012129,
+      "fp32_decision": 0,
+      "fp16_decision": 0,
+      "decision_match": true,
+      "classification_flip": false
+    },
+    {
+      "deidentified_id": "CASE_35",
+      "protocol": "Protocol 1 & 2",
+      "ground_truth_label": 1,
+      "ground_truth_class": "MSI",
+      "fp32_prob": 0.860587,
+      "fp16_prob": 0.86084,
+      "prob_drift": 0.000252,
+      "distance_to_threshold_fp16": 0.03084,
+      "fp32_decision": 1,
+      "fp16_decision": 1,
+      "decision_match": true,
+      "classification_flip": false
+    },
+    {
+      "deidentified_id": "CASE_20",
+      "protocol": "Protocol 2 (Uncapped)",
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_prob": 0.84075,
+      "fp16_prob": 0.84082,
+      "prob_drift": 7.02e-05,
+      "distance_to_threshold_fp16": 0.01082,
+      "fp32_decision": 1,
+      "fp16_decision": 1,
+      "decision_match": true,
+      "classification_flip": false
+    }
+  ],
+  "resource_benchmarks": {
+    "hardware_and_environment": {
+      "os": "Windows-11-10.0.26200-SP0",
+      "processor": "Intel64 Family 6 Model 142 Stepping 10, GenuineIntel",
+      "python": "3.13.5",
+      "onnxruntime": "1.31.0",
+      "provider": "CPUExecutionProvider",
+      "warmup_runs": 10,
+      "measured_runs": 50
+    },
+    "model_storage": {
+      "fp32_bytes": 21015452,
+      "fp32_mib": 20.04,
+      "fp16_bytes": 10519654,
+      "fp16_mib": 10.03,
+      "reduction_bytes": 10495798,
+      "reduction_pct": 49.94
+    },
+    "latency_benchmark": {
+      "N_100": {
+        "num_patches": 100,
+        "fp32_mean_ms": 2.6963200000318466,
+        "fp32_median_ms": 2.878150000469759,
+        "fp32_p95_ms": 3.2786050001959666,
+        "fp32_std_ms": 0.4942895886978734,
+        "fp16_mean_ms": 4.729181999973662,
+        "fp16_median_ms": 4.656250000152795,
+        "fp16_p95_ms": 5.927354998948431,
+        "fp16_std_ms": 0.7976116227913242,
+        "speedup_ratio": 0.5701451117861108
+      },
+      "N_385": {
+        "num_patches": 385,
+        "fp32_mean_ms": 8.841855999926338,
+        "fp32_median_ms": 9.286349999456434,
+        "fp32_p95_ms": 9.878434999791352,
+        "fp32_std_ms": 1.1908236155906624,
+        "fp16_mean_ms": 10.896956000033242,
+        "fp16_median_ms": 11.488850000205275,
+        "fp16_p95_ms": 12.805700000080831,
+        "fp16_std_ms": 1.518104083563593,
+        "speedup_ratio": 0.8114060476980328
+      },
+      "N_1000": {
+        "num_patches": 1000,
+        "fp32_mean_ms": 21.559783999982756,
+        "fp32_median_ms": 22.52900000075897,
+        "fp32_p95_ms": 24.533374999646185,
+        "fp32_std_ms": 2.710421079547986,
+        "fp16_mean_ms": 25.32548000010138,
+        "fp16_median_ms": 25.95629999996163,
+        "fp16_p95_ms": 28.698445000463835,
+        "fp16_std_ms": 2.78117452257632,
+        "speedup_ratio": 0.8513080107424006
+      }
+    }
+  },
+  "regression_suite_verification": {
+    "test_framework": "pytest",
+    "total_collected": 53,
+    "total_passed": 53,
+    "total_failed": 0,
+    "status": "ALL_TESTS_PASSING"
+  }
+}

@@ -1,0 +1,3526 @@
+{
+  "metadata": {
+    "benchmark_phase": "Phase 1 - FP32 Reference Benchmark",
+    "timestamp": "2026-10-16T18:38:32+0530",
+    "environment": {
+      "os": "Windows 11 (AMD64)",
+      "python_version": "3.13.5",
+      "pytorch_version": "2.9.1+cpu",
+      "execution_device": "cpu",
+      "cpu_threads": 4
+    },
+    "model": {
+      "architecture": "SummaryToPatchCrossAttention",
+      "checkpoint_file": "fusion_model_v1_1.pth",
+      "checkpoint_size_bytes": 21007347,
+      "total_parameters": 5250561,
+      "weight_memory_mb": 20.03
+    },
+    "evaluation_cohort": {
+      "manifest_file": "actual_validation_keys.json",
+      "total_patients": 66,
+      "class_counts": {
+        "MSS_0": 50,
+        "MSI_1": 16
+      },
+      "decision_threshold": 0.83
+    }
+  },
+  "protocol_provenance_and_relationship": {
+    "training_configuration": {
+      "script": "src/cross_attentiion_train.py (line 64)",
+      "max_patches_configured": 1000,
+      "sampling_mechanism": "torch.randperm(num_patches)[:1000] in MultimodalTCGADataset.__getitem__",
+      "finding": "The checkpoint fusion_model_v1_1.pth was strictly trained on sequences capped at 1,000 patches."
+    },
+    "original_evaluation_configuration": {
+      "script": "src/cross_attention_eval.py (line 73)",
+      "max_patches_configured": 1000,
+      "reported_metrics": {
+        "accuracy": 0.8788,
+        "roc_auc": 0.925
+      },
+      "finding": "The published report was generated under unseeded capped execution (an instance of Protocol 3)."
+    },
+    "protocol_roles": {
+      "protocol_1_training_aligned_capped_seed42": "Faithful operational counterpart to original training/eval configuration. Strictly capped at 1,000 patches with fixed seed=42.",
+      "protocol_2_full_uncapped_candidate": "Exploratory edge deployment candidate. Leverages model's computational capacity for flexible N to evaluate complete slide evidence without tile dropping.",
+      "recommendation": "Preserve Protocol 1 as the training-aligned baseline while benchmarking Protocol 2 as a deployment candidate. Do not silently replace the original protocol."
+    }
+  },
+  "protocols_summary": {
+    "protocol_1_training_aligned_capped_seed42": {
+      "description": "Capped at 1000 patches using deterministic torch.manual_seed(42), matching training pipeline.",
+      "overall_accuracy": 0.8939,
+      "roc_auc": 0.9262,
+      "confusion_matrix": [
+        [
+          47,
+          3
+        ],
+        [
+          4,
+          12
+        ]
+      ],
+      "classification_report": {
+        "MSS": {
+          "precision": 0.9215686274509803,
+          "recall": 0.94,
+          "f1-score": 0.9306930693069307,
+          "support": 50.0
+        },
+        "MSI": {
+          "precision": 0.8,
+          "recall": 0.75,
+          "f1-score": 0.7741935483870968,
+          "support": 16.0
+        },
+        "accuracy": 0.8939393939393939,
+        "macro avg": {
+          "precision": 0.8607843137254902,
+          "recall": 0.845,
+          "f1-score": 0.8524433088470138,
+          "support": 66.0
+        },
+        "weighted avg": {
+          "precision": 0.8920974450386214,
+          "recall": 0.8939393939393939,
+          "f1-score": 0.8927537915081831,
+          "support": 66.0
+        }
+      }
+    },
+    "protocol_2_full_uncapped_candidate": {
+      "description": "Full sequence evaluated without capping or tile dropping (N in [10, 3914]). Candidate deployment mode.",
+      "overall_accuracy": 0.8788,
+      "balanced_accuracy": 0.835,
+      "roc_auc": 0.9338,
+      "pr_auc": 0.8368,
+      "confusion_matrix": [
+        [
+          46,
+          4
+        ],
+        [
+          4,
+          12
+        ]
+      ],
+      "classification_report": {
+        "MSS": {
+          "precision": 0.92,
+          "recall": 0.92,
+          "f1-score": 0.92,
+          "support": 50.0
+        },
+        "MSI": {
+          "precision": 0.75,
+          "recall": 0.75,
+          "f1-score": 0.75,
+          "support": 16.0
+        },
+        "accuracy": 0.8787878787878788,
+        "macro avg": {
+          "precision": 0.835,
+          "recall": 0.835,
+          "f1-score": 0.835,
+          "support": 66.0
+        },
+        "weighted avg": {
+          "precision": 0.8787878787878788,
+          "recall": 0.8787878787878788,
+          "f1-score": 0.8787878787878788,
+          "support": 66.0
+        }
+      },
+      "mean_slide_latency_ms": 139.8,
+      "median_slide_latency_ms": 89.81
+    },
+    "protocol_3_legacy_unseeded_monte_carlo": {
+      "description": "10 unseeded stochastic trials matching legacy training DataLoader subsampling.",
+      "accuracy_range": [
+        0.8788,
+        0.8939
+      ],
+      "roc_auc_range": [
+        0.9225,
+        0.935
+      ],
+      "fluctuating_patients_count": 5
+    }
+  },
+  "numerical_tolerances_and_determinism_guidelines": {
+    "guideline": "Bit-exact determinism cannot be assumed across different runtimes (PyTorch vs ONNX Runtime vs NNAPI). Floating-point non-associativity, SIMD vectorization, and compiler optimizations cause minor numerical divergence.",
+    "target_tolerances_for_phase2": {
+      "max_absolute_logit_diff": 0.0001,
+      "max_absolute_prob_diff": 0.0001,
+      "max_relative_error": 0.001,
+      "non_borderline_classification_agreement_pct": 100.0
+    },
+    "boundary_sensitivity_zone": {
+      "threshold": 0.83,
+      "critical_window": "[0.78, 0.88]",
+      "borderline_patients_count": 4,
+      "borderline_patients": [
+        {
+          "patient_key": "TCGA-AY-A71X",
+          "patch_count": 3914,
+          "ground_truth": "MSS",
+          "probability_uncapped": 0.84075,
+          "distance_to_threshold": 0.0108,
+          "call": "MSI"
+        },
+        {
+          "patient_key": "TCGA-AD-5900",
+          "patch_count": 361,
+          "ground_truth": "MSI",
+          "probability_uncapped": 0.860587,
+          "distance_to_threshold": 0.0306,
+          "call": "MSI"
+        },
+        {
+          "patient_key": "TCGA-D5-6928",
+          "patch_count": 80,
+          "ground_truth": "MSI",
+          "probability_uncapped": 0.830106,
+          "distance_to_threshold": 0.0001,
+          "call": "MSI"
+        },
+        {
+          "patient_key": "TCGA-D5-6534",
+          "patch_count": 166,
+          "ground_truth": "MSS",
+          "probability_uncapped": 0.817998,
+          "distance_to_threshold": 0.012,
+          "call": "MSS"
+        }
+      ]
+    }
+  },
+  "resource_profiling_framing": {
+    "host_development_profile": {
+      "context": "x86_64 host developer machine (Windows 11, Intel CPU, 4 PyTorch threads)",
+      "measured_mean_latency_ms": 139.8,
+      "measured_median_latency_ms": 89.81,
+      "baseline_rss_mb": 355.4,
+      "peak_rss_mb": 665.33,
+      "note": "Peak RSS reflects batch preloading of all 66 holdout tensor pairs in memory for multi-trial evaluation."
+    },
+    "mobile_runtime_target_expectation": {
+      "execution_model": "Strictly single-patient sequential inference",
+      "model_storage_mb": 20.03,
+      "single_patient_input_tensor_mb": "2.05 MB (typical N=500) to 4.10 MB (capped N=1000)",
+      "peak_activation_memory_mb": "<25 MB per patient",
+      "note": "Host development latency and memory must NOT be directly extrapolated to Android phone performance. Physical on-device profiling is required in later phases."
+    }
+  },
+  "clinical_scope_caveat": {
+    "holdout_size": 66,
+    "statement": "The 66-case holdout cohort is an isolated academic test partition suitable for technical verification and conversion benchmarking. It is not sufficiently powered by itself to assert generalized clinical diagnostic efficacy."
+  },
+  "per_patient_reference_data_protocol_1_capped_seed42": [
+    {
+      "patient_index": 1,
+      "patient_key": "TCGA-D5-6540",
+      "original_n": 345,
+      "evaluated_n": 345,
+      "ground_truth_label": 1,
+      "ground_truth_class": "MSI",
+      "fp32_logit": 4.634805,
+      "fp32_probability": 0.990385,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 1,
+      "predicted_class_name": "MSI",
+      "classification_outcome": "TP",
+      "is_correct": true,
+      "confidence_pct": 99.04
+    },
+    {
+      "patient_index": 2,
+      "patient_key": "TCGA-CM-6675",
+      "original_n": 541,
+      "evaluated_n": 541,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": -1.641585,
+      "fp32_probability": 0.16225,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 83.78
+    },
+    {
+      "patient_index": 3,
+      "patient_key": "TCGA-AA-3877",
+      "original_n": 452,
+      "evaluated_n": 452,
+      "ground_truth_label": 1,
+      "ground_truth_class": "MSI",
+      "fp32_logit": 2.706418,
+      "fp32_probability": 0.937404,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 1,
+      "predicted_class_name": "MSI",
+      "classification_outcome": "TP",
+      "is_correct": true,
+      "confidence_pct": 93.74
+    },
+    {
+      "patient_index": 4,
+      "patient_key": "TCGA-A6-6142",
+      "original_n": 61,
+      "evaluated_n": 61,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": -4.320866,
+      "fp32_probability": 0.013114,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 98.69
+    },
+    {
+      "patient_index": 5,
+      "patient_key": "TCGA-AA-A03J",
+      "original_n": 331,
+      "evaluated_n": 331,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": -4.456253,
+      "fp32_probability": 0.011473,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 98.85
+    },
+    {
+      "patient_index": 6,
+      "patient_key": "TCGA-AZ-5403",
+      "original_n": 308,
+      "evaluated_n": 308,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": -5.666886,
+      "fp32_probability": 0.003447,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 99.66
+    },
+    {
+      "patient_index": 7,
+      "patient_key": "TCGA-AA-3681",
+      "original_n": 516,
+      "evaluated_n": 516,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": -2.298708,
+      "fp32_probability": 0.09123,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 90.88
+    },
+    {
+      "patient_index": 8,
+      "patient_key": "TCGA-F4-6459",
+      "original_n": 299,
+      "evaluated_n": 299,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": -4.012845,
+      "fp32_probability": 0.017761,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 98.22
+    },
+    {
+      "patient_index": 9,
+      "patient_key": "TCGA-AA-3989",
+      "original_n": 94,
+      "evaluated_n": 94,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": -2.665175,
+      "fp32_probability": 0.06506,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 93.49
+    },
+    {
+      "patient_index": 10,
+      "patient_key": "TCGA-AF-2693",
+      "original_n": 52,
+      "evaluated_n": 52,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": -4.245267,
+      "fp32_probability": 0.014129,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 98.59
+    },
+    {
+      "patient_index": 11,
+      "patient_key": "TCGA-DM-A0X9",
+      "original_n": 279,
+      "evaluated_n": 279,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": -3.825324,
+      "fp32_probability": 0.021346,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 97.87
+    },
+    {
+      "patient_index": 12,
+      "patient_key": "TCGA-A6-4105",
+      "original_n": 190,
+      "evaluated_n": 190,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": -4.993508,
+      "fp32_probability": 0.006736,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 99.33
+    },
+    {
+      "patient_index": 13,
+      "patient_key": "TCGA-EI-6507",
+      "original_n": 271,
+      "evaluated_n": 271,
+      "ground_truth_label": 1,
+      "ground_truth_class": "MSI",
+      "fp32_logit": 5.177694,
+      "fp32_probability": 0.994391,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 1,
+      "predicted_class_name": "MSI",
+      "classification_outcome": "TP",
+      "is_correct": true,
+      "confidence_pct": 99.44
+    },
+    {
+      "patient_index": 14,
+      "patient_key": "TCGA-CM-6163",
+      "original_n": 370,
+      "evaluated_n": 370,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": -4.157905,
+      "fp32_probability": 0.015399,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 98.46
+    },
+    {
+      "patient_index": 15,
+      "patient_key": "TCGA-AG-3890",
+      "original_n": 40,
+      "evaluated_n": 40,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": -5.049178,
+      "fp32_probability": 0.006374,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 99.36
+    },
+    {
+      "patient_index": 16,
+      "patient_key": "TCGA-AG-3882",
+      "original_n": 60,
+      "evaluated_n": 60,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": -5.889656,
+      "fp32_probability": 0.00276,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 99.72
+    },
+    {
+      "patient_index": 17,
+      "patient_key": "TCGA-AG-3902",
+      "original_n": 162,
+      "evaluated_n": 162,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": -3.139225,
+      "fp32_probability": 0.041518,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 95.85
+    },
+    {
+      "patient_index": 18,
+      "patient_key": "TCGA-AA-3994",
+      "original_n": 52,
+      "evaluated_n": 52,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": 0.23554,
+      "fp32_probability": 0.558614,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 44.14
+    },
+    {
+      "patient_index": 19,
+      "patient_key": "TCGA-CM-6674",
+      "original_n": 1690,
+      "evaluated_n": 1000,
+      "ground_truth_label": 1,
+      "ground_truth_class": "MSI",
+      "fp32_logit": 4.209738,
+      "fp32_probability": 0.985367,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 1,
+      "predicted_class_name": "MSI",
+      "classification_outcome": "TP",
+      "is_correct": true,
+      "confidence_pct": 98.54
+    },
+    {
+      "patient_index": 20,
+      "patient_key": "TCGA-AY-A71X",
+      "original_n": 3914,
+      "evaluated_n": 1000,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": 0.985127,
+      "fp32_probability": 0.728124,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 27.19
+    },
+    {
+      "patient_index": 21,
+      "patient_key": "TCGA-AG-4015",
+      "original_n": 406,
+      "evaluated_n": 406,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": -6.042586,
+      "fp32_probability": 0.00237,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 99.76
+    },
+    {
+      "patient_index": 22,
+      "patient_key": "TCGA-AG-3894",
+      "original_n": 70,
+      "evaluated_n": 70,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": -6.299376,
+      "fp32_probability": 0.001834,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 99.82
+    },
+    {
+      "patient_index": 23,
+      "patient_key": "TCGA-AZ-5407",
+      "original_n": 220,
+      "evaluated_n": 220,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": -0.867254,
+      "fp32_probability": 0.295826,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 70.42
+    },
+    {
+      "patient_index": 24,
+      "patient_key": "TCGA-D5-6539",
+      "original_n": 10,
+      "evaluated_n": 10,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": -3.414175,
+      "fp32_probability": 0.031855,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 96.81
+    },
+    {
+      "patient_index": 25,
+      "patient_key": "TCGA-F4-6856",
+      "original_n": 370,
+      "evaluated_n": 370,
+      "ground_truth_label": 1,
+      "ground_truth_class": "MSI",
+      "fp32_logit": 3.70303,
+      "fp32_probability": 0.975944,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 1,
+      "predicted_class_name": "MSI",
+      "classification_outcome": "TP",
+      "is_correct": true,
+      "confidence_pct": 97.59
+    },
+    {
+      "patient_index": 26,
+      "patient_key": "TCGA-CM-6167",
+      "original_n": 1403,
+      "evaluated_n": 1000,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": 4.512484,
+      "fp32_probability": 0.989148,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 1,
+      "predicted_class_name": "MSI",
+      "classification_outcome": "FP",
+      "is_correct": false,
+      "confidence_pct": 98.91
+    },
+    {
+      "patient_index": 27,
+      "patient_key": "TCGA-G4-6320",
+      "original_n": 913,
+      "evaluated_n": 913,
+      "ground_truth_label": 1,
+      "ground_truth_class": "MSI",
+      "fp32_logit": -1.762931,
+      "fp32_probability": 0.146424,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "FN",
+      "is_correct": false,
+      "confidence_pct": 85.36
+    },
+    {
+      "patient_index": 28,
+      "patient_key": "TCGA-AG-3726",
+      "original_n": 35,
+      "evaluated_n": 35,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": -2.909299,
+      "fp32_probability": 0.051696,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 94.83
+    },
+    {
+      "patient_index": 29,
+      "patient_key": "TCGA-A6-5664",
+      "original_n": 290,
+      "evaluated_n": 290,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": -3.303788,
+      "fp32_probability": 0.035441,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 96.46
+    },
+    {
+      "patient_index": 30,
+      "patient_key": "TCGA-F4-6463",
+      "original_n": 98,
+      "evaluated_n": 98,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": -2.592821,
+      "fp32_probability": 0.069602,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 93.04
+    },
+    {
+      "patient_index": 31,
+      "patient_key": "TCGA-F4-6854",
+      "original_n": 139,
+      "evaluated_n": 139,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": -2.651255,
+      "fp32_probability": 0.065912,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 93.41
+    },
+    {
+      "patient_index": 32,
+      "patient_key": "TCGA-CM-5348",
+      "original_n": 262,
+      "evaluated_n": 262,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": -2.574753,
+      "fp32_probability": 0.070781,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 92.92
+    },
+    {
+      "patient_index": 33,
+      "patient_key": "TCGA-A6-6653",
+      "original_n": 858,
+      "evaluated_n": 858,
+      "ground_truth_label": 1,
+      "ground_truth_class": "MSI",
+      "fp32_logit": 4.850641,
+      "fp32_probability": 0.992237,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 1,
+      "predicted_class_name": "MSI",
+      "classification_outcome": "TP",
+      "is_correct": true,
+      "confidence_pct": 99.22
+    },
+    {
+      "patient_index": 34,
+      "patient_key": "TCGA-D5-6927",
+      "original_n": 232,
+      "evaluated_n": 232,
+      "ground_truth_label": 1,
+      "ground_truth_class": "MSI",
+      "fp32_logit": 4.506709,
+      "fp32_probability": 0.989086,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 1,
+      "predicted_class_name": "MSI",
+      "classification_outcome": "TP",
+      "is_correct": true,
+      "confidence_pct": 98.91
+    },
+    {
+      "patient_index": 35,
+      "patient_key": "TCGA-AD-5900",
+      "original_n": 361,
+      "evaluated_n": 361,
+      "ground_truth_label": 1,
+      "ground_truth_class": "MSI",
+      "fp32_logit": 1.820176,
+      "fp32_probability": 0.860587,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 1,
+      "predicted_class_name": "MSI",
+      "classification_outcome": "TP",
+      "is_correct": true,
+      "confidence_pct": 86.06
+    },
+    {
+      "patient_index": 36,
+      "patient_key": "TCGA-D5-6928",
+      "original_n": 80,
+      "evaluated_n": 80,
+      "ground_truth_label": 1,
+      "ground_truth_class": "MSI",
+      "fp32_logit": 1.586382,
+      "fp32_probability": 0.830106,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 1,
+      "predicted_class_name": "MSI",
+      "classification_outcome": "TP",
+      "is_correct": true,
+      "confidence_pct": 83.01
+    },
+    {
+      "patient_index": 37,
+      "patient_key": "TCGA-AF-6655",
+      "original_n": 35,
+      "evaluated_n": 35,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": -2.575034,
+      "fp32_probability": 0.070763,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 92.92
+    },
+    {
+      "patient_index": 38,
+      "patient_key": "TCGA-F5-6464",
+      "original_n": 190,
+      "evaluated_n": 190,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": -1.527075,
+      "fp32_probability": 0.178422,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 82.16
+    },
+    {
+      "patient_index": 39,
+      "patient_key": "TCGA-AA-3693",
+      "original_n": 121,
+      "evaluated_n": 121,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": -6.203272,
+      "fp32_probability": 0.002019,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 99.8
+    },
+    {
+      "patient_index": 40,
+      "patient_key": "TCGA-AH-6643",
+      "original_n": 542,
+      "evaluated_n": 542,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": -0.499769,
+      "fp32_probability": 0.377595,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 62.24
+    },
+    {
+      "patient_index": 41,
+      "patient_key": "TCGA-AA-3811",
+      "original_n": 619,
+      "evaluated_n": 619,
+      "ground_truth_label": 1,
+      "ground_truth_class": "MSI",
+      "fp32_logit": -0.755592,
+      "fp32_probability": 0.319604,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "FN",
+      "is_correct": false,
+      "confidence_pct": 68.04
+    },
+    {
+      "patient_index": 42,
+      "patient_key": "TCGA-AA-3666",
+      "original_n": 169,
+      "evaluated_n": 169,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": -5.820265,
+      "fp32_probability": 0.002958,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 99.7
+    },
+    {
+      "patient_index": 43,
+      "patient_key": "TCGA-A6-6137",
+      "original_n": 1433,
+      "evaluated_n": 1000,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": -0.697748,
+      "fp32_probability": 0.332312,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 66.77
+    },
+    {
+      "patient_index": 44,
+      "patient_key": "TCGA-AF-2690",
+      "original_n": 283,
+      "evaluated_n": 283,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": 2.332125,
+      "fp32_probability": 0.911503,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 1,
+      "predicted_class_name": "MSI",
+      "classification_outcome": "FP",
+      "is_correct": false,
+      "confidence_pct": 91.15
+    },
+    {
+      "patient_index": 45,
+      "patient_key": "TCGA-CM-6170",
+      "original_n": 155,
+      "evaluated_n": 155,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": -5.635334,
+      "fp32_probability": 0.003557,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 99.64
+    },
+    {
+      "patient_index": 46,
+      "patient_key": "TCGA-A6-3807",
+      "original_n": 613,
+      "evaluated_n": 613,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": -6.061559,
+      "fp32_probability": 0.002325,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 99.77
+    },
+    {
+      "patient_index": 47,
+      "patient_key": "TCGA-A6-3809",
+      "original_n": 703,
+      "evaluated_n": 703,
+      "ground_truth_label": 1,
+      "ground_truth_class": "MSI",
+      "fp32_logit": 4.706197,
+      "fp32_probability": 0.991042,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 1,
+      "predicted_class_name": "MSI",
+      "classification_outcome": "TP",
+      "is_correct": true,
+      "confidence_pct": 99.1
+    },
+    {
+      "patient_index": 48,
+      "patient_key": "TCGA-AG-3892",
+      "original_n": 220,
+      "evaluated_n": 220,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": -5.048785,
+      "fp32_probability": 0.006376,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 99.36
+    },
+    {
+      "patient_index": 49,
+      "patient_key": "TCGA-AD-6889",
+      "original_n": 1921,
+      "evaluated_n": 1000,
+      "ground_truth_label": 1,
+      "ground_truth_class": "MSI",
+      "fp32_logit": -1.899016,
+      "fp32_probability": 0.13022,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "FN",
+      "is_correct": false,
+      "confidence_pct": 86.98
+    },
+    {
+      "patient_index": 50,
+      "patient_key": "TCGA-EF-5830",
+      "original_n": 356,
+      "evaluated_n": 356,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": -4.369443,
+      "fp32_probability": 0.0125,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 98.75
+    },
+    {
+      "patient_index": 51,
+      "patient_key": "TCGA-DC-6683",
+      "original_n": 2504,
+      "evaluated_n": 1000,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": -1.900535,
+      "fp32_probability": 0.130048,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 87.0
+    },
+    {
+      "patient_index": 52,
+      "patient_key": "TCGA-A6-6138",
+      "original_n": 113,
+      "evaluated_n": 113,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": 1.165999,
+      "fp32_probability": 0.762421,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 23.76
+    },
+    {
+      "patient_index": 53,
+      "patient_key": "TCGA-EI-6508",
+      "original_n": 67,
+      "evaluated_n": 67,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": -2.304217,
+      "fp32_probability": 0.090774,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 90.92
+    },
+    {
+      "patient_index": 54,
+      "patient_key": "TCGA-A6-5662",
+      "original_n": 447,
+      "evaluated_n": 447,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": 0.350727,
+      "fp32_probability": 0.586794,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 41.32
+    },
+    {
+      "patient_index": 55,
+      "patient_key": "TCGA-AA-3875",
+      "original_n": 444,
+      "evaluated_n": 444,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": -6.012058,
+      "fp32_probability": 0.002443,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 99.76
+    },
+    {
+      "patient_index": 56,
+      "patient_key": "TCGA-AD-6963",
+      "original_n": 23,
+      "evaluated_n": 23,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": 2.729641,
+      "fp32_probability": 0.938753,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 1,
+      "predicted_class_name": "MSI",
+      "classification_outcome": "FP",
+      "is_correct": false,
+      "confidence_pct": 93.88
+    },
+    {
+      "patient_index": 57,
+      "patient_key": "TCGA-F4-6808",
+      "original_n": 402,
+      "evaluated_n": 402,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": -4.202287,
+      "fp32_probability": 0.014741,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 98.53
+    },
+    {
+      "patient_index": 58,
+      "patient_key": "TCGA-AA-3821",
+      "original_n": 315,
+      "evaluated_n": 315,
+      "ground_truth_label": 1,
+      "ground_truth_class": "MSI",
+      "fp32_logit": -1.465063,
+      "fp32_probability": 0.187694,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "FN",
+      "is_correct": false,
+      "confidence_pct": 81.23
+    },
+    {
+      "patient_index": 59,
+      "patient_key": "TCGA-D5-6534",
+      "original_n": 166,
+      "evaluated_n": 166,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": 1.502839,
+      "fp32_probability": 0.817998,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 18.2
+    },
+    {
+      "patient_index": 60,
+      "patient_key": "TCGA-AA-3696",
+      "original_n": 62,
+      "evaluated_n": 62,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": -6.356814,
+      "fp32_probability": 0.001732,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 99.83
+    },
+    {
+      "patient_index": 61,
+      "patient_key": "TCGA-CM-6169",
+      "original_n": 349,
+      "evaluated_n": 349,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": -3.559891,
+      "fp32_probability": 0.027655,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 97.23
+    },
+    {
+      "patient_index": 62,
+      "patient_key": "TCGA-F5-6465",
+      "original_n": 327,
+      "evaluated_n": 327,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": -5.231762,
+      "fp32_probability": 0.005316,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 99.47
+    },
+    {
+      "patient_index": 63,
+      "patient_key": "TCGA-AA-3845",
+      "original_n": 502,
+      "evaluated_n": 502,
+      "ground_truth_label": 1,
+      "ground_truth_class": "MSI",
+      "fp32_logit": 4.303967,
+      "fp32_probability": 0.986665,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 1,
+      "predicted_class_name": "MSI",
+      "classification_outcome": "TP",
+      "is_correct": true,
+      "confidence_pct": 98.67
+    },
+    {
+      "patient_index": 64,
+      "patient_key": "TCGA-AG-A00C",
+      "original_n": 99,
+      "evaluated_n": 99,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": -4.463814,
+      "fp32_probability": 0.011387,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 98.86
+    },
+    {
+      "patient_index": 65,
+      "patient_key": "TCGA-DC-6682",
+      "original_n": 1413,
+      "evaluated_n": 1000,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": -2.004321,
+      "fp32_probability": 0.11875,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 88.13
+    },
+    {
+      "patient_index": 66,
+      "patient_key": "TCGA-AY-6197",
+      "original_n": 2090,
+      "evaluated_n": 1000,
+      "ground_truth_label": 1,
+      "ground_truth_class": "MSI",
+      "fp32_logit": 4.925179,
+      "fp32_probability": 0.992791,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 1,
+      "predicted_class_name": "MSI",
+      "classification_outcome": "TP",
+      "is_correct": true,
+      "confidence_pct": 99.28
+    }
+  ],
+  "per_patient_reference_data_protocol_2_uncapped": [
+    {
+      "patient_index": 1,
+      "patient_key": "TCGA-D5-6540",
+      "num_patches": 345,
+      "ground_truth_label": 1,
+      "ground_truth_class": "MSI",
+      "fp32_logit": 4.634805,
+      "fp32_probability": 0.990385,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 1,
+      "predicted_class_name": "MSI",
+      "classification_outcome": "TP",
+      "is_correct": true,
+      "confidence_pct": 99.04,
+      "latency_ms": {
+        "mean": 117.61,
+        "median": 109.4,
+        "std": 17.56,
+        "min": 97.81,
+        "max": 143.69
+      },
+      "attention_stats": {
+        "entropy": 4.0613,
+        "max_attention": 0.169845,
+        "min_attention": 6.6e-07,
+        "top5_patch_indices": [
+          245,
+          180,
+          305,
+          18,
+          272
+        ]
+      }
+    },
+    {
+      "patient_index": 2,
+      "patient_key": "TCGA-CM-6675",
+      "num_patches": 541,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": -1.641585,
+      "fp32_probability": 0.16225,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 83.78,
+      "latency_ms": {
+        "mean": 170.92,
+        "median": 165.81,
+        "std": 8.51,
+        "min": 162.37,
+        "max": 183.39
+      },
+      "attention_stats": {
+        "entropy": 4.806,
+        "max_attention": 0.067064,
+        "min_attention": 2.2e-07,
+        "top5_patch_indices": [
+          48,
+          313,
+          261,
+          128,
+          421
+        ]
+      }
+    },
+    {
+      "patient_index": 3,
+      "patient_key": "TCGA-AA-3877",
+      "num_patches": 452,
+      "ground_truth_label": 1,
+      "ground_truth_class": "MSI",
+      "fp32_logit": 2.706418,
+      "fp32_probability": 0.937404,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 1,
+      "predicted_class_name": "MSI",
+      "classification_outcome": "TP",
+      "is_correct": true,
+      "confidence_pct": 93.74,
+      "latency_ms": {
+        "mean": 258.08,
+        "median": 177.49,
+        "std": 118.41,
+        "min": 140.54,
+        "max": 415.82
+      },
+      "attention_stats": {
+        "entropy": 4.1356,
+        "max_attention": 0.128197,
+        "min_attention": 3.8e-07,
+        "top5_patch_indices": [
+          369,
+          101,
+          203,
+          356,
+          323
+        ]
+      }
+    },
+    {
+      "patient_index": 4,
+      "patient_key": "TCGA-A6-6142",
+      "num_patches": 61,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": -4.320866,
+      "fp32_probability": 0.013114,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 98.69,
+      "latency_ms": {
+        "mean": 57.33,
+        "median": 51.38,
+        "std": 21.91,
+        "min": 31.39,
+        "max": 97.88
+      },
+      "attention_stats": {
+        "entropy": 2.9188,
+        "max_attention": 0.226687,
+        "min_attention": 4.58e-06,
+        "top5_patch_indices": [
+          40,
+          22,
+          28,
+          15,
+          46
+        ]
+      }
+    },
+    {
+      "patient_index": 5,
+      "patient_key": "TCGA-AA-A03J",
+      "num_patches": 331,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": -4.456253,
+      "fp32_probability": 0.011473,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 98.85,
+      "latency_ms": {
+        "mean": 91.46,
+        "median": 91.24,
+        "std": 3.0,
+        "min": 87.14,
+        "max": 95.26
+      },
+      "attention_stats": {
+        "entropy": 4.451,
+        "max_attention": 0.06621,
+        "min_attention": 5.6e-07,
+        "top5_patch_indices": [
+          122,
+          114,
+          156,
+          295,
+          111
+        ]
+      }
+    },
+    {
+      "patient_index": 6,
+      "patient_key": "TCGA-AZ-5403",
+      "num_patches": 308,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": -5.666886,
+      "fp32_probability": 0.003447,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 99.66,
+      "latency_ms": {
+        "mean": 87.99,
+        "median": 87.86,
+        "std": 1.23,
+        "min": 86.38,
+        "max": 90.16
+      },
+      "attention_stats": {
+        "entropy": 4.3161,
+        "max_attention": 0.128772,
+        "min_attention": 3e-07,
+        "top5_patch_indices": [
+          285,
+          19,
+          299,
+          33,
+          259
+        ]
+      }
+    },
+    {
+      "patient_index": 7,
+      "patient_key": "TCGA-AA-3681",
+      "num_patches": 516,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": -2.298708,
+      "fp32_probability": 0.09123,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 90.88,
+      "latency_ms": {
+        "mean": 149.54,
+        "median": 144.14,
+        "std": 13.29,
+        "min": 136.36,
+        "max": 174.53
+      },
+      "attention_stats": {
+        "entropy": 5.1981,
+        "max_attention": 0.062983,
+        "min_attention": 4.6e-07,
+        "top5_patch_indices": [
+          128,
+          364,
+          514,
+          272,
+          210
+        ]
+      }
+    },
+    {
+      "patient_index": 8,
+      "patient_key": "TCGA-F4-6459",
+      "num_patches": 299,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": -4.012845,
+      "fp32_probability": 0.017761,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 98.22,
+      "latency_ms": {
+        "mean": 93.13,
+        "median": 90.32,
+        "std": 6.11,
+        "min": 87.15,
+        "max": 100.84
+      },
+      "attention_stats": {
+        "entropy": 4.2367,
+        "max_attention": 0.099008,
+        "min_attention": 5.28e-06,
+        "top5_patch_indices": [
+          139,
+          93,
+          150,
+          185,
+          144
+        ]
+      }
+    },
+    {
+      "patient_index": 9,
+      "patient_key": "TCGA-AA-3989",
+      "num_patches": 94,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": -2.665175,
+      "fp32_probability": 0.06506,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 93.49,
+      "latency_ms": {
+        "mean": 42.43,
+        "median": 42.19,
+        "std": 4.17,
+        "min": 36.17,
+        "max": 47.07
+      },
+      "attention_stats": {
+        "entropy": 3.3587,
+        "max_attention": 0.215084,
+        "min_attention": 1.208e-05,
+        "top5_patch_indices": [
+          87,
+          4,
+          59,
+          77,
+          52
+        ]
+      }
+    },
+    {
+      "patient_index": 10,
+      "patient_key": "TCGA-AF-2693",
+      "num_patches": 52,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": -4.245267,
+      "fp32_probability": 0.014129,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 98.59,
+      "latency_ms": {
+        "mean": 40.79,
+        "median": 35.72,
+        "std": 9.97,
+        "min": 30.67,
+        "max": 56.73
+      },
+      "attention_stats": {
+        "entropy": 2.6932,
+        "max_attention": 0.201277,
+        "min_attention": 6.28e-06,
+        "top5_patch_indices": [
+          4,
+          19,
+          12,
+          7,
+          28
+        ]
+      }
+    },
+    {
+      "patient_index": 11,
+      "patient_key": "TCGA-DM-A0X9",
+      "num_patches": 279,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": -3.825324,
+      "fp32_probability": 0.021346,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 97.87,
+      "latency_ms": {
+        "mean": 84.07,
+        "median": 81.26,
+        "std": 4.05,
+        "min": 80.5,
+        "max": 90.64
+      },
+      "attention_stats": {
+        "entropy": 4.3155,
+        "max_attention": 0.138033,
+        "min_attention": 1.68e-06,
+        "top5_patch_indices": [
+          116,
+          197,
+          255,
+          147,
+          249
+        ]
+      }
+    },
+    {
+      "patient_index": 12,
+      "patient_key": "TCGA-A6-4105",
+      "num_patches": 190,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": -4.993508,
+      "fp32_probability": 0.006736,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 99.33,
+      "latency_ms": {
+        "mean": 73.1,
+        "median": 73.47,
+        "std": 7.93,
+        "min": 60.84,
+        "max": 84.71
+      },
+      "attention_stats": {
+        "entropy": 3.6415,
+        "max_attention": 0.250415,
+        "min_attention": 1.53e-06,
+        "top5_patch_indices": [
+          158,
+          44,
+          35,
+          81,
+          94
+        ]
+      }
+    },
+    {
+      "patient_index": 13,
+      "patient_key": "TCGA-EI-6507",
+      "num_patches": 271,
+      "ground_truth_label": 1,
+      "ground_truth_class": "MSI",
+      "fp32_logit": 5.177694,
+      "fp32_probability": 0.994391,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 1,
+      "predicted_class_name": "MSI",
+      "classification_outcome": "TP",
+      "is_correct": true,
+      "confidence_pct": 99.44,
+      "latency_ms": {
+        "mean": 86.94,
+        "median": 87.6,
+        "std": 8.75,
+        "min": 76.79,
+        "max": 99.3
+      },
+      "attention_stats": {
+        "entropy": 3.711,
+        "max_attention": 0.125808,
+        "min_attention": 6e-08,
+        "top5_patch_indices": [
+          39,
+          106,
+          74,
+          91,
+          194
+        ]
+      }
+    },
+    {
+      "patient_index": 14,
+      "patient_key": "TCGA-CM-6163",
+      "num_patches": 370,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": -4.157905,
+      "fp32_probability": 0.015399,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 98.46,
+      "latency_ms": {
+        "mean": 118.64,
+        "median": 119.22,
+        "std": 15.99,
+        "min": 101.54,
+        "max": 147.29
+      },
+      "attention_stats": {
+        "entropy": 3.0548,
+        "max_attention": 0.353169,
+        "min_attention": 7.6e-07,
+        "top5_patch_indices": [
+          339,
+          14,
+          256,
+          23,
+          272
+        ]
+      }
+    },
+    {
+      "patient_index": 15,
+      "patient_key": "TCGA-AG-3890",
+      "num_patches": 40,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": -5.049178,
+      "fp32_probability": 0.006374,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 99.36,
+      "latency_ms": {
+        "mean": 23.95,
+        "median": 24.09,
+        "std": 0.31,
+        "min": 23.35,
+        "max": 24.23
+      },
+      "attention_stats": {
+        "entropy": 2.3788,
+        "max_attention": 0.410984,
+        "min_attention": 0.00045975,
+        "top5_patch_indices": [
+          33,
+          22,
+          14,
+          24,
+          31
+        ]
+      }
+    },
+    {
+      "patient_index": 16,
+      "patient_key": "TCGA-AG-3882",
+      "num_patches": 60,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": -5.889656,
+      "fp32_probability": 0.00276,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 99.72,
+      "latency_ms": {
+        "mean": 34.4,
+        "median": 35.14,
+        "std": 3.77,
+        "min": 30.28,
+        "max": 40.27
+      },
+      "attention_stats": {
+        "entropy": 2.9437,
+        "max_attention": 0.166895,
+        "min_attention": 5.42e-05,
+        "top5_patch_indices": [
+          35,
+          10,
+          48,
+          33,
+          6
+        ]
+      }
+    },
+    {
+      "patient_index": 17,
+      "patient_key": "TCGA-AG-3902",
+      "num_patches": 162,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": -3.139225,
+      "fp32_probability": 0.041518,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 95.85,
+      "latency_ms": {
+        "mean": 80.06,
+        "median": 81.16,
+        "std": 6.21,
+        "min": 70.7,
+        "max": 89.0
+      },
+      "attention_stats": {
+        "entropy": 3.7425,
+        "max_attention": 0.148793,
+        "min_attention": 1.703e-05,
+        "top5_patch_indices": [
+          105,
+          135,
+          80,
+          40,
+          131
+        ]
+      }
+    },
+    {
+      "patient_index": 18,
+      "patient_key": "TCGA-AA-3994",
+      "num_patches": 52,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": 0.23554,
+      "fp32_probability": 0.558614,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 44.14,
+      "latency_ms": {
+        "mean": 33.45,
+        "median": 32.18,
+        "std": 3.57,
+        "min": 30.56,
+        "max": 40.45
+      },
+      "attention_stats": {
+        "entropy": 2.6811,
+        "max_attention": 0.317779,
+        "min_attention": 0.00034419,
+        "top5_patch_indices": [
+          30,
+          17,
+          45,
+          3,
+          44
+        ]
+      }
+    },
+    {
+      "patient_index": 19,
+      "patient_key": "TCGA-CM-6674",
+      "num_patches": 1690,
+      "ground_truth_label": 1,
+      "ground_truth_class": "MSI",
+      "fp32_logit": 4.316311,
+      "fp32_probability": 0.986827,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 1,
+      "predicted_class_name": "MSI",
+      "classification_outcome": "TP",
+      "is_correct": true,
+      "confidence_pct": 98.68,
+      "latency_ms": {
+        "mean": 414.49,
+        "median": 415.73,
+        "std": 28.9,
+        "min": 372.3,
+        "max": 460.79
+      },
+      "attention_stats": {
+        "entropy": 5.1707,
+        "max_attention": 0.138541,
+        "min_attention": 3e-08,
+        "top5_patch_indices": [
+          998,
+          1176,
+          204,
+          798,
+          137
+        ]
+      }
+    },
+    {
+      "patient_index": 20,
+      "patient_key": "TCGA-AY-A71X",
+      "num_patches": 3914,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": 1.663819,
+      "fp32_probability": 0.84075,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 1,
+      "predicted_class_name": "MSI",
+      "classification_outcome": "FP",
+      "is_correct": false,
+      "confidence_pct": 84.07,
+      "latency_ms": {
+        "mean": 914.39,
+        "median": 881.05,
+        "std": 59.72,
+        "min": 859.37,
+        "max": 1021.46
+      },
+      "attention_stats": {
+        "entropy": 6.5356,
+        "max_attention": 0.042568,
+        "min_attention": 4e-08,
+        "top5_patch_indices": [
+          3321,
+          3639,
+          79,
+          778,
+          2639
+        ]
+      }
+    },
+    {
+      "patient_index": 21,
+      "patient_key": "TCGA-AG-4015",
+      "num_patches": 406,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": -6.042586,
+      "fp32_probability": 0.00237,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 99.76,
+      "latency_ms": {
+        "mean": 134.71,
+        "median": 129.03,
+        "std": 11.46,
+        "min": 122.02,
+        "max": 148.8
+      },
+      "attention_stats": {
+        "entropy": 5.0819,
+        "max_attention": 0.034951,
+        "min_attention": 1.755e-05,
+        "top5_patch_indices": [
+          355,
+          269,
+          55,
+          328,
+          331
+        ]
+      }
+    },
+    {
+      "patient_index": 22,
+      "patient_key": "TCGA-AG-3894",
+      "num_patches": 70,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": -6.299376,
+      "fp32_probability": 0.001834,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 99.82,
+      "latency_ms": {
+        "mean": 35.82,
+        "median": 35.47,
+        "std": 2.34,
+        "min": 32.94,
+        "max": 39.0
+      },
+      "attention_stats": {
+        "entropy": 2.8049,
+        "max_attention": 0.234104,
+        "min_attention": 1.907e-05,
+        "top5_patch_indices": [
+          41,
+          15,
+          6,
+          16,
+          0
+        ]
+      }
+    },
+    {
+      "patient_index": 23,
+      "patient_key": "TCGA-AZ-5407",
+      "num_patches": 220,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": -0.867254,
+      "fp32_probability": 0.295826,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 70.42,
+      "latency_ms": {
+        "mean": 67.92,
+        "median": 69.31,
+        "std": 4.88,
+        "min": 61.14,
+        "max": 74.37
+      },
+      "attention_stats": {
+        "entropy": 3.6176,
+        "max_attention": 0.194487,
+        "min_attention": 1.748e-05,
+        "top5_patch_indices": [
+          130,
+          208,
+          161,
+          47,
+          191
+        ]
+      }
+    },
+    {
+      "patient_index": 24,
+      "patient_key": "TCGA-D5-6539",
+      "num_patches": 10,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": -3.414175,
+      "fp32_probability": 0.031855,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 96.81,
+      "latency_ms": {
+        "mean": 14.61,
+        "median": 14.58,
+        "std": 0.56,
+        "min": 13.92,
+        "max": 15.54
+      },
+      "attention_stats": {
+        "entropy": 1.4051,
+        "max_attention": 0.407203,
+        "min_attention": 0.00482089,
+        "top5_patch_indices": [
+          5,
+          9,
+          8,
+          2,
+          7
+        ]
+      }
+    },
+    {
+      "patient_index": 25,
+      "patient_key": "TCGA-F4-6856",
+      "num_patches": 370,
+      "ground_truth_label": 1,
+      "ground_truth_class": "MSI",
+      "fp32_logit": 3.70303,
+      "fp32_probability": 0.975944,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 1,
+      "predicted_class_name": "MSI",
+      "classification_outcome": "TP",
+      "is_correct": true,
+      "confidence_pct": 97.59,
+      "latency_ms": {
+        "mean": 102.14,
+        "median": 97.85,
+        "std": 12.4,
+        "min": 92.02,
+        "max": 125.53
+      },
+      "attention_stats": {
+        "entropy": 4.0018,
+        "max_attention": 0.153481,
+        "min_attention": 8.32e-06,
+        "top5_patch_indices": [
+          111,
+          170,
+          307,
+          291,
+          19
+        ]
+      }
+    },
+    {
+      "patient_index": 26,
+      "patient_key": "TCGA-CM-6167",
+      "num_patches": 1403,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": 4.504601,
+      "fp32_probability": 0.989063,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 1,
+      "predicted_class_name": "MSI",
+      "classification_outcome": "FP",
+      "is_correct": false,
+      "confidence_pct": 98.91,
+      "latency_ms": {
+        "mean": 342.12,
+        "median": 338.3,
+        "std": 10.18,
+        "min": 334.58,
+        "max": 362.2
+      },
+      "attention_stats": {
+        "entropy": 5.0983,
+        "max_attention": 0.068596,
+        "min_attention": 1.25e-06,
+        "top5_patch_indices": [
+          1367,
+          4,
+          349,
+          1384,
+          698
+        ]
+      }
+    },
+    {
+      "patient_index": 27,
+      "patient_key": "TCGA-G4-6320",
+      "num_patches": 913,
+      "ground_truth_label": 1,
+      "ground_truth_class": "MSI",
+      "fp32_logit": -1.762931,
+      "fp32_probability": 0.146424,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "FN",
+      "is_correct": false,
+      "confidence_pct": 85.36,
+      "latency_ms": {
+        "mean": 230.53,
+        "median": 235.87,
+        "std": 8.98,
+        "min": 219.54,
+        "max": 239.89
+      },
+      "attention_stats": {
+        "entropy": 5.2843,
+        "max_attention": 0.059856,
+        "min_attention": 1e-07,
+        "top5_patch_indices": [
+          638,
+          216,
+          507,
+          752,
+          718
+        ]
+      }
+    },
+    {
+      "patient_index": 28,
+      "patient_key": "TCGA-AG-3726",
+      "num_patches": 35,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": -2.909299,
+      "fp32_probability": 0.051696,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 94.83,
+      "latency_ms": {
+        "mean": 81.24,
+        "median": 66.0,
+        "std": 37.76,
+        "min": 46.48,
+        "max": 153.67
+      },
+      "attention_stats": {
+        "entropy": 2.8588,
+        "max_attention": 0.175142,
+        "min_attention": 0.00013973,
+        "top5_patch_indices": [
+          33,
+          27,
+          21,
+          2,
+          13
+        ]
+      }
+    },
+    {
+      "patient_index": 29,
+      "patient_key": "TCGA-A6-5664",
+      "num_patches": 290,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": -3.303788,
+      "fp32_probability": 0.035441,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 96.46,
+      "latency_ms": {
+        "mean": 130.27,
+        "median": 120.04,
+        "std": 36.71,
+        "min": 97.17,
+        "max": 201.44
+      },
+      "attention_stats": {
+        "entropy": 3.6689,
+        "max_attention": 0.195367,
+        "min_attention": 5.9e-07,
+        "top5_patch_indices": [
+          152,
+          168,
+          229,
+          84,
+          183
+        ]
+      }
+    },
+    {
+      "patient_index": 30,
+      "patient_key": "TCGA-F4-6463",
+      "num_patches": 98,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": -2.592821,
+      "fp32_probability": 0.069602,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 93.04,
+      "latency_ms": {
+        "mean": 63.96,
+        "median": 60.75,
+        "std": 12.01,
+        "min": 53.72,
+        "max": 86.8
+      },
+      "attention_stats": {
+        "entropy": 3.2443,
+        "max_attention": 0.304594,
+        "min_attention": 3.76e-05,
+        "top5_patch_indices": [
+          83,
+          56,
+          74,
+          4,
+          31
+        ]
+      }
+    },
+    {
+      "patient_index": 31,
+      "patient_key": "TCGA-F4-6854",
+      "num_patches": 139,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": -2.651255,
+      "fp32_probability": 0.065912,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 93.41,
+      "latency_ms": {
+        "mean": 58.98,
+        "median": 52.13,
+        "std": 12.06,
+        "min": 50.95,
+        "max": 82.56
+      },
+      "attention_stats": {
+        "entropy": 3.3851,
+        "max_attention": 0.22993,
+        "min_attention": 7.76e-06,
+        "top5_patch_indices": [
+          124,
+          101,
+          27,
+          36,
+          89
+        ]
+      }
+    },
+    {
+      "patient_index": 32,
+      "patient_key": "TCGA-CM-5348",
+      "num_patches": 262,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": -2.574753,
+      "fp32_probability": 0.070781,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 92.92,
+      "latency_ms": {
+        "mean": 107.88,
+        "median": 94.09,
+        "std": 26.3,
+        "min": 80.15,
+        "max": 142.98
+      },
+      "attention_stats": {
+        "entropy": 4.3522,
+        "max_attention": 0.059174,
+        "min_attention": 3.1e-07,
+        "top5_patch_indices": [
+          180,
+          239,
+          45,
+          101,
+          150
+        ]
+      }
+    },
+    {
+      "patient_index": 33,
+      "patient_key": "TCGA-A6-6653",
+      "num_patches": 858,
+      "ground_truth_label": 1,
+      "ground_truth_class": "MSI",
+      "fp32_logit": 4.850641,
+      "fp32_probability": 0.992237,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 1,
+      "predicted_class_name": "MSI",
+      "classification_outcome": "TP",
+      "is_correct": true,
+      "confidence_pct": 99.22,
+      "latency_ms": {
+        "mean": 261.0,
+        "median": 254.45,
+        "std": 26.72,
+        "min": 229.51,
+        "max": 293.21
+      },
+      "attention_stats": {
+        "entropy": 4.4083,
+        "max_attention": 0.177444,
+        "min_attention": 1e-08,
+        "top5_patch_indices": [
+          75,
+          128,
+          152,
+          10,
+          522
+        ]
+      }
+    },
+    {
+      "patient_index": 34,
+      "patient_key": "TCGA-D5-6927",
+      "num_patches": 232,
+      "ground_truth_label": 1,
+      "ground_truth_class": "MSI",
+      "fp32_logit": 4.506709,
+      "fp32_probability": 0.989086,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 1,
+      "predicted_class_name": "MSI",
+      "classification_outcome": "TP",
+      "is_correct": true,
+      "confidence_pct": 98.91,
+      "latency_ms": {
+        "mean": 78.82,
+        "median": 75.96,
+        "std": 8.99,
+        "min": 70.65,
+        "max": 95.94
+      },
+      "attention_stats": {
+        "entropy": 4.5589,
+        "max_attention": 0.064161,
+        "min_attention": 0.00014504,
+        "top5_patch_indices": [
+          115,
+          131,
+          158,
+          8,
+          95
+        ]
+      }
+    },
+    {
+      "patient_index": 35,
+      "patient_key": "TCGA-AD-5900",
+      "num_patches": 361,
+      "ground_truth_label": 1,
+      "ground_truth_class": "MSI",
+      "fp32_logit": 1.820176,
+      "fp32_probability": 0.860587,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 1,
+      "predicted_class_name": "MSI",
+      "classification_outcome": "TP",
+      "is_correct": true,
+      "confidence_pct": 86.06,
+      "latency_ms": {
+        "mean": 101.51,
+        "median": 103.56,
+        "std": 4.68,
+        "min": 92.5,
+        "max": 105.85
+      },
+      "attention_stats": {
+        "entropy": 4.857,
+        "max_attention": 0.095911,
+        "min_attention": 1.617e-05,
+        "top5_patch_indices": [
+          273,
+          247,
+          288,
+          193,
+          359
+        ]
+      }
+    },
+    {
+      "patient_index": 36,
+      "patient_key": "TCGA-D5-6928",
+      "num_patches": 80,
+      "ground_truth_label": 1,
+      "ground_truth_class": "MSI",
+      "fp32_logit": 1.586382,
+      "fp32_probability": 0.830106,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 1,
+      "predicted_class_name": "MSI",
+      "classification_outcome": "TP",
+      "is_correct": true,
+      "confidence_pct": 83.01,
+      "latency_ms": {
+        "mean": 30.85,
+        "median": 30.4,
+        "std": 1.11,
+        "min": 29.97,
+        "max": 33.03
+      },
+      "attention_stats": {
+        "entropy": 3.8611,
+        "max_attention": 0.082847,
+        "min_attention": 0.00074564,
+        "top5_patch_indices": [
+          29,
+          32,
+          41,
+          17,
+          63
+        ]
+      }
+    },
+    {
+      "patient_index": 37,
+      "patient_key": "TCGA-AF-6655",
+      "num_patches": 35,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": -2.575034,
+      "fp32_probability": 0.070763,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 92.92,
+      "latency_ms": {
+        "mean": 21.29,
+        "median": 20.79,
+        "std": 0.97,
+        "min": 20.04,
+        "max": 22.65
+      },
+      "attention_stats": {
+        "entropy": 2.3516,
+        "max_attention": 0.245879,
+        "min_attention": 1.513e-05,
+        "top5_patch_indices": [
+          2,
+          23,
+          12,
+          34,
+          31
+        ]
+      }
+    },
+    {
+      "patient_index": 38,
+      "patient_key": "TCGA-F5-6464",
+      "num_patches": 190,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": -1.527075,
+      "fp32_probability": 0.178422,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 82.16,
+      "latency_ms": {
+        "mean": 55.0,
+        "median": 53.44,
+        "std": 2.59,
+        "min": 52.39,
+        "max": 58.96
+      },
+      "attention_stats": {
+        "entropy": 3.7039,
+        "max_attention": 0.09169,
+        "min_attention": 3.9e-07,
+        "top5_patch_indices": [
+          8,
+          11,
+          81,
+          28,
+          37
+        ]
+      }
+    },
+    {
+      "patient_index": 39,
+      "patient_key": "TCGA-AA-3693",
+      "num_patches": 121,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": -6.203272,
+      "fp32_probability": 0.002019,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 99.8,
+      "latency_ms": {
+        "mean": 42.74,
+        "median": 41.78,
+        "std": 1.37,
+        "min": 41.56,
+        "max": 45.04
+      },
+      "attention_stats": {
+        "entropy": 3.8617,
+        "max_attention": 0.158275,
+        "min_attention": 1.7e-05,
+        "top5_patch_indices": [
+          58,
+          117,
+          82,
+          103,
+          90
+        ]
+      }
+    },
+    {
+      "patient_index": 40,
+      "patient_key": "TCGA-AH-6643",
+      "num_patches": 542,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": -0.499769,
+      "fp32_probability": 0.377595,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 62.24,
+      "latency_ms": {
+        "mean": 141.22,
+        "median": 135.74,
+        "std": 13.65,
+        "min": 128.7,
+        "max": 167.58
+      },
+      "attention_stats": {
+        "entropy": 5.2237,
+        "max_attention": 0.045371,
+        "min_attention": 6.45e-06,
+        "top5_patch_indices": [
+          337,
+          389,
+          69,
+          92,
+          158
+        ]
+      }
+    },
+    {
+      "patient_index": 41,
+      "patient_key": "TCGA-AA-3811",
+      "num_patches": 619,
+      "ground_truth_label": 1,
+      "ground_truth_class": "MSI",
+      "fp32_logit": -0.755592,
+      "fp32_probability": 0.319604,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "FN",
+      "is_correct": false,
+      "confidence_pct": 68.04,
+      "latency_ms": {
+        "mean": 152.04,
+        "median": 152.43,
+        "std": 5.14,
+        "min": 143.15,
+        "max": 159.11
+      },
+      "attention_stats": {
+        "entropy": 5.0848,
+        "max_attention": 0.155182,
+        "min_attention": 6.79e-06,
+        "top5_patch_indices": [
+          427,
+          465,
+          601,
+          522,
+          318
+        ]
+      }
+    },
+    {
+      "patient_index": 42,
+      "patient_key": "TCGA-AA-3666",
+      "num_patches": 169,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": -5.820265,
+      "fp32_probability": 0.002958,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 99.7,
+      "latency_ms": {
+        "mean": 61.55,
+        "median": 60.73,
+        "std": 8.48,
+        "min": 50.42,
+        "max": 74.96
+      },
+      "attention_stats": {
+        "entropy": 4.1897,
+        "max_attention": 0.081895,
+        "min_attention": 1.133e-05,
+        "top5_patch_indices": [
+          91,
+          5,
+          147,
+          41,
+          145
+        ]
+      }
+    },
+    {
+      "patient_index": 43,
+      "patient_key": "TCGA-A6-6137",
+      "num_patches": 1433,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": -0.788027,
+      "fp32_probability": 0.312592,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 68.74,
+      "latency_ms": {
+        "mean": 345.83,
+        "median": 322.39,
+        "std": 46.0,
+        "min": 317.49,
+        "max": 437.51
+      },
+      "attention_stats": {
+        "entropy": 5.3098,
+        "max_attention": 0.121488,
+        "min_attention": 5e-08,
+        "top5_patch_indices": [
+          436,
+          121,
+          252,
+          1074,
+          89
+        ]
+      }
+    },
+    {
+      "patient_index": 44,
+      "patient_key": "TCGA-AF-2690",
+      "num_patches": 283,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": 2.332125,
+      "fp32_probability": 0.911503,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 1,
+      "predicted_class_name": "MSI",
+      "classification_outcome": "FP",
+      "is_correct": false,
+      "confidence_pct": 91.15,
+      "latency_ms": {
+        "mean": 113.94,
+        "median": 96.23,
+        "std": 32.58,
+        "min": 84.35,
+        "max": 171.79
+      },
+      "attention_stats": {
+        "entropy": 4.3941,
+        "max_attention": 0.076126,
+        "min_attention": 6e-07,
+        "top5_patch_indices": [
+          172,
+          28,
+          55,
+          273,
+          236
+        ]
+      }
+    },
+    {
+      "patient_index": 45,
+      "patient_key": "TCGA-CM-6170",
+      "num_patches": 155,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": -5.635334,
+      "fp32_probability": 0.003557,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 99.64,
+      "latency_ms": {
+        "mean": 90.08,
+        "median": 85.5,
+        "std": 10.52,
+        "min": 77.84,
+        "max": 102.67
+      },
+      "attention_stats": {
+        "entropy": 3.0747,
+        "max_attention": 0.244493,
+        "min_attention": 1.86e-06,
+        "top5_patch_indices": [
+          45,
+          17,
+          144,
+          51,
+          28
+        ]
+      }
+    },
+    {
+      "patient_index": 46,
+      "patient_key": "TCGA-A6-3807",
+      "num_patches": 613,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": -6.061559,
+      "fp32_probability": 0.002325,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 99.77,
+      "latency_ms": {
+        "mean": 180.52,
+        "median": 179.69,
+        "std": 16.33,
+        "min": 164.59,
+        "max": 209.76
+      },
+      "attention_stats": {
+        "entropy": 3.7602,
+        "max_attention": 0.369285,
+        "min_attention": 5e-08,
+        "top5_patch_indices": [
+          112,
+          351,
+          30,
+          379,
+          241
+        ]
+      }
+    },
+    {
+      "patient_index": 47,
+      "patient_key": "TCGA-A6-3809",
+      "num_patches": 703,
+      "ground_truth_label": 1,
+      "ground_truth_class": "MSI",
+      "fp32_logit": 4.706197,
+      "fp32_probability": 0.991042,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 1,
+      "predicted_class_name": "MSI",
+      "classification_outcome": "TP",
+      "is_correct": true,
+      "confidence_pct": 99.1,
+      "latency_ms": {
+        "mean": 179.12,
+        "median": 181.87,
+        "std": 7.7,
+        "min": 168.13,
+        "max": 187.44
+      },
+      "attention_stats": {
+        "entropy": 4.207,
+        "max_attention": 0.130009,
+        "min_attention": 2e-08,
+        "top5_patch_indices": [
+          56,
+          530,
+          483,
+          14,
+          216
+        ]
+      }
+    },
+    {
+      "patient_index": 48,
+      "patient_key": "TCGA-AG-3892",
+      "num_patches": 220,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": -5.048785,
+      "fp32_probability": 0.006376,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 99.36,
+      "latency_ms": {
+        "mean": 67.1,
+        "median": 66.52,
+        "std": 3.37,
+        "min": 62.44,
+        "max": 72.69
+      },
+      "attention_stats": {
+        "entropy": 3.902,
+        "max_attention": 0.191451,
+        "min_attention": 3.888e-05,
+        "top5_patch_indices": [
+          102,
+          171,
+          1,
+          176,
+          152
+        ]
+      }
+    },
+    {
+      "patient_index": 49,
+      "patient_key": "TCGA-AD-6889",
+      "num_patches": 1921,
+      "ground_truth_label": 1,
+      "ground_truth_class": "MSI",
+      "fp32_logit": -0.116123,
+      "fp32_probability": 0.471002,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "FN",
+      "is_correct": false,
+      "confidence_pct": 52.9,
+      "latency_ms": {
+        "mean": 418.83,
+        "median": 418.6,
+        "std": 24.5,
+        "min": 386.72,
+        "max": 460.62
+      },
+      "attention_stats": {
+        "entropy": 5.5904,
+        "max_attention": 0.10921,
+        "min_attention": 2.6e-07,
+        "top5_patch_indices": [
+          78,
+          840,
+          1667,
+          1908,
+          112
+        ]
+      }
+    },
+    {
+      "patient_index": 50,
+      "patient_key": "TCGA-EF-5830",
+      "num_patches": 356,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": -4.369443,
+      "fp32_probability": 0.0125,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 98.75,
+      "latency_ms": {
+        "mean": 94.84,
+        "median": 91.88,
+        "std": 5.61,
+        "min": 89.9,
+        "max": 105.5
+      },
+      "attention_stats": {
+        "entropy": 4.6473,
+        "max_attention": 0.045396,
+        "min_attention": 4.3e-07,
+        "top5_patch_indices": [
+          334,
+          301,
+          283,
+          2,
+          114
+        ]
+      }
+    },
+    {
+      "patient_index": 51,
+      "patient_key": "TCGA-DC-6683",
+      "num_patches": 2504,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": -2.162349,
+      "fp32_probability": 0.103183,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 89.68,
+      "latency_ms": {
+        "mean": 570.5,
+        "median": 566.33,
+        "std": 29.91,
+        "min": 542.38,
+        "max": 624.95
+      },
+      "attention_stats": {
+        "entropy": 6.0326,
+        "max_attention": 0.034282,
+        "min_attention": 1e-08,
+        "top5_patch_indices": [
+          1370,
+          1268,
+          36,
+          1156,
+          1664
+        ]
+      }
+    },
+    {
+      "patient_index": 52,
+      "patient_key": "TCGA-A6-6138",
+      "num_patches": 113,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": 1.165999,
+      "fp32_probability": 0.762421,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 23.76,
+      "latency_ms": {
+        "mean": 43.29,
+        "median": 42.46,
+        "std": 3.26,
+        "min": 39.87,
+        "max": 49.01
+      },
+      "attention_stats": {
+        "entropy": 3.019,
+        "max_attention": 0.204126,
+        "min_attention": 2.4e-07,
+        "top5_patch_indices": [
+          63,
+          64,
+          10,
+          19,
+          95
+        ]
+      }
+    },
+    {
+      "patient_index": 53,
+      "patient_key": "TCGA-EI-6508",
+      "num_patches": 67,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": -2.304217,
+      "fp32_probability": 0.090774,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 90.92,
+      "latency_ms": {
+        "mean": 32.32,
+        "median": 32.15,
+        "std": 2.02,
+        "min": 29.97,
+        "max": 35.78
+      },
+      "attention_stats": {
+        "entropy": 2.9208,
+        "max_attention": 0.315342,
+        "min_attention": 2.86e-06,
+        "top5_patch_indices": [
+          46,
+          37,
+          25,
+          3,
+          12
+        ]
+      }
+    },
+    {
+      "patient_index": 54,
+      "patient_key": "TCGA-A6-5662",
+      "num_patches": 447,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": 0.350727,
+      "fp32_probability": 0.586794,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 41.32,
+      "latency_ms": {
+        "mean": 116.62,
+        "median": 116.8,
+        "std": 4.53,
+        "min": 108.65,
+        "max": 122.08
+      },
+      "attention_stats": {
+        "entropy": 4.9911,
+        "max_attention": 0.083553,
+        "min_attention": 3.26e-06,
+        "top5_patch_indices": [
+          220,
+          373,
+          33,
+          439,
+          310
+        ]
+      }
+    },
+    {
+      "patient_index": 55,
+      "patient_key": "TCGA-AA-3875",
+      "num_patches": 444,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": -6.012058,
+      "fp32_probability": 0.002443,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 99.76,
+      "latency_ms": {
+        "mean": 111.53,
+        "median": 106.16,
+        "std": 13.99,
+        "min": 98.91,
+        "max": 136.51
+      },
+      "attention_stats": {
+        "entropy": 4.2914,
+        "max_attention": 0.068074,
+        "min_attention": 9.2e-07,
+        "top5_patch_indices": [
+          420,
+          97,
+          276,
+          255,
+          137
+        ]
+      }
+    },
+    {
+      "patient_index": 56,
+      "patient_key": "TCGA-AD-6963",
+      "num_patches": 23,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": 2.729641,
+      "fp32_probability": 0.938753,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 1,
+      "predicted_class_name": "MSI",
+      "classification_outcome": "FP",
+      "is_correct": false,
+      "confidence_pct": 93.88,
+      "latency_ms": {
+        "mean": 19.47,
+        "median": 18.75,
+        "std": 2.52,
+        "min": 15.89,
+        "max": 22.38
+      },
+      "attention_stats": {
+        "entropy": 2.3152,
+        "max_attention": 0.317999,
+        "min_attention": 0.00019316,
+        "top5_patch_indices": [
+          12,
+          0,
+          17,
+          20,
+          8
+        ]
+      }
+    },
+    {
+      "patient_index": 57,
+      "patient_key": "TCGA-F4-6808",
+      "num_patches": 402,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": -4.202287,
+      "fp32_probability": 0.014741,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 98.53,
+      "latency_ms": {
+        "mean": 111.1,
+        "median": 105.33,
+        "std": 12.29,
+        "min": 99.81,
+        "max": 133.36
+      },
+      "attention_stats": {
+        "entropy": 3.8562,
+        "max_attention": 0.297624,
+        "min_attention": 9.1e-07,
+        "top5_patch_indices": [
+          19,
+          123,
+          21,
+          295,
+          228
+        ]
+      }
+    },
+    {
+      "patient_index": 58,
+      "patient_key": "TCGA-AA-3821",
+      "num_patches": 315,
+      "ground_truth_label": 1,
+      "ground_truth_class": "MSI",
+      "fp32_logit": -1.465063,
+      "fp32_probability": 0.187694,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "FN",
+      "is_correct": false,
+      "confidence_pct": 81.23,
+      "latency_ms": {
+        "mean": 77.51,
+        "median": 76.64,
+        "std": 3.34,
+        "min": 74.18,
+        "max": 82.83
+      },
+      "attention_stats": {
+        "entropy": 3.3504,
+        "max_attention": 0.361167,
+        "min_attention": 3.79e-06,
+        "top5_patch_indices": [
+          145,
+          37,
+          278,
+          156,
+          140
+        ]
+      }
+    },
+    {
+      "patient_index": 59,
+      "patient_key": "TCGA-D5-6534",
+      "num_patches": 166,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": 1.502839,
+      "fp32_probability": 0.817998,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 18.2,
+      "latency_ms": {
+        "mean": 51.89,
+        "median": 52.96,
+        "std": 1.84,
+        "min": 49.61,
+        "max": 54.04
+      },
+      "attention_stats": {
+        "entropy": 3.3818,
+        "max_attention": 0.182184,
+        "min_attention": 5e-07,
+        "top5_patch_indices": [
+          28,
+          48,
+          151,
+          2,
+          161
+        ]
+      }
+    },
+    {
+      "patient_index": 60,
+      "patient_key": "TCGA-AA-3696",
+      "num_patches": 62,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": -6.356814,
+      "fp32_probability": 0.001732,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 99.83,
+      "latency_ms": {
+        "mean": 28.16,
+        "median": 27.64,
+        "std": 2.54,
+        "min": 25.04,
+        "max": 32.7
+      },
+      "attention_stats": {
+        "entropy": 2.2483,
+        "max_attention": 0.563776,
+        "min_attention": 1.654e-05,
+        "top5_patch_indices": [
+          38,
+          42,
+          34,
+          39,
+          29
+        ]
+      }
+    },
+    {
+      "patient_index": 61,
+      "patient_key": "TCGA-CM-6169",
+      "num_patches": 349,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": -3.559891,
+      "fp32_probability": 0.027655,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 97.23,
+      "latency_ms": {
+        "mean": 85.25,
+        "median": 87.09,
+        "std": 4.01,
+        "min": 80.16,
+        "max": 89.86
+      },
+      "attention_stats": {
+        "entropy": 3.5643,
+        "max_attention": 0.17251,
+        "min_attention": 8e-08,
+        "top5_patch_indices": [
+          281,
+          208,
+          132,
+          33,
+          271
+        ]
+      }
+    },
+    {
+      "patient_index": 62,
+      "patient_key": "TCGA-F5-6465",
+      "num_patches": 327,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": -5.231762,
+      "fp32_probability": 0.005316,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 99.47,
+      "latency_ms": {
+        "mean": 92.57,
+        "median": 93.18,
+        "std": 8.92,
+        "min": 78.78,
+        "max": 106.37
+      },
+      "attention_stats": {
+        "entropy": 4.6156,
+        "max_attention": 0.04632,
+        "min_attention": 6.8e-07,
+        "top5_patch_indices": [
+          313,
+          201,
+          119,
+          42,
+          244
+        ]
+      }
+    },
+    {
+      "patient_index": 63,
+      "patient_key": "TCGA-AA-3845",
+      "num_patches": 502,
+      "ground_truth_label": 1,
+      "ground_truth_class": "MSI",
+      "fp32_logit": 4.303967,
+      "fp32_probability": 0.986665,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 1,
+      "predicted_class_name": "MSI",
+      "classification_outcome": "TP",
+      "is_correct": true,
+      "confidence_pct": 98.67,
+      "latency_ms": {
+        "mean": 154.16,
+        "median": 163.04,
+        "std": 27.85,
+        "min": 116.32,
+        "max": 184.57
+      },
+      "attention_stats": {
+        "entropy": 5.2799,
+        "max_attention": 0.041507,
+        "min_attention": 8.04e-06,
+        "top5_patch_indices": [
+          44,
+          467,
+          25,
+          40,
+          433
+        ]
+      }
+    },
+    {
+      "patient_index": 64,
+      "patient_key": "TCGA-AG-A00C",
+      "num_patches": 99,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": -4.463814,
+      "fp32_probability": 0.011387,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 98.86,
+      "latency_ms": {
+        "mean": 49.18,
+        "median": 45.67,
+        "std": 5.14,
+        "min": 44.85,
+        "max": 58.33
+      },
+      "attention_stats": {
+        "entropy": 3.1385,
+        "max_attention": 0.204324,
+        "min_attention": 5.8e-07,
+        "top5_patch_indices": [
+          24,
+          75,
+          2,
+          32,
+          87
+        ]
+      }
+    },
+    {
+      "patient_index": 65,
+      "patient_key": "TCGA-DC-6682",
+      "num_patches": 1413,
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "fp32_logit": -2.024579,
+      "fp32_probability": 0.116646,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 0,
+      "predicted_class_name": "MSS",
+      "classification_outcome": "TN",
+      "is_correct": true,
+      "confidence_pct": 88.34,
+      "latency_ms": {
+        "mean": 483.96,
+        "median": 476.6,
+        "std": 101.17,
+        "min": 343.63,
+        "max": 626.7
+      },
+      "attention_stats": {
+        "entropy": 5.0456,
+        "max_attention": 0.060212,
+        "min_attention": 3.4e-07,
+        "top5_patch_indices": [
+          432,
+          328,
+          558,
+          625,
+          711
+        ]
+      }
+    },
+    {
+      "patient_index": 66,
+      "patient_key": "TCGA-AY-6197",
+      "num_patches": 2090,
+      "ground_truth_label": 1,
+      "ground_truth_class": "MSI",
+      "fp32_logit": 4.989834,
+      "fp32_probability": 0.993239,
+      "decision_threshold": 0.83,
+      "predicted_class_id": 1,
+      "predicted_class_name": "MSI",
+      "classification_outcome": "TP",
+      "is_correct": true,
+      "confidence_pct": 99.32,
+      "latency_ms": {
+        "mean": 419.93,
+        "median": 419.98,
+        "std": 18.11,
+        "min": 394.41,
+        "max": 446.11
+      },
+      "attention_stats": {
+        "entropy": 4.5638,
+        "max_attention": 0.071345,
+        "min_attention": 0.0,
+        "top5_patch_indices": [
+          838,
+          1945,
+          444,
+          1620,
+          1403
+        ]
+      }
+    }
+  ]
+}

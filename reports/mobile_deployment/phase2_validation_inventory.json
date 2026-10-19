@@ -1,0 +1,272 @@
+{
+  "schema_version": "2.0.0",
+  "audit_timestamp_iso": "2026-10-16T15:07:36.441115+00:00",
+  "audit_phase": "Phase 2 \u2014 ONNX FP32 Conversion and Parity Verification",
+  "gate_decision": "GO",
+  "host_environment": {
+    "repository_root": "d:\\CRC Edge deployment\\MULTIMODAL-FUSION-FOR-DETECTION-OF-COLORECTAL-CANCER-USING-CLINICAL-BERT-AND-PHIKONV2",
+    "python_version": "3.13.5",
+    "platform": "Windows 11 AMD64 (build 10.0.26100)",
+    "interpreter": "C:\\Python313\\python.exe",
+    "pytorch_version": "2.9.1+cpu",
+    "onnx_version": "1.23.2",
+    "onnxruntime_version": "1.31.0",
+    "pip_check_status": "No broken requirements found (exit 0)"
+  },
+  "git_environment": {
+    "branch": "edge-deployment",
+    "base_commit": "189b6638c31d80344ecc8c45133c7058c3e47fa1",
+    "working_tree_policy": "Preserve unrelated changes; no untracked file destruction"
+  },
+  "protected_assets_integrity": {
+    "fusion_model_v1_1.pth": {
+      "path": "models/fusion_model_v1_1.pth",
+      "sha256": "e9a7bbcdbe1713a0ed14b6ecd511ac65d046a52e2f03c69443f5bd3dcf12d453",
+      "size_bytes": 21007347,
+      "status": "UNMODIFIED_VERIFIED"
+    },
+    "patient_registry.json": {
+      "path": "data/patient_registry.json",
+      "sha256": "7d1c92c51741e080787607733a8b34cb07252c804f527cd567937345a5b22ce2",
+      "size_bytes": 13158992,
+      "status": "UNMODIFIED_VERIFIED"
+    },
+    "actual_validation_keys.json": {
+      "path": "results/actual_validation_keys.json",
+      "sha256": "61d7f8d98388efbe9fc5e000d695b2f41022720a14a8308a6317bc9441930aa9",
+      "size_bytes": 1056,
+      "status": "UNMODIFIED_VERIFIED"
+    },
+    "protocol1_patch_selection_manifest.json": {
+      "path": "reports/mobile_deployment/protocol1_patch_selection_manifest.json",
+      "sha256": "e592f3e218169741fceae27deb75e305cf7549739cfd1fbdbb0087b05863e668",
+      "size_bytes": 138689,
+      "status": "UNMODIFIED_VERIFIED"
+    },
+    "governance_constants": {
+      "class_mapping": {
+        "0": "MSS",
+        "1": "MSI"
+      },
+      "decision_threshold": 0.83,
+      "status": "STRICTLY_PRESERVED"
+    }
+  },
+  "exported_onnx_model": {
+    "path": "models/fusion_model_fp32.onnx",
+    "sha256": "0402f6c522beac5733e30eeecad908927957b5d4164b6b896663f43ba3702d73",
+    "size_bytes": 21015452,
+    "size_mib": 20.04,
+    "opset_version": 17,
+    "ir_version": 8,
+    "total_nodes": 109,
+    "total_initializers": 16,
+    "parameter_count": 5250561,
+    "graph_checker_passed": true,
+    "input_signatures": {
+      "vision_seq": {
+        "type": "FLOAT",
+        "shape": [
+          "batch_size",
+          "num_patches",
+          1024
+        ]
+      },
+      "text_summary": {
+        "type": "FLOAT",
+        "shape": [
+          "batch_size",
+          768
+        ]
+      }
+    },
+    "output_signatures": {
+      "logit": {
+        "type": "FLOAT",
+        "shape": [
+          "batch_size",
+          1
+        ]
+      },
+      "probability": {
+        "type": "FLOAT",
+        "shape": [
+          "batch_size",
+          1
+        ]
+      },
+      "attention_weights": {
+        "type": "FLOAT",
+        "shape": [
+          "batch_size",
+          1,
+          "num_patches"
+        ]
+      }
+    }
+  },
+  "dynamic_shape_validation": {
+    "N_1": {
+      "num_patches": 1,
+      "ref_logit": 2.4923341274261475,
+      "onnx_logit": 2.4923346042633057,
+      "logit_error": 4.76837158203125e-07,
+      "ref_prob": 0.9236026406288147,
+      "onnx_prob": 0.9236027002334595,
+      "prob_error": 5.960464477539063e-08,
+      "max_attn_error": 0.0,
+      "within_tolerance": true
+    },
+    "N_6": {
+      "num_patches": 6,
+      "ref_logit": 1.894735336303711,
+      "onnx_logit": 1.894735336303711,
+      "logit_error": 0.0,
+      "ref_prob": 0.8692945241928101,
+      "onnx_prob": 0.8692945241928101,
+      "prob_error": 0.0,
+      "max_attn_error": 2.9802322387695312e-08,
+      "within_tolerance": true
+    },
+    "N_50": {
+      "num_patches": 50,
+      "ref_logit": -0.43831297755241394,
+      "onnx_logit": -0.4383131265640259,
+      "logit_error": 1.4901161193847656e-07,
+      "ref_prob": 0.39214304089546204,
+      "onnx_prob": 0.39214301109313965,
+      "prob_error": 2.9802322387695312e-08,
+      "max_attn_error": 7.450580596923828e-09,
+      "within_tolerance": true
+    },
+    "N_100": {
+      "num_patches": 100,
+      "ref_logit": 0.17070621252059937,
+      "onnx_logit": 0.17070630192756653,
+      "logit_error": 8.940696716308594e-08,
+      "ref_prob": 0.5425732135772705,
+      "onnx_prob": 0.5425732135772705,
+      "prob_error": 0.0,
+      "max_attn_error": 7.450580596923828e-09,
+      "within_tolerance": true
+    },
+    "N_385": {
+      "num_patches": 385,
+      "ref_logit": -0.11323460936546326,
+      "onnx_logit": -0.11323454231023788,
+      "logit_error": 6.705522537231445e-08,
+      "ref_prob": 0.4717215895652771,
+      "onnx_prob": 0.4717215895652771,
+      "prob_error": 0.0,
+      "max_attn_error": 1.862645149230957e-09,
+      "within_tolerance": true
+    },
+    "N_1000": {
+      "num_patches": 1000,
+      "ref_logit": 0.6355421543121338,
+      "onnx_logit": 0.6355422139167786,
+      "logit_error": 5.960464477539063e-08,
+      "ref_prob": 0.6537450551986694,
+      "onnx_prob": 0.6537450551986694,
+      "prob_error": 0.0,
+      "max_attn_error": 2.3283064365386963e-09,
+      "within_tolerance": true
+    },
+    "N_4305": {
+      "num_patches": 4305,
+      "ref_logit": 0.42649877071380615,
+      "onnx_logit": 0.42649877071380615,
+      "logit_error": 0.0,
+      "ref_prob": 0.605037271976471,
+      "onnx_prob": 0.605037271976471,
+      "prob_error": 0.0,
+      "max_attn_error": 3.4924596548080444e-10,
+      "within_tolerance": true
+    }
+  },
+  "numerical_parity_summary": {
+    "acceptance_criteria": {
+      "max_logit_error_limit": 0.0001,
+      "max_prob_error_limit": 0.0001,
+      "mean_prob_error_limit": 1e-05,
+      "required_agreement_pct": 100.0
+    },
+    "protocol_1_capped": {
+      "max_logit_error": 2.054534911977157e-06,
+      "max_prob_error": 4.968109130754073e-07,
+      "mean_prob_error": 2.3123351010353897e-07,
+      "classification_flips": 0,
+      "classification_agreement_pct": 100.0,
+      "parity_gate_passed": true
+    },
+    "protocol_2_uncapped": {
+      "max_logit_error": 2.875350952002975e-06,
+      "max_prob_error": 4.968109130754073e-07,
+      "mean_prob_error": 2.323504650230878e-07,
+      "classification_flips": 0,
+      "classification_agreement_pct": 100.0,
+      "parity_gate_passed": true
+    }
+  },
+  "boundary_cases_audit": [
+    {
+      "deidentified_id": "CASE_36",
+      "protocol": "Protocol 1 & 2",
+      "ground_truth_label": 1,
+      "ground_truth_class": "MSI",
+      "ref_prob": 0.830106,
+      "onnx_prob": 0.830106,
+      "prob_error": 4.97e-07,
+      "distance_to_threshold": 0.000106,
+      "ref_decision": 1,
+      "onnx_decision": 1,
+      "decision_match": true
+    },
+    {
+      "deidentified_id": "CASE_59",
+      "protocol": "Protocol 1 & 2",
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "ref_prob": 0.817998,
+      "onnx_prob": 0.817998,
+      "prob_error": 4.85e-07,
+      "distance_to_threshold": -0.012002,
+      "ref_decision": 0,
+      "onnx_decision": 0,
+      "decision_match": true
+    },
+    {
+      "deidentified_id": "CASE_35",
+      "protocol": "Protocol 1 & 2",
+      "ground_truth_label": 1,
+      "ground_truth_class": "MSI",
+      "ref_prob": 0.860587,
+      "onnx_prob": 0.860587,
+      "prob_error": 2.39e-07,
+      "distance_to_threshold": 0.030587,
+      "ref_decision": 1,
+      "onnx_decision": 1,
+      "decision_match": true
+    },
+    {
+      "deidentified_id": "CASE_20",
+      "protocol": "Protocol 2 (Uncapped)",
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "ref_prob": 0.84075,
+      "onnx_prob": 0.84075,
+      "prob_error": 2.1e-08,
+      "distance_to_threshold": 0.01075,
+      "ref_decision": 1,
+      "onnx_decision": 1,
+      "decision_match": true
+    }
+  ],
+  "regression_suite_verification": {
+    "test_framework": "pytest",
+    "total_collected": 42,
+    "total_passed": 42,
+    "total_failed": 0,
+    "status": "ALL_TESTS_PASSING"
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "audit_timestamp": "2026-10-12T09:10:00+05:30",
+  "audit_status": "PASSED_WITH_FULL_DATA_INTEGRITY",
+  "directory": "data/clean_tensors",
+  "total_files": 652,
+  "file_breakdown": {
+    "vision_files_count": 326,
+    "text_files_count": 326,
+    "paired_patients_count": 326,
+    "orphan_vision_count": 0,
+    "orphan_text_count": 0
+  },
+  "tensor_specifications": {
+    "vision": {
+      "expected_feature_dim": 1024,
+      "measured_feature_dim": [1024],
+      "patch_count_distribution": {
+        "min_patches": 6,
+        "max_patches": 4305,
+        "mean_patches": 531.89
+      },
+      "dtypes": ["torch.float32"],
+      "device": "cpu"
+    },
+    "text": {
+      "expected_shape": [1, 768],
+      "measured_shapes": [[1, 768]],
+      "dtypes": ["torch.float32"],
+      "device": "cpu"
+    }
+  },
+  "numerical_integrity": {
+    "total_tensors_scanned": 652,
+    "nan_detected": 0,
+    "inf_detected": 0,
+    "empty_tensors_detected": 0,
+    "safe_weights_only_load_success_rate": 1.0
+  },
+  "compatibility": {
+    "cross_attention_fusion_compatible": true,
+    "late_fusion_baseline_compatible": true,
+    "dimension_match_with_phikon_v2": true,
+    "dimension_match_with_clinical_bert": true
+  }
+}

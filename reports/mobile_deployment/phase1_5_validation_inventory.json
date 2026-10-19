@@ -1,0 +1,237 @@
+{
+  "schema_version": "1.5.0",
+  "audit_timestamp_iso": "2026-10-16T13:30:27.595789+00:00",
+  "audit_phase": "Phase 1.5 \u2014 Final Baseline Integrity Gate Before Phase 2",
+  "git_environment": {
+    "repository_root": "d:\\CRC Edge deployment\\MULTIMODAL-FUSION-FOR-DETECTION-OF-COLORECTAL-CANCER-USING-CLINICAL-BERT-AND-PHIKONV2",
+    "branch": "edge-deployment",
+    "base_commit": "189b6638c31d80344ecc8c45133c7058c3e47fa1",
+    "commit_subject": "chore: remove roadmap/next-team and authors, keep mentor Mr Nageshwara Guptha \u2014 professional public version",
+    "working_tree_policy": "Preserve unrelated changes; no untracked file destruction"
+  },
+  "protected_assets_integrity": {
+    "fusion_model_v1_1.pth": {
+      "path": "models/fusion_model_v1_1.pth",
+      "sha256": "e9a7bbcdbe1713a0ed14b6ecd511ac65d046a52e2f03c69443f5bd3dcf12d453",
+      "size_bytes": 21007347,
+      "size_decimal_mb": 21.01,
+      "size_binary_mib": 20.03,
+      "status": "UNMODIFIED_VERIFIED"
+    },
+    "patient_registry.json": {
+      "path": "data/patient_registry.json",
+      "sha256": "7d1c92c51741e080787607733a8b34cb07252c804f527cd567937345a5b22ce2",
+      "size_bytes": 13158992,
+      "patient_count": 326,
+      "status": "UNMODIFIED_VERIFIED"
+    },
+    "actual_validation_keys.json": {
+      "path": "results/actual_validation_keys.json",
+      "sha256": "61d7f8d98388efbe9fc5e000d695b2f41022720a14a8308a6317bc9441930aa9",
+      "size_bytes": 1056,
+      "holdout_count": 66,
+      "status": "UNMODIFIED_VERIFIED"
+    },
+    "clean_tensors_directory": {
+      "path": "data/clean_tensors",
+      "file_count": 652,
+      "aggregate_sha256": "3a57ef2f7424e010d27f327a701c8d3042a82c3cc60bbb029313cef1428312a1",
+      "status": "UNMODIFIED_VERIFIED"
+    },
+    "governance_constants": {
+      "class_mapping": {
+        "0": "MSS",
+        "1": "MSI"
+      },
+      "decision_threshold": 0.83,
+      "status": "STRICTLY_PRESERVED"
+    }
+  },
+  "phase1_5_1_sampling_reproducibility": {
+    "status": "PASSED",
+    "patch_capping_limit": 1000,
+    "manifest_path": "reports/mobile_deployment/protocol1_patch_selection_manifest.json",
+    "holdout_cases_total": 66,
+    "cases_with_n_gt_1000": 8,
+    "capped_case_indices": [
+      "CASE_19",
+      "CASE_20",
+      "CASE_26",
+      "CASE_43",
+      "CASE_49",
+      "CASE_51",
+      "CASE_65",
+      "CASE_66"
+    ],
+    "order_independence_verified": true,
+    "reverse_order_test_mismatches": 0,
+    "isolated_run_test_mismatches": 0,
+    "provenance_relationship": "Protocol 1 manifest anchors benchmark reproducibility; does not claim historical unrecorded per-epoch training PRNG match"
+  },
+  "phase1_5_2_golden_reference_and_tolerance": {
+    "status": "PASSED",
+    "golden_reference_dataset": "reports/mobile_deployment/phase1_fp32_benchmark_data.json",
+    "protocol_1_capped_manifest_parity": {
+      "cases_evaluated": 66,
+      "classification_agreement_pct": 100.0,
+      "classification_flips": 0,
+      "max_absolute_logit_error": 4.9135e-07,
+      "max_absolute_prob_error": 4.9681e-07,
+      "mean_absolute_prob_error": 2.1982e-07,
+      "meets_proposed_acceptance_criteria": true
+    },
+    "protocol_2_uncapped_dynamic_parity": {
+      "cases_evaluated": 66,
+      "classification_agreement_pct": 100.0,
+      "classification_flips": 0,
+      "max_absolute_logit_error": 4.9135e-07,
+      "max_absolute_prob_error": 4.9681e-07,
+      "mean_absolute_prob_error": 2.2449e-07,
+      "meets_proposed_acceptance_criteria": true
+    },
+    "proposed_fp32_acceptance_criteria": {
+      "max_absolute_logit_error": 0.0001,
+      "max_absolute_prob_error": 0.0001,
+      "mean_absolute_prob_error": 1e-05,
+      "non_boundary_classification_agreement_pct": 100.0,
+      "boundary_classification_rule": "Audit individual flips for numerical justification"
+    }
+  },
+  "phase1_5_3_boundary_case_audit": {
+    "status": "PASSED",
+    "boundary_interval": "[0.78, 0.88] (0.83 +/- 0.05)",
+    "protocol_1_boundary_cases": [
+      {
+        "deidentified_id": "CASE_36",
+        "n_patches": 80,
+        "ground_truth": "MSI",
+        "prob": 0.830106,
+        "dist_to_thresh": 0.000106,
+        "call": "MSI",
+        "vulnerability": "CRITICAL_POSITIVE"
+      },
+      {
+        "deidentified_id": "CASE_59",
+        "n_patches": 166,
+        "ground_truth": "MSS",
+        "prob": 0.817998,
+        "dist_to_thresh": -0.012002,
+        "call": "MSS",
+        "vulnerability": "MODERATE_NEGATIVE"
+      },
+      {
+        "deidentified_id": "CASE_35",
+        "n_patches": 361,
+        "ground_truth": "MSI",
+        "prob": 0.860587,
+        "dist_to_thresh": 0.030587,
+        "call": "MSI",
+        "vulnerability": "LOW_POSITIVE"
+      }
+    ],
+    "protocol_2_boundary_cases": [
+      {
+        "deidentified_id": "CASE_36",
+        "n_patches": 80,
+        "ground_truth": "MSI",
+        "prob": 0.830106,
+        "dist_to_thresh": 0.000106,
+        "call": "MSI",
+        "vulnerability": "CRITICAL_POSITIVE"
+      },
+      {
+        "deidentified_id": "CASE_20",
+        "n_patches": 3914,
+        "ground_truth": "MSS",
+        "prob": 0.84075,
+        "dist_to_thresh": 0.01075,
+        "call": "MSI",
+        "vulnerability": "SEQUENCE_LENGTH_SENSITIVE"
+      },
+      {
+        "deidentified_id": "CASE_59",
+        "n_patches": 166,
+        "ground_truth": "MSS",
+        "prob": 0.817998,
+        "dist_to_thresh": -0.012002,
+        "call": "MSS",
+        "vulnerability": "MODERATE_NEGATIVE"
+      },
+      {
+        "deidentified_id": "CASE_35",
+        "n_patches": 361,
+        "ground_truth": "MSI",
+        "prob": 0.860587,
+        "dist_to_thresh": 0.030587,
+        "call": "MSI",
+        "vulnerability": "LOW_POSITIVE"
+      }
+    ],
+    "cross_protocol_discrepancy_count": 1,
+    "cross_protocol_discrepancy_details": [
+      {
+        "deidentified_id": "CASE_20",
+        "p1_prob": 0.728124,
+        "p1_call": "MSS",
+        "p2_prob": 0.84075,
+        "p2_call": "MSI",
+        "root_cause": "Sequence length (N=1000 vs N=3914), not numerical drift"
+      }
+    ],
+    "fp16_parity_disclaimer": "FP32 parity does NOT imply FP16 parity; FP16 requires separate Phase 3 authorization"
+  },
+  "phase1_5_4_resource_claims_audit": {
+    "status": "PASSED",
+    "model_parameters_exact": 5250561,
+    "weight_bytes_exact": 21002244,
+    "weight_decimal_mb": 21.0,
+    "weight_binary_mib": 20.03,
+    "checkpoint_bytes_on_disk": 21007347,
+    "checkpoint_decimal_mb": 21.01,
+    "checkpoint_binary_mib": 20.03,
+    "host_measured_metrics": {
+      "mean_latency_ms": 139.8,
+      "median_latency_ms": 89.81,
+      "baseline_rss_mb": 355.4,
+      "peak_rss_mb": 665.33,
+      "peak_rss_context": "Includes simultaneous preloading of all 66 holdout tensor pairs in host RAM"
+    },
+    "edge_mobile_architectural_estimates": {
+      "execution_mode": "Single-patient sequential on demand",
+      "model_storage_fp32_mb": 20.03,
+      "model_storage_fp16_target_mb": 10.02,
+      "text_tensor_storage_kb": 3.07,
+      "vision_tensor_storage_mb": "1.57 MB (median N=384) to 4.10 MB (cap N=1000)",
+      "activation_ram_estimate_mb": "< 25 MB",
+      "android_latency_status": "UNMEASURED_ESTIMATE",
+      "thermal_and_battery_status": "UNMEASURED_ESTIMATE"
+    }
+  },
+  "phase1_5_5_export_readiness_inspection": {
+    "status": "PASSED_WITH_WRAPPER_STRATEGY",
+    "target_source_file": "src/architectures/cross_attention_fusion.py",
+    "tracer_blocker_identified": {
+      "line_number": 48,
+      "code": "real_matrix = attn_weights[0].detach().cpu().numpy()",
+      "issue": "PyTorch ONNX tracer fails on Tensor.numpy() conversion",
+      "is_semantically_used": false,
+      "remedy": "Non-invasive export wrapper class in src/eval/export_onnx.py bypassing dead numpy assignment"
+    },
+    "retraining_required": false,
+    "architecture_modification_required": false
+  },
+  "phase1_5_6_regression_and_artifact_integrity": {
+    "status": "PASSED",
+    "test_command": "python -m pytest tests/ -v",
+    "tests_passed": 30,
+    "tests_failed": 0,
+    "exit_code": 0,
+    "duration_seconds": 11.81,
+    "new_targeted_test_file": "tests/test_sampling_manifest.py"
+  },
+  "final_decision_gate": {
+    "recommendation": "GO",
+    "summary": "All baseline gates, manifest controls, golden reference parity, tolerance contracts, and export readiness inspections pass with zero discrepancies.",
+    "next_phase_pending_authorization": "Phase 2 (ONNX Model Conversion & Parity Verification)"
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "benchmark_audit_timestamp": "2026-10-12T09:15:00+05:30",
+  "discrepancies": [
+    {
+      "component": "Phikon-v2 Parameter Count",
+      "reported_in_docs": "~307,000,000 (~307M in ARCHITECTURE.md)",
+      "empirically_verified": 303351808,
+      "discrepancy_nature": "Approximation rounding. 303.35M is the exact parameter count for owkin/phikon-v2 DINOv2 ViT-L/16.",
+      "severity": "LOW"
+    },
+    {
+      "component": "ClinicalBERT Parameter Count",
+      "reported_in_docs": "~110,000,000 (~110M in ARCHITECTURE.md)",
+      "empirically_verified": 108310272,
+      "discrepancy_nature": "Approximation rounding. 108.31M is the exact parameter count for Bio_ClinicalBERT base.",
+      "severity": "LOW"
+    },
+    {
+      "component": "Cross-Attention Validation Accuracy",
+      "reported_in_docs": "89.39% (in ARCHITECTURE.md Executive Summary)",
+      "empirically_verified_report": "87.88% (in results/Cross_Attention_Model_Evaluation_Report.txt)",
+      "discrepancy_nature": "Stochastic variance caused by unseeded torch.randperm sampling cap (max_patches=1000) during evaluation.",
+      "severity": "MEDIUM"
+    },
+    {
+      "component": "Cross-Attention Validation ROC-AUC",
+      "reported_in_docs": "0.9150 (in ARCHITECTURE.md Executive Summary)",
+      "empirically_verified_report": "0.9250 (in results/Cross_Attention_Model_Evaluation_Report.txt)",
+      "discrepancy_nature": "Same as above; metric oscillates slightly between runs without a fixed torch.manual_seed.",
+      "severity": "MEDIUM"
+    },
+    {
+      "component": "Edge Hardware Latency Attribution",
+      "reported_in_docs": "Jetson Orin: 8-12s, RTX 4060: 2-4s, A100: <0.6s",
+      "empirically_verified_context": "Analytical projections based on theoretical TFLOPs; the local benchmark script only physically executed on a single-core Windows CPU.",
+      "discrepancy_nature": "Theoretical hardware extrapolation vs measured host CPU latency.",
+      "severity": "LOW_CLARIFICATION"
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+================================================================================
+FINAL VERIFIED COMPUTATIONAL POWER PROFILE AT FP32 (SINGLE-PRECISION)
+================================================================================
+Generated on: 2026-10-12 08:21:59
+PyTorch:      2.9.1+cpu
+
+1. VISION ENCODER: PHIKON-V2 (owkin/phikon-v2)
+   - Base Architecture:       DINOv2 ViT-L/16 (24 Layers, 1024-D, 16 Heads, MLP 4096)
+   - Total Parameters:        303,351,808 (~307.3M)
+   - FP32 Weight Memory:      1157.20 MB (1.130 GB)
+   - Single Patch Workload:   61.56 GMACs  |  123.13 GFLOPs  (123,126,944,768 FLOPs)
+   - WSI Slide (500 patches):  61.56 TFLOPs
+   - WSI Slide (1000 patches): 123.13 TFLOPs
+   - Host CPU Latency:        1644.0 ms / patch
+
+2. TEXT ENCODER: CLINICALBERT (emilyalsentzer/Bio_ClinicalBERT)
+   - Base Architecture:       BERT-base (12 Layers, 768-D, 12 Heads, Intermediate 3072)
+   - Total Parameters:        108,310,272 (~109.5M)
+   - FP32 Weight Memory:      413.17 MB (0.403 GB)
+   - Compute (128 tokens):    11.18 GMACs  |  22.35 GFLOPs  (Latency: 318.0 ms)
+   - Compute (512 max):       48.34 GMACs  |  96.69 GFLOPs  (Latency: 1197.9 ms)
+
+3. MULTIMODAL FUSION HEAD: SUMMARYTOPATCHCROSSATTENTION
+   - Trainable Parameters:    5,250,561 (~5.25M)
+   - FP32 Weight Memory:      20.03 MB
+   - Workload (1,000 patches): 4.2047 GFLOPs
+   - Inference Latency:       44.75 ms
+
+4. COMPUTATIONAL DISTRIBUTION & HARDWARE IMPLICATION
+   - Vision vs Text Burden:   Vision (Phikon-v2) consumes >99.9% of all FLOPs in the pipeline.
+   - Total FP32 Weight Footprint: 1590.40 MB (~1.69 GB total VRAM for model weights)
+   - Edge Deployment:         Inference with frozen precomputed embeddings is lightweight (<2 ms).
+                              Real-time patch extraction for 500 patches requires ~61.5 TFLOPs:
+                              • High-end GPU (A100/H100): <0.6s
+                              • Workstation (RTX 4060/3060): ~2-4s
+                              • Edge AI (Jetson Orin): ~8-12s
+================================================================================

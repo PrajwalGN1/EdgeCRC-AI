@@ -65,3 +65,17 @@ Thumbs.db
 Interactive_XAI*.png
 src/Interactive_XAI*.png
 src/*.png
+
+# Android generated files and machine-specific configuration
+/android/.gradle/
+/android/build/
+/android/app/build/
+/android/local.properties
+
+# General build and environment artifacts
+.gradle/
+**/build/
+.venv/
+venv/
+__pycache__/
+.env

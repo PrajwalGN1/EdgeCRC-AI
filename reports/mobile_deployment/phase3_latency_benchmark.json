@@ -1,0 +1,57 @@
+{
+  "hardware_and_environment": {
+    "os": "Windows-11-10.0.26200-SP0",
+    "processor": "Intel64 Family 6 Model 142 Stepping 10, GenuineIntel",
+    "python": "3.13.5",
+    "onnxruntime": "1.31.0",
+    "provider": "CPUExecutionProvider",
+    "warmup_runs": 10,
+    "measured_runs": 50
+  },
+  "model_storage": {
+    "fp32_bytes": 21015452,
+    "fp32_mib": 20.04,
+    "fp16_bytes": 10519654,
+    "fp16_mib": 10.03,
+    "reduction_bytes": 10495798,
+    "reduction_pct": 49.94
+  },
+  "latency_benchmark": {
+    "N_100": {
+      "num_patches": 100,
+      "fp32_mean_ms": 2.6963200000318466,
+      "fp32_median_ms": 2.878150000469759,
+      "fp32_p95_ms": 3.2786050001959666,
+      "fp32_std_ms": 0.4942895886978734,
+      "fp16_mean_ms": 4.729181999973662,
+      "fp16_median_ms": 4.656250000152795,
+      "fp16_p95_ms": 5.927354998948431,
+      "fp16_std_ms": 0.7976116227913242,
+      "speedup_ratio": 0.5701451117861108
+    },
+    "N_385": {
+      "num_patches": 385,
+      "fp32_mean_ms": 8.841855999926338,
+      "fp32_median_ms": 9.286349999456434,
+      "fp32_p95_ms": 9.878434999791352,
+      "fp32_std_ms": 1.1908236155906624,
+      "fp16_mean_ms": 10.896956000033242,
+      "fp16_median_ms": 11.488850000205275,
+      "fp16_p95_ms": 12.805700000080831,
+      "fp16_std_ms": 1.518104083563593,
+      "speedup_ratio": 0.8114060476980328
+    },
+    "N_1000": {
+      "num_patches": 1000,
+      "fp32_mean_ms": 21.559783999982756,
+      "fp32_median_ms": 22.52900000075897,
+      "fp32_p95_ms": 24.533374999646185,
+      "fp32_std_ms": 2.710421079547986,
+      "fp16_mean_ms": 25.32548000010138,
+      "fp16_median_ms": 25.95629999996163,
+      "fp16_p95_ms": 28.698445000463835,
+      "fp16_std_ms": 2.78117452257632,
+      "speedup_ratio": 0.8513080107424006
+    }
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "Phikon-v2": {
+    "architecture": "DINOv2 ViT-L/16 (24 layers, 1024 hidden, 16 heads)",
+    "parameters": 303351808,
+    "fp32_weight_mb": 1157.2,
+    "fp32_weight_gb": 1.1301,
+    "input_shape": "1 x 3 x 224 x 224 (197 tokens)",
+    "flops_per_patch": 123126944768,
+    "gflops_per_patch": 123.127,
+    "gmacs_per_patch": 61.563,
+    "latency_ms_per_patch": 1644.04,
+    "wsi_500_patches_tflops": 61.563,
+    "wsi_1000_patches_tflops": 123.127
+  },
+  "ClinicalBERT": {
+    "architecture": "BERT-base (12 layers, 768 hidden, 12 heads)",
+    "parameters": 108310272,
+    "fp32_weight_mb": 413.17,
+    "fp32_weight_gb": 0.4035,
+    "seq_128": {
+      "gflops": 22.353,
+      "gmacs": 11.177,
+      "latency_ms": 318.05
+    },
+    "seq_512_max": {
+      "gflops": 96.686,
+      "gmacs": 48.343,
+      "latency_ms": 1197.91
+    }
+  },
+  "SummaryToPatchCrossAttention": {
+    "parameters": 5250561,
+    "fp32_weight_mb": 20.03,
+    "flops_for_1000_patches": 4204694016,
+    "gflops": 4.2047,
+    "latency_ms": 44.75
+  }
+}
