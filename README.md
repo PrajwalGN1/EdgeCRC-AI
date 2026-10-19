@@ -87,12 +87,12 @@ flowchart TD
     subgraph S3["Phase 3: Cross-Attention Fusion (Trainable 5.25M)"]
         V_EMB["Patch Embeddings<br/>V in R^(N x 1024)"]
         T_EMB["Text CLS Embedding<br/>T in R^(1 x 768)"]
-        PROJ["Linear Projection<br/>768 -> 1024 (T')"]
+        PROJ["Linear Projection<br/>768 → 1024 (T')"]
         MHA["Multi-Head Cross-Attention (8 Heads)<br/>Q = T', K = V, V = V"]
         RES_LN["Residual Addition & LayerNorm<br/>R^(1 x 1024)"]
-        MLP["Classification MLP<br/>Linear(1024->256) -> ReLU -> Drop(0.3) -> Linear(256->1)"]
+        MLP["Classification MLP<br/>Linear(1024 → 256) → ReLU → Drop(0.3) → Linear(256 → 1)"]
         SIGMOID["Sigmoid Activation<br/>p = P(MSI | V, T)"]
-        DECISION{"Threshold Rule<br/>tau = 0.83"}
+        DECISION{"Threshold Rule<br/>τ = 0.83"}
 
         PHIKON --> V_EMB
         CLINICAL --> T_EMB
@@ -103,8 +103,8 @@ flowchart TD
         RES_LN --> MLP
         MLP --> SIGMOID
         SIGMOID --> DECISION
-        DECISION -- "p >= 0.83" --> MSI["MSI (High Instability)"]
-        DECISION -- "p < 0.83" --> MSS["MSS (Stable)"]
+        DECISION -->|"p ≥ 0.83"| MSI["MSI (High Instability)"]
+        DECISION -->|"p &lt; 0.83"| MSS["MSS (Stable)"]
     end
 
     subgraph S4["Phase 4: Multi-Tier Explainable AI (XAI)"]
