@@ -1,17 +1,22 @@
 {
-  "release_version": "v0.1.1",
-  "release_title": "CRC Edge AI Android Test Build (Startup Crash Remediation)",
+  "release_version": "v1.0.2",
+  "release_title": "CRC Multimodal Edge AI — Enterprise UI/UX Redesign (v1.0.2)",
   "asset_filename": "crc-edge-ai-android-debug.apk",
-  "asset_size_bytes": 75357763,
-  "asset_size_mb": 71.87,
-  "apk_sha256": "e126d788700019f660a02d643bfc64240bca813793d8ff7c034a8399ea087917",
-  "historical_failing_version": {
-    "version": "v0.1.0",
-    "apk_sha256": "22b94247a7fed5bab297fcff28a46f9461b7f93bd74a7620c32f33db22f758a9",
-    "archived_path": "reports/mobile_deployment/phase4_2_2D/failing_crc-edge-ai-android-debug-v0.1.0.apk",
-    "root_cause": "Missing AppCompat theme descendant with AppCompatActivity in AndroidManifest.xml and missing res/ resources"
-  },
-  "source_commit": "d3c68eb7d825f3933dccb9aa7bb46b808d4c3a2d",
+  "asset_size_bytes": 74335338,
+  "asset_size_mb": 70.89,
+  "apk_sha256": "f593442afc85ea4b1379e37959dd186666a543b2bceede5a8350e4348e58082c",
+  "historical_versions": [
+    {
+      "version": "v0.1.0",
+      "apk_sha256": "22b94247a7fed5bab297fcff28a46f9461b7f93bd74a7620c32f33db22f758a9",
+      "status": "archived_startup_crash"
+    },
+    {
+      "version": "v1.0.1",
+      "apk_sha256": "e126d788700019f660a02d643bfc64240bca813793d8ff7c034a8399ea087917",
+      "status": "remediated_baseline_ui"
+    }
+  ],
   "target_branch": "edge-deployment",
   "model_filename": "fusion_model_fp32.onnx",
   "model_sha256": "0402f6c522beac5733e30eeecad908927957b5d4164b6b896663f43ba3702d73",
@@ -21,8 +26,8 @@
   "build_variant": "debug",
   "application_id": "org.crc.multimodal",
   "app_name": "CRC Multimodal Edge (Research)",
-  "version_code": 2,
-  "version_name": "1.0.1",
+  "version_code": 3,
+  "version_name": "1.0.2",
   "min_sdk": 24,
   "target_sdk": 34,
   "compile_sdk": 34,
@@ -35,7 +40,7 @@
   "signature_scheme": "APK Signature Scheme v2/v3 (Debug keystore)",
   "network_permissions": [],
   "offline_privacy_guarantee": true,
-  "build_timestamp": "2026-10-19T20:25:35+05:30",
+  "build_timestamp": "2026-10-21T18:55:00+05:30",
   "timezone": "Asia/Kolkata (UTC+05:30)",
   "intended_hardware": "Samsung Galaxy S24 (SM-S921B / SM-S921U, arm64-v8a, Android 14 / One UI 6.1)"
 }

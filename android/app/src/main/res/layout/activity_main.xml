@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
@@ -10,66 +11,146 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="20dp">
+        android:paddingStart="@dimen/spacing_lg"
+        android:paddingEnd="@dimen/spacing_lg"
+        android:paddingTop="@dimen/spacing_xl"
+        android:paddingBottom="@dimen/spacing_xxl">
 
-        <!-- Header -->
-        <TextView
-            android:id="@+id/tvHeaderTitle"
+        <!-- ========================================== -->
+        <!-- HEADER: Brand Identity & Clinical Badge     -->
+        <!-- ========================================== -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/title_edge_ai"
-            android:textColor="?attr/colorOnSurface"
-            android:textSize="22sp"
-            android:textStyle="bold" />
+            android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/tvHeaderSubtitle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="@string/subtitle_edge_ai"
-            android:textColor="?attr/colorSecondary"
-            android:textSize="14sp" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
 
-        <!-- Engine & Model Status Card -->
+                <ImageView
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:src="@drawable/ic_science"
+                    app:tint="@color/secondary"
+                    android:contentDescription="@null" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="@dimen/spacing_md"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvHeaderTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/title_edge_ai"
+                        android:textColor="?attr/colorOnSurface"
+                        android:textSize="@dimen/text_title_large"
+                        android:textStyle="bold"
+                        android:letterSpacing="-0.01" />
+
+                    <TextView
+                        android:id="@+id/tvHeaderSubtitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="@string/subtitle_edge_ai"
+                        android:textColor="@color/text_secondary_light"
+                        android:textSize="@dimen/text_caption" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Privacy Guarantee Badge -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_md"
+                android:background="@drawable/bg_badge_pill"
+                android:paddingStart="@dimen/spacing_md"
+                android:paddingEnd="@dimen/spacing_md"
+                android:paddingTop="@dimen/spacing_xs"
+                android:paddingBottom="@dimen/spacing_xs"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="14dp"
+                    android:layout_height="14dp"
+                    android:src="@drawable/ic_check_circle"
+                    android:contentDescription="@null" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/spacing_xs"
+                    android:text="@string/local_privacy_guarantee"
+                    android:textSize="11sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/text_secondary_light" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- ========================================== -->
+        <!-- CARD 1: Engine & Model Status              -->
+        <!-- ========================================== -->
         <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardEngineStatus"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="2dp"
-            app:strokeWidth="1dp"
+            android:layout_marginTop="@dimen/spacing_lg"
+            app:cardCornerRadius="@dimen/card_corner_radius"
+            app:cardElevation="@dimen/card_elevation"
+            app:strokeWidth="@dimen/card_stroke_width"
             app:strokeColor="@color/border_light">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="16dp">
+                android:padding="@dimen/spacing_lg">
 
-                <TextView
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="ENGINE &amp; MODEL STATUS"
-                    android:textSize="12sp"
-                    android:textStyle="bold"
-                    android:textColor="?attr/colorSecondary" />
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/header_runtime_status"
+                        style="@style/TextAppearance.CrcMultimodal.SectionHeader" />
+
+                    <ImageView
+                        android:id="@+id/ivEngineStatusIcon"
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:src="@drawable/ic_memory"
+                        app:tint="@color/secondary"
+                        android:contentDescription="@string/cd_engine_status" />
+                </LinearLayout>
 
                 <ProgressBar
                     android:id="@+id/progressBarLoading"
                     style="?android:attr/progressBarStyleHorizontal"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
+                    android:layout_height="4dp"
+                    android:layout_marginTop="@dimen/spacing_sm"
                     android:indeterminate="true" />
 
                 <TextView
                     android:id="@+id/tvEngineStatus"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginTop="@dimen/spacing_sm"
                     android:text="@string/status_initializing"
-                    android:textSize="14sp"
+                    android:textSize="@dimen/text_body"
                     android:textStyle="bold"
                     android:textColor="?attr/colorOnSurface" />
 
@@ -77,115 +158,513 @@
                     android:id="@+id/tvModelDetails"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
-                    android:text="Loading frozen weights: models/fusion_model_fp32.onnx (20.04 MB)…"
-                    android:textSize="13sp"
-                    android:textColor="?attr/colorOnSurface" />
+                    android:layout_marginTop="@dimen/spacing_xs"
+                    android:text="Loading frozen weights: models/fusion_model_fp32.onnx (20.04 MB FP32)…"
+                    android:textSize="12sp"
+                    android:textColor="@color/text_secondary_light" />
 
                 <TextView
                     android:id="@+id/tvRuntimeDetails"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
-                    android:text="Provider: ONNX Runtime Mobile v1.18.0 (CPU)\nDecision Threshold: 0.83 (MSI vs. MSS)"
+                    android:layout_marginTop="@dimen/spacing_xxs"
+                    android:text="Provider: ONNX Runtime Mobile v1.18.0 (CPU) · Decision Threshold: 0.83"
+                    android:textSize="12sp"
+                    android:textColor="@color/text_secondary_light" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- ========================================== -->
+        <!-- CARD 2: Multimodal Input Specification     -->
+        <!-- ========================================== -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardInputSpec"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_md"
+            app:cardCornerRadius="@dimen/card_corner_radius"
+            app:cardElevation="@dimen/card_elevation"
+            app:strokeWidth="@dimen/card_stroke_width"
+            app:strokeColor="@color/border_light">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/spacing_lg">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/header_input_review"
+                        style="@style/TextAppearance.CrcMultimodal.SectionHeader" />
+
+                    <ImageView
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:src="@drawable/ic_layers"
+                        app:tint="@color/secondary"
+                        android:contentDescription="@null" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_xs"
+                    android:text="Consumes precomputed multimodal feature representations. Choose slide patch count to test sequence scaling:"
                     android:textSize="13sp"
                     android:textColor="?attr/colorOnSurface" />
+
+                <!-- Patch Count Selector (Single-select Toggle Group) -->
+                <com.google.android.material.button.MaterialButtonToggleGroup
+                    android:id="@+id/toggleGroupPatchCount"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_md"
+                    app:singleSelection="true"
+                    app:selectionRequired="true">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnPatches10"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="10 Patches"
+                        android:textSize="12sp"
+                        android:minHeight="@dimen/min_touch_target" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnPatches50"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="50 Patches"
+                        android:textSize="12sp"
+                        android:minHeight="@dimen/min_touch_target" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnPatches1000"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="1,000 (Cap)"
+                        android:textSize="12sp"
+                        android:minHeight="@dimen/min_touch_target" />
+                </com.google.android.material.button.MaterialButtonToggleGroup>
+
+                <!-- Input Tensor Summary -->
+                <TextView
+                    android:id="@+id/tvInputSummary"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_sm"
+                    android:text="Vision sequence: [1, 10, 1024] · Text summary: [1, 768] · Protocol 1 (Capped)"
+                    android:textSize="12sp"
+                    android:textColor="@color/text_secondary_light" />
 
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Live Inference Verification Card -->
-        <com.google.android.material.card.MaterialCardView
+        <!-- ========================================== -->
+        <!-- PRIMARY ACTION: Run Inference              -->
+        <!-- ========================================== -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnRunInference"
+            style="@style/Widget.CrcMultimodal.Button.Primary"
+            android:layout_width="match_parent"
+            android:layout_height="54dp"
+            android:layout_marginTop="@dimen/spacing_lg"
+            android:text="@string/btn_run_inference"
+            android:enabled="false"
+            app:icon="@drawable/ic_science"
+            app:iconGravity="textStart"
+            app:iconPadding="@dimen/spacing_sm" />
+
+        <ProgressBar
+            android:id="@+id/progressBarInference"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="4dp"
+            android:layout_marginTop="@dimen/spacing_sm"
+            android:indeterminate="true"
+            android:visibility="gone"
+            tools:visibility="visible" />
+
+        <TextView
+            android:id="@+id/tvInferenceProgress"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            app:cardCornerRadius="12dp"
+            android:layout_marginTop="@dimen/spacing_xs"
+            android:gravity="center"
+            android:text="@string/status_inference_running"
+            android:textSize="12sp"
+            android:textColor="@color/secondary"
+            android:visibility="gone"
+            tools:visibility="visible" />
+
+        <!-- ========================================== -->
+        <!-- CARD 3: Results & Research Interpretation  -->
+        <!-- ========================================== -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardResult"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_md"
+            android:visibility="gone"
+            tools:visibility="visible"
+            app:cardCornerRadius="@dimen/card_corner_radius"
             app:cardElevation="2dp"
-            app:strokeWidth="1dp"
+            app:strokeWidth="@dimen/card_stroke_width"
             app:strokeColor="@color/border_light">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="16dp">
+                android:padding="@dimen/spacing_lg">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="ON-DEVICE RUNTIME VERIFICATION"
-                    android:textSize="12sp"
-                    android:textStyle="bold"
-                    android:textColor="?attr/colorSecondary" />
-
-                <TextView
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
-                    android:text="Execute a live neural network inference on device to verify tensor execution, float precision, and latency."
-                    android:textSize="13sp"
-                    android:textColor="?attr/colorOnSurface" />
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
 
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/header_result_summary"
+                        style="@style/TextAppearance.CrcMultimodal.SectionHeader" />
+
+                    <TextView
+                        android:id="@+id/tvResultTimestamp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="11sp"
+                        android:textColor="@color/text_secondary_light"
+                        tools:text="14:32:05" />
+                </LinearLayout>
+
+                <!-- Classification Badge -->
+                <LinearLayout
+                    android:id="@+id/layoutClassificationBadge"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_md"
+                    android:background="@drawable/bg_badge_pill"
+                    android:paddingStart="@dimen/spacing_lg"
+                    android:paddingEnd="@dimen/spacing_lg"
+                    android:paddingTop="@dimen/spacing_md"
+                    android:paddingBottom="@dimen/spacing_md"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:id="@+id/ivClassificationIcon"
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:src="@drawable/ic_check_circle"
+                        android:contentDescription="@null" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="@dimen/spacing_md"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/tvResultClassification"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="22sp"
+                            android:textStyle="bold"
+                            android:textColor="?attr/colorOnSurface"
+                            tools:text="MSI (High Instability)" />
+
+                        <TextView
+                            android:id="@+id/tvResultSubLabel"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="12sp"
+                            android:textColor="@color/text_secondary_light"
+                            tools:text="Evaluated Class 1 · Microsatellite Instability" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- Score & Margin Row -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_lg"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:id="@+id/tvResultScore"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:textColor="?attr/colorOnSurface"
+                        tools:text="Score: 0.8421" />
+
+                    <TextView
+                        android:id="@+id/tvResultMargin"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/secondary"
+                        tools:text="+0.0121 vs 0.83" />
+                </LinearLayout>
+
+                <!-- Custom Graphical Probability Threshold Gauge -->
+                <org.crc.multimodal.ui.ProbabilityThresholdBarView
+                    android:id="@+id/probabilityBarView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_sm" />
+
+                <!-- 3-Column Metrics Grid -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_lg"
+                    android:orientation="horizontal">
+
+                    <!-- Stat 1: Threshold -->
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_badge_pill"
+                        android:padding="@dimen/spacing_sm"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="THRESHOLD"
+                            android:textSize="10sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/text_muted_light" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="0.83"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:textColor="?attr/colorOnSurface" />
+                    </LinearLayout>
+
+                    <Space
+                        android:layout_width="@dimen/spacing_sm"
+                        android:layout_height="wrap_content" />
+
+                    <!-- Stat 2: Measured Latency -->
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_badge_pill"
+                        android:padding="@dimen/spacing_sm"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="CPU LATENCY"
+                            android:textSize="10sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/text_muted_light" />
+
+                        <TextView
+                            android:id="@+id/tvResultLatency"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:textColor="?attr/colorOnSurface"
+                            tools:text="4.25 ms" />
+                    </LinearLayout>
+
+                    <Space
+                        android:layout_width="@dimen/spacing_sm"
+                        android:layout_height="wrap_content" />
+
+                    <!-- Stat 3: Slide Patches -->
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_badge_pill"
+                        android:padding="@dimen/spacing_sm"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="PATCH COUNT"
+                            android:textSize="10sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/text_muted_light" />
+
+                        <TextView
+                            android:id="@+id/tvResultPatches"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:textColor="?attr/colorOnSurface"
+                            tools:text="10 Patches" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- Action to Toggle Technical Diagnostics -->
                 <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnRunInference"
+                    android:id="@+id/btnToggleDiagnostics"
+                    style="@style/Widget.CrcMultimodal.Button.Outlined"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:text="@string/btn_run_smoke_test"
-                    android:enabled="false"
-                    app:cornerRadius="8dp" />
+                    android:layout_marginTop="@dimen/spacing_lg"
+                    android:text="@string/btn_toggle_diagnostics_show"
+                    app:icon="@drawable/ic_expand_more"
+                    app:iconGravity="textEnd" />
 
-                <TextView
-                    android:id="@+id/tvInferenceResult"
+                <!-- Expandable Technical Diagnostics Console -->
+                <LinearLayout
+                    android:id="@+id/layoutTechnicalDiagnostics"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:padding="12dp"
-                    android:background="#1E293B"
-                    android:textColor="#F8FAFC"
-                    android:typeface="monospace"
-                    android:textSize="12sp"
-                    android:text="Waiting for ONNX model to initialize…" />
+                    android:layout_marginTop="@dimen/spacing_sm"
+                    android:visibility="gone"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvInferenceResult"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_console"
+                        android:padding="@dimen/spacing_md"
+                        android:textColor="@color/console_text"
+                        android:typeface="monospace"
+                        android:textSize="11sp"
+                        android:lineSpacingExtra="2dp"
+                        android:textIsSelectable="true"
+                        tools:text="=== LIVE ON-DEVICE INFERENCE RESULT ===\nStatus: SUCCESS..." />
+                </LinearLayout>
 
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Disclaimer Card -->
+        <!-- ========================================== -->
+        <!-- CARD 4: System & Model Specifications      -->
+        <!-- ========================================== -->
         <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardModelSpec"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="24dp"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="1dp"
-            app:strokeWidth="1dp"
+            android:layout_marginTop="@dimen/spacing_md"
+            app:cardCornerRadius="@dimen/card_corner_radius"
+            app:cardElevation="@dimen/card_elevation"
+            app:strokeWidth="@dimen/card_stroke_width"
             app:strokeColor="@color/border_light">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="16dp">
+                android:padding="@dimen/spacing_lg">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/disclaimer_heading"
-                    android:textSize="12sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/status_pending" />
+                    android:text="@string/header_model_spec"
+                    style="@style/TextAppearance.CrcMultimodal.SectionHeader" />
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
+                    android:layout_marginTop="@dimen/spacing_xs"
+                    android:text="• Model Checkpoint: models/fusion_model_fp32.onnx (FP32 ONNX, 20.04 MB)\n• Inference Backend: ONNX Runtime Mobile v1.18.0 (CPUExecutionProvider)\n• Fusion Architecture: Cross-Attention (Summary-to-Patch Cross Attention)\n• Operating Threshold: 0.83 (P ≥ 0.83 MSI, P &lt; 0.83 MSS)\n• Protocols: Protocol 1 (Capped ≤ 1,000) &amp; Protocol 2 (Uncapped)\n• Execution Isolation: Strictly local single-patient sequential execution"
+                    android:textSize="12sp"
+                    android:lineSpacingExtra="3dp"
+                    android:textColor="@color/text_secondary_light" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- ========================================== -->
+        <!-- CARD 5: Investigational Research Disclaimer-->
+        <!-- ========================================== -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardDisclaimer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_md"
+            android:layout_marginBottom="@dimen/spacing_lg"
+            app:cardCornerRadius="@dimen/card_corner_radius"
+            app:cardElevation="@dimen/card_elevation"
+            app:strokeWidth="@dimen/card_stroke_width"
+            app:strokeColor="@color/border_light">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/spacing_lg">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:src="@drawable/ic_warning_amber"
+                        android:contentDescription="@string/cd_disclaimer_icon" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/spacing_sm"
+                        android:text="@string/disclaimer_heading"
+                        android:textSize="11sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/status_warning"
+                        android:letterSpacing="0.04" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_xs"
                     android:text="@string/disclaimer_content"
                     android:textSize="12sp"
                     android:lineSpacingExtra="2dp"
-                    android:textColor="?attr/colorOnSurface" />
-
+                    android:textColor="@color/text_secondary_light" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
     </LinearLayout>
-</ScrollView>
+</androidx.core.widget.NestedScrollView>

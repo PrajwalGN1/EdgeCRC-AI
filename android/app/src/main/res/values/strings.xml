@@ -2,9 +2,38 @@
 <resources>
     <string name="app_name">CRC Multimodal Edge (Research)</string>
     <string name="title_edge_ai">CRC Multimodal Edge AI</string>
-    <string name="subtitle_edge_ai">Cross-Attention Fusion · MSI/MSS Detection</string>
-    <string name="status_initializing">Initializing ONNX Runtime Engine…</string>
-    <string name="btn_run_smoke_test">Execute On-Device Live Inference</string>
-    <string name="disclaimer_heading">INVESTIGATIONAL RESEARCH DISCLAIMER</string>
-    <string name="disclaimer_content">This software is an investigational research demonstration. It is NOT cleared, certified, or approved for clinical diagnosis, treatment planning, or patient care.\n\nConsumes precomputed feature embeddings (Vision: [1, N, 1024], Text: [1, 768]). Foundation vision encoder (Phikon-v2) and clinical text encoder (ClinicalBERT) are evaluated via precomputed tensors.</string>
+    <string name="subtitle_edge_ai">Cross-Attention Fusion · MSI/MSS Research</string>
+    <string name="tag_research_mode">LOCAL RESEARCH ENGINE</string>
+
+    <!-- Runtime Engine Statuses -->
+    <string name="status_initializing">Initializing ONNX Runtime…</string>
+    <string name="status_engine_ready">ONNX Runtime Engine Ready</string>
+    <string name="status_inference_running">Executing Multimodal Fusion…</string>
+    <string name="status_initialization_failed">Initialization Failed</string>
+    <string name="status_inference_failed">Inference Execution Error</string>
+
+    <!-- Action Buttons -->
+    <string name="btn_run_inference">Run Research Inference</string>
+    <string name="btn_run_again">Run Another Analysis</string>
+    <string name="btn_toggle_diagnostics_show">View Technical Diagnostics</string>
+    <string name="btn_toggle_diagnostics_hide">Hide Technical Diagnostics</string>
+
+    <!-- Section Headers -->
+    <string name="header_input_review">MULTIMODAL INPUT SPECIFICATION</string>
+    <string name="header_runtime_status">ENGINE &amp; RUNTIME STATUS</string>
+    <string name="header_result_summary">RESEARCH CLASSIFICATION RESULT</string>
+    <string name="header_model_spec">SYSTEM &amp; MODEL SPECIFICATIONS</string>
+    <string name="header_disclaimer">INVESTIGATIONAL RESEARCH DISCLAIMER</string>
+
+    <!-- Disclaimers & Notes -->
+    <string name="disclaimer_heading">INVESTIGATIONAL RESEARCH USE ONLY</string>
+    <string name="disclaimer_content">This software is an investigational research demonstration. It is NOT cleared, certified, or approved by the FDA, EMA, or any regulatory authority for clinical diagnosis, patient triage, or therapeutic decision-making.\n\nThe application consumes precomputed multimodal representations (Vision embedding [1, N, 1024] and Clinical text summary [1, 768]). Foundation encoders (Phikon-v2 and ClinicalBERT) are evaluated via precomputed tensors. Model outputs are experimental scores intended solely for scientific benchmarking.</string>
+    <string name="local_privacy_guarantee">100% On-Device Execution · Zero Network Transmission · Privacy Preserved</string>
+
+    <!-- Accessibility Descriptions -->
+    <string name="cd_engine_status">Engine operational status indicator</string>
+    <string name="cd_probability_gauge">Probability gauge comparing model score against 0.83 decision boundary</string>
+    <string name="cd_msi_badge">MSI classification badge</string>
+    <string name="cd_mss_badge">MSS classification badge</string>
+    <string name="cd_disclaimer_icon">Clinical research warning icon</string>
 </resources>
