@@ -1,67 +1,118 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Dark Mode Application Theme -->
+    <!-- Dark Mode Healthcare Application Theme -->
     <style name="Theme.CrcMultimodal" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <!-- Primary Brand Tokens in Dark Mode -->
-        <item name="colorPrimary">@color/secondary</item>
-        <item name="colorPrimaryVariant">@color/secondary_variant</item>
-        <item name="colorOnPrimary">@color/white</item>
+        <!-- Brand & Clinical Tokens in Dark Mode -->
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryVariant">@color/primary_variant</item>
+        <item name="colorOnPrimary">@color/on_primary</item>
 
-        <!-- Secondary Tokens in Dark Mode -->
-        <item name="colorSecondary">@color/primary_variant</item>
-        <item name="colorSecondaryVariant">@color/primary</item>
-        <item name="colorOnSecondary">@color/white</item>
+        <item name="colorSecondary">@color/secondary</item>
+        <item name="colorSecondaryVariant">@color/secondary_variant</item>
+        <item name="colorOnSecondary">@color/on_secondary</item>
 
-        <!-- Dark Background & Surfaces -->
-        <item name="android:colorBackground">@color/background_dark</item>
-        <item name="colorSurface">@color/surface_dark</item>
-        <item name="colorOnSurface">@color/text_primary_dark</item>
+        <!-- Dark Backgrounds & Accessible Surfaces -->
+        <item name="android:colorBackground">@color/app_background</item>
+        <item name="colorSurface">@color/app_surface</item>
+        <item name="colorOnSurface">@color/text_primary</item>
+        <item name="android:textColorPrimary">@color/text_primary</item>
+        <item name="android:textColorSecondary">@color/text_secondary</item>
 
-        <!-- System Bars in Dark Mode -->
-        <item name="android:statusBarColor">@color/background_dark</item>
+        <!-- Dark System Bars -->
+        <item name="android:statusBarColor">@color/app_surface</item>
         <item name="android:windowLightStatusBar" tools:targetApi="m">false</item>
-        <item name="android:navigationBarColor">@color/surface_dark</item>
+        <item name="android:navigationBarColor">@color/app_surface</item>
         <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">false</item>
-        <item name="android:windowBackground">@color/background_dark</item>
+        <item name="android:windowBackground">@color/app_background</item>
 
-        <!-- Component Styling Overrides -->
+        <!-- Component Theme Defaults -->
         <item name="materialCardViewStyle">@style/Widget.CrcMultimodal.CardView</item>
         <item name="materialButtonStyle">@style/Widget.CrcMultimodal.Button.Primary</item>
+        <item name="textInputStyle">@style/Widget.CrcMultimodal.TextInputLayout</item>
     </style>
 
-    <!-- Dark Mode Card Style -->
+    <!-- Dark Mode Card Style: High-contrast border against dark surface -->
     <style name="Widget.CrcMultimodal.CardView" parent="Widget.MaterialComponents.CardView">
         <item name="cardCornerRadius">@dimen/card_corner_radius</item>
         <item name="cardElevation">@dimen/card_elevation</item>
         <item name="strokeWidth">@dimen/card_stroke_width</item>
-        <item name="strokeColor">@color/card_stroke_dark</item>
-        <item name="cardBackgroundColor">@color/surface_dark</item>
+        <item name="strokeColor">@color/card_stroke</item>
+        <item name="cardBackgroundColor">@color/app_surface</item>
     </style>
 
     <!-- Dark Mode Primary Button -->
     <style name="Widget.CrcMultimodal.Button.Primary" parent="Widget.MaterialComponents.Button">
-        <item name="backgroundTint">@color/secondary</item>
-        <item name="android:textColor">@color/white</item>
-        <item name="cornerRadius">@dimen/card_corner_radius_sm</item>
+        <item name="backgroundTint">@color/primary</item>
+        <item name="android:textColor">#101820</item>
+        <item name="cornerRadius">@dimen/button_corner_radius</item>
         <item name="android:minHeight">@dimen/min_touch_target</item>
-        <item name="android:letterSpacing">0.02</item>
+        <item name="android:letterSpacing">0.01</item>
         <item name="android:textStyle">bold</item>
+        <item name="android:textSize">14sp</item>
+        <item name="elevation">0dp</item>
     </style>
 
     <!-- Dark Mode Secondary Outlined Button -->
     <style name="Widget.CrcMultimodal.Button.Outlined" parent="Widget.MaterialComponents.Button.OutlinedButton">
-        <item name="android:textColor">@color/secondary</item>
-        <item name="strokeColor">@color/secondary</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="strokeColor">@color/border_color</item>
         <item name="strokeWidth">1dp</item>
-        <item name="cornerRadius">@dimen/card_corner_radius_sm</item>
+        <item name="cornerRadius">@dimen/button_corner_radius</item>
         <item name="android:minHeight">@dimen/min_touch_target</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <!-- Dark Mode Text Button -->
+    <style name="Widget.CrcMultimodal.Button.Text" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:textColor">@color/primary</item>
+        <item name="cornerRadius">@dimen/button_corner_radius</item>
+        <item name="android:minHeight">@dimen/min_touch_target</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <!-- Dark Mode TextInputLayout -->
+    <style name="Widget.CrcMultimodal.TextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="boxStrokeColor">@color/border_color</item>
+        <item name="boxStrokeWidth">1dp</item>
+        <item name="boxCornerRadiusTopStart">@dimen/card_corner_radius_sm</item>
+        <item name="boxCornerRadiusTopEnd">@dimen/card_corner_radius_sm</item>
+        <item name="boxCornerRadiusBottomStart">@dimen/card_corner_radius_sm</item>
+        <item name="boxCornerRadiusBottomEnd">@dimen/card_corner_radius_sm</item>
+        <item name="hintTextColor">@color/primary</item>
+        <item name="helperTextTextColor">@color/text_supporting</item>
+    </style>
+
+    <!-- High-Visibility Specimen Ingestion TextInputLayout (Dark Mode) -->
+    <style name="Widget.CrcMultimodal.TextInputLayout.SpecimenField" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="boxBackgroundMode">outline</item>
+        <item name="boxBackgroundColor">@color/field_bg</item>
+        <item name="boxStrokeColor">@color/field_box_stroke_selector</item>
+        <item name="boxStrokeErrorColor">@color/field_stroke_error</item>
+        <item name="boxStrokeWidth">@dimen/input_field_stroke_width</item>
+        <item name="boxStrokeWidthFocused">@dimen/input_field_stroke_width_focused</item>
+        <item name="boxCornerRadiusTopStart">@dimen/input_field_corner_radius</item>
+        <item name="boxCornerRadiusTopEnd">@dimen/input_field_corner_radius</item>
+        <item name="boxCornerRadiusBottomStart">@dimen/input_field_corner_radius</item>
+        <item name="boxCornerRadiusBottomEnd">@dimen/input_field_corner_radius</item>
+        <item name="hintTextColor">@color/field_hint_selector</item>
+        <item name="android:textColorHint">@color/field_text_hint</item>
+        <item name="placeholderTextColor">@color/field_text_hint</item>
+        <item name="helperTextTextColor">@color/text_supporting</item>
+        <item name="errorTextColor">@color/field_stroke_error</item>
     </style>
 
     <!-- Dark Mode Section Header -->
     <style name="TextAppearance.CrcMultimodal.SectionHeader" parent="TextAppearance.MaterialComponents.Subtitle2">
         <item name="android:textSize">12sp</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:textColor">@color/secondary</item>
-        <item name="android:letterSpacing">0.06</item>
+        <item name="android:textColor">@color/text_secondary</item>
+        <item name="android:letterSpacing">0.05</item>
+    </style>
+
+    <!-- Dark Mode Subtitle / Meta Text -->
+    <style name="TextAppearance.CrcMultimodal.Metadata" parent="TextAppearance.MaterialComponents.Caption">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@color/text_secondary</item>
     </style>
 </resources>

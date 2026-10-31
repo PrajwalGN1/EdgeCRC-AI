@@ -2,9 +2,9 @@ package org.crc.multimodal.ui
 
 import android.content.Context
 import android.graphics.Canvas
-import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.RectF
+import android.graphics.Typeface
 import android.util.AttributeSet
 import android.view.View
 import androidx.core.content.ContextCompat
@@ -15,6 +15,11 @@ import org.crc.multimodal.R
  *
  * Renders an accessible, bounded probability bar indicating the model's predicted
  * probability alongside the frozen decision threshold marker at 0.83.
+ *
+ * Visual Layout:
+ * - Top Row: Dedicated threshold annotation "τ = 0.83" centered above the decision boundary marker.
+ * - Middle Row: Probability track and progress fill with vertical threshold marker line.
+ * - Bottom Row: Scale boundary labels "0.00 (MSS)" on far left and "1.00 (MSI)" on far right.
  *
  * Visual Rules:
  * - Operating Threshold is fixed at 0.83f (83% of the horizontal bar).
@@ -35,7 +40,8 @@ class ProbabilityThresholdBarView @JvmOverloads constructor(
     private val trackPaint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val fillPaint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val thresholdLinePaint = Paint(Paint.ANTI_ALIAS_FLAG)
-    private val textPaint = Paint(Paint.ANTI_ALIAS_FLAG)
+    private val thresholdTextPaint = Paint(Paint.ANTI_ALIAS_FLAG)
+    private val scaleTextPaint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val zonePaint = Paint(Paint.ANTI_ALIAS_FLAG)
 
     private val barRect = RectF()
@@ -49,9 +55,15 @@ class ProbabilityThresholdBarView @JvmOverloads constructor(
         thresholdLinePaint.strokeWidth = dpToPx(2.5f)
         thresholdLinePaint.color = ContextCompat.getColor(context, R.color.threshold_marker)
 
-        textPaint.isAntiAlias = true
-        textPaint.textSize = spToPx(10.5f)
-        textPaint.style = Paint.Style.FILL
+        thresholdTextPaint.isAntiAlias = true
+        thresholdTextPaint.textSize = spToPx(11.5f)
+        thresholdTextPaint.style = Paint.Style.FILL
+        thresholdTextPaint.textAlign = Paint.Align.CENTER
+        thresholdTextPaint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+
+        scaleTextPaint.isAntiAlias = true
+        scaleTextPaint.textSize = spToPx(10.5f)
+        scaleTextPaint.style = Paint.Style.FILL
 
         zonePaint.style = Paint.Style.FILL
 
@@ -99,7 +111,11 @@ class ProbabilityThresholdBarView @JvmOverloads constructor(
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        val minHeight = dpToPx(48f).toInt()
+        val topSize = spToPx(11.5f)
+        val bottomSize = spToPx(10.5f)
+        val barH = dpToPx(14f)
+        val totalVertical = paddingTop + paddingBottom + topSize + dpToPx(5f) + barH + dpToPx(6f) + bottomSize + dpToPx(4f)
+        val minHeight = totalVertical.toInt().coerceAtLeast(dpToPx(56f).toInt())
         val height = resolveSizeAndState(minHeight, heightMeasureSpec, 0)
         val width = MeasureSpec.getSize(widthMeasureSpec)
         setMeasuredDimension(width, height)
@@ -116,16 +132,30 @@ class ProbabilityThresholdBarView @JvmOverloads constructor(
         val paddingR = paddingRight.toFloat() + dpToPx(4f)
         val availableWidth = (w - paddingL - paddingR).coerceAtLeast(0f)
 
-        // The bar occupies the central vertical region
+        // Resolve dynamic Day/Night colors
+        thresholdLinePaint.color = ContextCompat.getColor(context, R.color.threshold_marker)
+        thresholdTextPaint.color = ContextCompat.getColor(context, R.color.threshold_marker)
+        trackPaint.color = ContextCompat.getColor(context, R.color.gauge_track)
+        scaleTextPaint.color = ContextCompat.getColor(context, R.color.text_secondary)
+
+        // Text sizing based on current font metrics
+        thresholdTextPaint.textSize = spToPx(11.5f)
+        scaleTextPaint.textSize = spToPx(10.5f)
+
+        val topMetrics = thresholdTextPaint.fontMetrics
+        val topTextBaseline = paddingTop.toFloat() + dpToPx(2f) - topMetrics.ascent
+
         val barHeight = dpToPx(14f)
-        val barTop = (h - barHeight) / 2f
+        val barTop = topTextBaseline + topMetrics.descent + dpToPx(4f)
         val barBottom = barTop + barHeight
         val cornerRadius = barHeight / 2f
+
+        val bottomMetrics = scaleTextPaint.fontMetrics
+        val bottomTextBaseline = barBottom + dpToPx(6f) - bottomMetrics.ascent
 
         barRect.set(paddingL, barTop, paddingL + availableWidth, barBottom)
 
         // 1. Draw track background
-        trackPaint.color = ContextCompat.getColor(context, R.color.card_stroke_light)
         canvas.drawRoundRect(barRect, cornerRadius, cornerRadius, trackPaint)
 
         // 2. Draw subtle MSI zone indicator on the track (from threshold to 1.0)
@@ -149,25 +179,27 @@ class ProbabilityThresholdBarView @JvmOverloads constructor(
             canvas.drawRoundRect(progressRect, cornerRadius, cornerRadius, fillPaint)
         }
 
-        // 4. Draw Threshold Marker Line at 0.83
-        val markerTop = barTop - dpToPx(5f)
-        val markerBottom = barBottom + dpToPx(5f)
+        // 4. Draw Threshold Annotation in dedicated top row (Above Bar)
+        val thresholdLabel = String.format(java.util.Locale.US, "τ = %.2f", threshold)
+        val labelWidth = thresholdTextPaint.measureText(thresholdLabel)
+        val halfLabelWidth = labelWidth / 2f
+        val clampedLabelX = thresholdX.coerceIn(
+            paddingL + halfLabelWidth,
+            paddingL + availableWidth - halfLabelWidth
+        )
+        canvas.drawText(thresholdLabel, clampedLabelX, topTextBaseline, thresholdTextPaint)
+
+        // 5. Draw Threshold Marker Line at 0.83 (connects from below top text down across the bar)
+        val markerTop = barTop - dpToPx(3f)
+        val markerBottom = barBottom + dpToPx(3f)
         canvas.drawLine(thresholdX, markerTop, thresholdX, markerBottom, thresholdLinePaint)
 
-        // 5. Draw Labels
-        textPaint.color = ContextCompat.getColor(context, R.color.text_secondary_light)
-        textPaint.textAlign = Paint.Align.LEFT
-        canvas.drawText("0.0 (MSS)", paddingL, barBottom + dpToPx(13f), textPaint)
+        // 6. Draw Scale Labels in dedicated bottom row (Below Bar)
+        scaleTextPaint.textAlign = Paint.Align.LEFT
+        canvas.drawText("0.00 (MSS)", paddingL, bottomTextBaseline, scaleTextPaint)
 
-        textPaint.textAlign = Paint.Align.RIGHT
-        canvas.drawText("1.0 (MSI)", paddingL + availableWidth, barBottom + dpToPx(13f), textPaint)
-
-        // Threshold annotation at top
-        textPaint.color = ContextCompat.getColor(context, R.color.threshold_marker)
-        textPaint.textAlign = Paint.Align.CENTER
-        val thresholdLabel = String.format("Threshold %.2f", threshold)
-        val clampedLabelX = thresholdX.coerceIn(paddingL + dpToPx(36f), paddingL + availableWidth - dpToPx(36f))
-        canvas.drawText(thresholdLabel, clampedLabelX, barTop - dpToPx(7f), textPaint)
+        scaleTextPaint.textAlign = Paint.Align.RIGHT
+        canvas.drawText("1.00 (MSI)", paddingL + availableWidth, bottomTextBaseline, scaleTextPaint)
     }
 
     private fun dpToPx(dp: Float): Float = dp * resources.displayMetrics.density

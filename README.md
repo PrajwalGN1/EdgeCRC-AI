@@ -1,612 +1,944 @@
-# Multimodal Fusion for Detection of Colorectal Cancer (CRC) MSI/MSS
-## Cross-Attention of ClinicalBERT & Phikon-v2 with Edge ONNX & Android Deployment
+# EdgeCRC-AI: Multimodal Fusion for Colorectal Cancer MSI/MSS Research
 
-[![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
-[![PyTorch 2.9.1](https://img.shields.io/badge/PyTorch-2.9.1-EE4C2C?logo=pytorch&logoColor=white)](https://pytorch.org/)
-[![ONNX Runtime 1.18+](https://img.shields.io/badge/ONNX_Runtime-1.18%2B-005CED?logo=onnx&logoColor=white)](https://onnxruntime.ai/)
-[![Android API 34+](https://img.shields.io/badge/Android-API_34%2B-3DDC84?logo=android&logoColor=white)](https://developer.android.com/)
-[![Kotlin 1.9.24](https://img.shields.io/badge/Kotlin-1.9.24-7F52FF?logo=kotlin&logoColor=white)](https://kotlinlang.org/)
-[![Streamlit 1.52.2](https://img.shields.io/badge/Streamlit-1.52.2-FF4B4B?logo=streamlit&logoColor=white)](https://streamlit.io/)
-[![ROC-AUC 0.9150](https://img.shields.io/badge/ROC--AUC-0.9150-brightgreen)](results/Cross_Attention_Model_Evaluation_Report.txt)
-[![MSI F1 0.77](https://img.shields.io/badge/MSI%20F1-0.77-success)](results/Cross_Attention_Model_Evaluation_Report.txt)
-[![Tests 63 Passed](https://img.shields.io/badge/Tests-63%20Passed-brightgreen)](tests/)
+**Cross-Attention Fusion of Phikon-v2 Histopathology and Bio_ClinicalBERT Clinical Text with Offline Android ONNX Runtime Edge Workstation**
 
----
+[![Kotlin 1.9.24](https://img.shields.io/badge/Kotlin-1.9.24-7F52FF?logo=kotlin&logoColor=white)](android/build.gradle.kts)
+[![Android SDK 24--34](https://img.shields.io/badge/Android_SDK-24--34-3DDC84?logo=android&logoColor=white)](android/app/build.gradle.kts)
+[![ONNX Runtime 1.18.0](https://img.shields.io/badge/ONNX_Runtime_Android-1.18.0-005CED?logo=onnx&logoColor=white)](android/app/build.gradle.kts)
+[![PyTorch 2.9.1](https://img.shields.io/badge/PyTorch-2.9.1-EE4C2C?logo=pytorch&logoColor=white)](requirements.txt)
+[![Streamlit 1.52.2](https://img.shields.io/badge/Streamlit-1.52.2-FF4B4B?logo=streamlit&logoColor=white)](requirements.txt)
+[![Threshold 0.83](https://img.shields.io/badge/Operating_Threshold-%CF%84%20%3D%200.83-0F766E)](android/app/src/main/java/org/crc/multimodal/inference/ThresholdLogic.kt)
 
-## Executive Summary
+**EdgeCRC-AI** is an end-to-end multimodal deep learning research and offline Android edge-deployment platform for investigating **Microsatellite Instability (`MSI`) versus Microsatellite Stability (`MSS`)** in Colorectal Cancer (`CRC`) specimens from the de-identified **TCGA-COAD** cohort. It pairs a Python model training, explainability, and ONNX export pipeline with a zero-permission, air-gapped native **Android Research Workstation** (`org.crc.multimodal`) backed by **ONNX Runtime Android 1.18.0** and local **SQLite** persistence.
 
-This repository hosts an end-to-end multimodal deep learning and edge deployment framework for diagnosing **Microsatellite Instability (MSI-H vs. MSS)** in Colorectal Cancer (CRC) patients from the **TCGA-COAD** cohort. By synthesizing high-resolution histopathology Whole Slide Images (WSIs) and unstructured clinical pathology reports, the system delivers state-of-the-art diagnostic accuracy, multi-tier explainability, and ultra-fast edge inference.
-
-The neural architecture replaces naive late-fusion baselines with a **Text-to-Patch Cross-Attention Network** (`SummaryToPatchCrossAttention`). Frozen representations from **Owkin Phikon-v2** (a 307M-parameter DINOv2 ViT-L/16 pathology foundation model) and **Bio_ClinicalBERT** (a 109.5M-parameter clinical language model) are dynamically coupled through a learnable 8-head multihead attention mechanism. Clinical summary tokens act as the attention **Query** ($Q$) to interrogate and rank high-risk morphological features across hundreds of histology patch embeddings acting as **Keys** ($K$) and **Values** ($V$).
-
-### Core Breakthroughs & Capabilities
-
-- **Superior Diagnostic Power:** Achieves **0.9150 ROC-AUC**, **89.39% accuracy**, and **0.77 MSI F1-score** on an isolated 66-patient holdout set. Compared to the Attention-Based Multiple Instance Learning (AB-MIL) late fusion baseline, the cross-attention architecture yields a **+70% relative increase in MSI recall (0.75 vs. 0.44)** and catches **12 out of 16** MSI cases (vs. 7/16).
-- **Dynamic Cross-Modal Steering:** Perturbation and Jensen-Shannon divergence tests mathematically prove that text representations dynamically govern patch attention weights, reflecting true multi-modal clinical reasoning rather than unimodal bias.
-- **Three-Tier Explainable AI (XAI):**
-  1. *Macroscopic:* Attention-weighted slide-level patch ranking identifying top diagnostic tissue regions.
-  2. *Microscopic:* DINOv2 self-attention rollout generating cellular-resolution heatmaps with Otsu thresholding and contour overlays.
-  3. *Linguistic:* Structured clinical diagnostic reporting powered by a locally hosted **Ollama Qwen 2.5** medical scribe (with deterministic offline template fallback).
-- **Edge & Mobile Production Deployment:**
-  - Exported to **ONNX FP32** (`fusion_model_fp32.onnx`, 21.0 MB) with zero numerical divergence from PyTorch ($\Delta < 1 \times 10^{-6}$).
-  - Quantized to **ONNX FP16** (`fusion_model_fp16.onnx`, 10.5 MB) achieving a 50% storage reduction and 1.83 ms latency with 0 label flips across the entire cohort.
-  - Native **Android Edge Application** (`android/`) implemented in Kotlin and Jetpack Compose using ONNX Runtime Mobile, supporting dual-protocol execution (capped and uncapped) with zero network exposure.
+> [!CAUTION]
+> **FOR INVESTIGATIONAL RESEARCH USE ONLY.** EdgeCRC-AI is an academic computational pathology prototype and has **not** been cleared, certified, or approved by the FDA, EMA, CDSCO, or any regulatory authority for clinical diagnosis, patient triage, or therapeutic decision-making.
 
 ---
 
 ## Table of Contents
 
-1. [Clinical & Biological Context](#clinical--biological-context)
-2. [End-to-End System Architecture](#end-to-end-system-architecture)
-3. [Deep Neural Network Architecture](#deep-neural-network-architecture)
-4. [Training, Loss & Optimization](#training-loss--optimization)
-5. [Evaluation & Diagnostic Performance](#evaluation--diagnostic-performance)
-6. [Explainable AI (XAI) Suite](#explainable-ai-xai-suite)
-7. [Computational Complexity & Hardware Profiling](#computational-complexity--hardware-profiling)
-8. [Edge AI & Android Deployment](#edge-ai--android-deployment)
-9. [Repository File Map](#repository-file-map)
-10. [Quick Start & Installation](#quick-start--installation)
-11. [Running Inference & Applications](#running-inference--applications)
-12. [Android Edge Build & Verification](#android-edge-build--verification)
-13. [Automated Test Suite](#automated-test-suite)
-14. [Regulatory & Clinical Disclaimer](#regulatory--clinical-disclaimer)
-15. [Citation & Acknowledgments](#citation--acknowledgments)
+1. [Project Overview](#1-project-overview)
+2. [Problem Statement and Motivation](#2-problem-statement-and-motivation)
+3. [Project Objectives](#3-project-objectives)
+4. [Key Features](#4-key-features)
+5. [System Architecture Overview](#5-system-architecture-overview)
+6. [End-to-End Data Flow](#6-end-to-end-data-flow)
+7. [Multimodal Input Architecture and Tensor Specifications](#7-multimodal-input-architecture-and-tensor-specifications)
+8. [Feature-Bundle Formats and Import Workflow](#8-feature-bundle-formats-and-import-workflow)
+9. [Cross-Attention Fusion Architecture](#9-cross-attention-fusion-architecture)
+10. [ONNX Export and Android Inference Architecture](#10-onnx-export-and-android-inference-architecture)
+11. [Classification Logic and Decision Threshold](#11-classification-logic-and-decision-threshold)
+12. [Android Application Modules and UI Screens](#12-android-application-modules-and-ui-screens)
+13. [SQLite Database Architecture and Verified Schema](#13-sqlite-database-architecture-and-verified-schema)
+14. [Batch Specimen Analysis Workflow](#14-batch-specimen-analysis-workflow)
+15. [Cohort Evaluation Methodology and Metrics](#15-cohort-evaluation-methodology-and-metrics)
+16. [Reporting and Research Analytics](#16-reporting-and-research-analytics)
+17. [Technology Stack](#17-technology-stack)
+18. [Repository Directory Structure](#18-repository-directory-structure)
+19. [Prerequisites and Setup Instructions](#19-prerequisites-and-setup-instructions)
+20. [Android Build and Deployment Guide](#20-android-build-and-deployment-guide)
+21. [Workstation Usage Guide](#21-workstation-usage-guide)
+22. [Configuration and Model Asset Contract](#22-configuration-and-model-asset-contract)
+23. [Error Handling and Troubleshooting](#23-error-handling-and-troubleshooting)
+24. [Testing Instructions and Coverage](#24-testing-instructions-and-coverage)
+25. [Performance Gates and Device Considerations](#25-performance-gates-and-device-considerations)
+26. [Security, Privacy, and Provenance Governance](#26-security-privacy-and-provenance-governance)
+27. [Known Limitations and Source-Verified Nuances](#27-known-limitations-and-source-verified-nuances)
+28. [Proposed Future Improvements](#28-proposed-future-improvements)
+29. [Visual Diagrams and Optional Screenshots](#29-visual-diagrams-and-optional-screenshots)
+30. [Research-Use and Medical Disclaimer](#30-research-use-and-medical-disclaimer)
+31. [Author](#31-author)
+32. [Acknowledgements and References](#32-acknowledgements-and-references)
+33. [License Status](#33-license-status)
 
 ---
 
-## Clinical & Biological Context
+## 1. Project Overview
 
-Colorectal cancer (CRC) is among the leading causes of cancer-related mortality globally. Approximately 15% of all colorectal carcinomas exhibit **Microsatellite Instability (MSI)**, characterized by hypermutation caused by a defective DNA Mismatch Repair (dMMR) system:
+EdgeCRC-AI addresses multimodal biomarker prediction in colorectal adenocarcinoma by combining **patch-level histopathology embeddings** with **clinical pathology report embeddings** inside a lightweight **Text-to-Patch Cross-Attention Fusion Network** (`SummaryToPatchCrossAttention`).
 
-$$\text{MSI-H} \implies \text{Defective MMR (MLH1, MSH2, MSH6, PMS2)} \implies \text{High Tumor Mutational Burden (TMB)}$$
+The repository comprises two tightly verified subsystems that share a frozen mathematical contract:
 
-Determining MSI status is critical for patient care:
-- **Immunotherapy Response:** MSI-H tumors express elevated neoantigens and immune checkpoint ligands (PD-1, PD-L1), rendering them exceptionally responsive to Immune Checkpoint Inhibitor (ICI) therapy (e.g., Pembrolizumab, Nivolumab).
-- **Prognosis & Chemotherapy:** Stage II MSI-H tumors have a favorable prognosis but exhibit resistance to conventional 5-Fluorouracil (5-FU) adjuvant chemotherapy.
+1. **Upstream Python Research, Explainability & Export Pipeline (`src/`, `tools/`, `models/`):**
+   - Trains and evaluates the `SummaryToPatchCrossAttention` fusion head (`5.25M` trainable parameters) over precomputed **Owkin Phikon-v2** (`[1, N, 1024]`) vision patch embeddings and **Bio_ClinicalBERT** (`[1, 768]`) clinical summary embeddings across `326` TCGA-COAD cases (`66` locked holdout validation cases).
+   - Provides three-tier Explainable AI (`XAI`) utilities (cross-attention patch ranking, DINOv2 ViT self-attention rollout heatmaps, and an optional local Ollama clinical scribe) plus an interactive Streamlit desktop dashboard (`src/ui/app.py`).
+   - Exports the trained PyTorch checkpoint (`models/fusion_model_v1_1.pth`) into an opset-17 single-precision ONNX graph (`models/fusion_model_fp32.onnx`, `21,015,452` bytes) and packages upstream specimen tensors into cryptographically hashed `.crcbundle` files (`tools/export_specimen_bundle.py`).
 
-Standard clinical determination requires Immunohistochemistry (IHC) or molecular PCR/NGS testing, which can be expensive, resource-constrained, and take days to weeks. This system provides a rapid, non-invasive computational prescreening pipeline that predicts MSI status directly from routinely available digitized H&E histology sections and electronic pathology summaries.
+2. **Offline Android Edge AI Research Workstation (`android/`):**
+   - A native Kotlin + Android Views (`Material Components`) mobile application (`org.crc.multimodal`) that embeds `fusion_model_fp32.onnx` directly inside APK assets and executes 100% local inference via **ONNX Runtime Android (`CPUExecutionProvider`)**.
+   - Declares **zero Android permissions** (no `INTERNET` permission), ingests verified `.crcbundle` / `.npy` precomputed feature bundles, manages specimen records and audit trails in local **SQLite** databases, runs single-case and sequential batch evaluations (with automatic uncapped Protocol 2 routing for large slides), benchmarks predictions against the 66-case TCGA holdout cohort, profiles decision margins, and compiles multi-page **A4 PDF research reports** on-device.
+
+> [!IMPORTANT]
+> **Clear Architectural Boundary (Encoder vs. Fusion Execution):** Foundation feature extraction (**Phikon-v2** ~`307M` parameters on raw H&E image tiles and **Bio_ClinicalBERT** ~`108.3M` parameters on raw clinical text) executes **upstream** on a Python workstation/GPU (`src/inference/`). The Android application **does not** run Phikon-v2 or ClinicalBERT on raw Whole Slide Images or raw pathology text; it consumes **precomputed Float32 feature tensors** (`[1, N, 1024]` and `[1, 768]`) and executes the exported **cross-attention fusion model** locally via ONNX Runtime.
 
 ---
 
-## End-to-End System Architecture
+## 2. Problem Statement and Motivation
+
+Approximately 15% of colorectal carcinomas exhibit **Microsatellite Instability (`MSI`)** resulting from deficient DNA Mismatch Repair (`dMMR` across *MLH1*, *MSH2*, *MSH6*, or *PMS2*). Identifying MSI status is critical in oncology research because MSI-High tumors carry high neoantigen loads that respond strongly to immune checkpoint inhibitors while showing distinct prognostic profiles compared to **Microsatellite Stable (`MSS`)** tumors.
+
+Conventional wet-lab assays—Immunohistochemistry (`IHC`), PCR fragment analysis, or Next-Generation Sequencing (`NGS`)—require specialized reagents, laboratory infrastructure, and turnaround time. Computational pathology seeks to prescreen MSI probability from routine H&E histology and pathology notes, yet faces three practical challenges:
+
+1. **Unimodal Blind Spots & Static Late Fusion:** Purely image-based Multiple Instance Learning (`AB-MIL`) ignores clinical context (anatomic site, mucinous differentiation, tumor grade), while naive vector concatenation fails to let clinical text guide spatial attention across heterogeneous tissue tiles.
+2. **Foundation Encoder Compute Bottleneck:** Running a 307M-parameter ViT-L/16 backbone over 500–3,000 patches requires tens of TFLOPs (~`61.56 TFLOPs` for 500 patches in FP32), making raw-slide encoding impractical on mobile CPUs, whereas the downstream cross-attention fusion head requires only `~20 MB` of weights and `< 50 ms` per specimen.
+3. **Traceable, Offline Edge Evaluation:** Research teams need a portable, network-isolated workstation capable of deterministic inference, provenance verification, cohort metric validation, and structured PDF documentation without transmitting sensitive research artifacts over a network.
+
+---
+
+## 3. Project Objectives
+
+1. **Dynamic Cross-Modal Reasoning:** Replace static concatenation (`MultimodalFusionNetwork`) with `SummaryToPatchCrossAttention`, projecting the `768`-D ClinicalBERT `[CLS]` summary into `1024`-D space as an attention Query over `N` Phikon-v2 patch embeddings.
+2. **Lossless ONNX Graph Portability:** Export the trained PyTorch fusion network to ONNX (`opset 17`) with dynamic patch-sequence axes while maintaining bit-level numerical parity (`max probability diff < 3e-6`, `0` label flips across all `66` holdout cases).
+3. **Cryptographically Verified Tensor Ingestion:** Standardize a Little-Endian binary container (`.crcbundle` `CRCB` v2) carrying specimen metadata, tensor dimensions, and per-modality SHA-256 digests with fail-closed validation against NaN/Inf values and byte truncation.
+4. **Full-Lifecycle Offline Android Workstation:** Deliver a multi-screen Android application supporting individual case workflows, pathologist review notes, batch cohort processing, confusion-matrix/ROC-AUC/PR-AUC benchmarking, margin analytics, and native A4 PDF report generation backed by transactional SQLite storage.
+
+---
+
+## 4. Key Features
+
+| Subsystem | Capability | Implementation Location | Status |
+| :--- | :--- | :--- | :---: |
+| **Fusion Model** | 8-head Text-to-Patch Cross-Attention (`SummaryToPatchCrossAttention`) | `src/architectures/cross_attention_fusion.py` | Verified |
+| **ONNX Export** | Trace-safe `CrossAttentionExportWrapper` (opset 17, dynamic `num_patches`) | `src/eval/export_onnx.py` | Verified |
+| **Bundle Exporter** | Lossless `.crcbundle` (`CRCB` v2), JSON v2.0, and `.npy` pair serializer | `tools/export_specimen_bundle.py` | Verified |
+| **Desktop Web UI** | Interactive Streamlit dashboard + 3-tier XAI + optional Ollama scribe | `src/ui/app.py`, `src/generate_pixel_xai.py` | Verified |
+| **Android Engine** | Async singleton ONNX session (`CPUExecutionProvider`, Direct `ByteBuffer`) | `android/app/src/main/java/org/crc/multimodal/inference/OnnxRuntimeManager.kt`, `CrcMultimodalClassifier.kt` | Verified |
+| **Dual Protocols** | `PROTOCOL_1_CAPPED` (`1 <= N <= 1000`) & `PROTOCOL_2_UNCAPPED` (`N >= 1`) | `android/app/src/main/java/org/crc/multimodal/inference/InferenceProtocol.kt`, `InputValidator.kt` | Verified |
+| **Bundle Ingestion** | On-device parser for `CRCB` v2, `CRCT` v1, JSON v2.0, and `.npy` v1/v2 pairs | `android/app/src/main/java/org/crc/multimodal/inference/AuthenticBundleLoader.kt`, `NpyTensorLoader.kt` | Verified |
+| **Case Workstation** | Case creation, pre-inference review checklist, findings bar, review notes | `android/app/src/main/java/org/crc/multimodal/ui/fragments/` | Verified |
+| **SQLite Storage** | Dual SQLite databases (`crc_workstation.db` v4 & `crc_batch_runs.db` v3) | `android/app/src/main/java/org/crc/multimodal/data/SqliteWorkstationRepository.kt`, `BatchRepository.kt` | Verified |
+| **Batch Analysis** | Up to 100 bundles/run, auto Protocol 2 fallback, archive/delete, bulk PDF | `android/app/src/main/java/org/crc/multimodal/batch/BatchCoordinator.kt`, `BatchAnalysisFragment.kt` | Verified |
+| **Cohort Benchmark** | 66-case TCGA holdout matching, 2x2 matrix, 7 metrics, ROC-AUC & PR-AUC | `android/app/src/main/java/org/crc/multimodal/evaluation/CohortEvaluationEngine.kt` | Verified |
+| **Research Analytics** | Probability histogram, decision-margin brackets (`tau = 0.83`), explorer | `android/app/src/main/java/org/crc/multimodal/analytics/ResearchAnalyticsEngine.kt` | Verified |
+| **PDF Reporting** | Native Android `PdfDocument` A4 reports (single-case v2.0.0 & batch) | `android/app/src/main/java/org/crc/multimodal/report/PdfReportGenerator.kt`, `BatchReportGenerator.kt` | Verified |
+| **Security & Audit** | Zero manifest permissions, path/Zip-Slip guard, PII log redactor, audit DB | `android/app/src/main/java/org/crc/multimodal/security/SafeFileValidator.kt`, `SensitiveLogRedactor.kt` | Verified |
+
+---
+
+## 5. System Architecture Overview
 
 ```mermaid
 flowchart TD
-    subgraph S1["Phase 1: Input Modalities"]
-        WSI["H&E Histology Patches<br/>(224x224 @ 10x, Reinhard Norm)"]
-        TXT["Unstructured Pathology Report<br/>(Histological Type, Grade, Site)"]
+    subgraph Upstream["Upstream Python Research & Preprocessing Environment"]
+        WSI["Raw H&E Slide Tiles (224x224 RGB)"] --> PHIKON["Owkin Phikon-v2 (ViT-L/16, Frozen)"]
+        TXT["Clinical Pathology Text"] --> CBERT["Bio_ClinicalBERT (Frozen)"]
+        PHIKON --> VT["Precomputed Vision Tensor [N, 1024] FP32"]
+        CBERT --> TT["Precomputed Text Tensor [1, 768] FP32"]
+        VT --> TRAIN["SummaryToPatchCrossAttention Training (PyTorch)"]
+        TT --> TRAIN
+        TRAIN --> PTH["Checkpoint: fusion_model_v1_1.pth"]
+        PTH --> ONNXEXP["ONNX Opset 17 Export: fusion_model_fp32.onnx"]
+        VT --> BUNDLER["Bundle Serializer: export_specimen_bundle.py"]
+        TT --> BUNDLER
+        BUNDLER --> CRCB["Specimen Feature Bundle (.crcbundle CRCB v2)"]
     end
 
-    subgraph S2["Phase 2: Foundation Encoders (Frozen)"]
-        PHIKON["Owkin Phikon-v2<br/>(DINOv2 ViT-L/16, 307M Params)<br/>Weights Frozen"]
-        CLINICAL["Bio_ClinicalBERT<br/>(BERT-base, 109.5M Params)<br/>Weights Frozen"]
-        WSI --> PHIKON
-        TXT --> CLINICAL
-    end
-
-    subgraph S3["Phase 3: Cross-Attention Fusion (Trainable 5.25M)"]
-        V_EMB["Patch Embeddings<br/>V in R^(N x 1024)"]
-        T_EMB["Text CLS Embedding<br/>T in R^(1 x 768)"]
-        PROJ["Linear Projection<br/>768 → 1024 (T')"]
-        MHA["Multi-Head Cross-Attention (8 Heads)<br/>Q = T', K = V, V = V"]
-        RES_LN["Residual Addition & LayerNorm<br/>R^(1 x 1024)"]
-        MLP["Classification MLP<br/>Linear(1024 → 256) → ReLU → Drop(0.3) → Linear(256 → 1)"]
-        SIGMOID["Sigmoid Activation<br/>p = P(MSI | V, T)"]
-        DECISION{"Threshold Rule<br/>τ = 0.83"}
-
-        PHIKON --> V_EMB
-        CLINICAL --> T_EMB
-        T_EMB --> PROJ
-        PROJ --> MHA
-        V_EMB --> MHA
-        MHA --> RES_LN
-        RES_LN --> MLP
-        MLP --> SIGMOID
-        SIGMOID --> DECISION
-        DECISION -->|"p ≥ 0.83"| MSI["MSI (High Instability)"]
-        DECISION -->|"p &lt; 0.83"| MSS["MSS (Stable)"]
-    end
-
-    subgraph S4["Phase 4: Multi-Tier Explainable AI (XAI)"]
-        TOP5["Macroscopic: Top-5 Attended Patches<br/>(Ranking via Cross-Attention Weights)"]
-        HEATMAP["Microscopic: ViT Attention Rollout<br/>(Cellular Contours & Nuclear Density)"]
-        SCRIBE["Linguistic: Ollama Qwen 2.5<br/>(Clinical Scribe Synthetic Report)"]
-        MHA -.-> TOP5
-        PHIKON -.-> HEATMAP
-        SIGMOID -.-> SCRIBE
-    end
-
-    subgraph S5["Phase 5: Dual Runtime Deployment"]
-        STREAMLIT["Streamlit Clinical UI<br/>(Web & Hospital Workstation)"]
-        ANDROID["Native Android Edge APK<br/>(Kotlin + ONNX Runtime Mobile)"]
-        DECISION --> STREAMLIT
-        DECISION --> ANDROID
+    subgraph Edge["Air-Gapped Android Edge AI Workstation (org.crc.multimodal)"]
+        CRCB --> LOADER["AuthenticBundleLoader + SHA-256 & InputValidator"]
+        ONNXEXP --> ORT["OnnxRuntimeManager + CrcMultimodalClassifier (CPUExecutionProvider)"]
+        LOADER --> ORT
+        ORT --> THRESH["ThresholdLogic (tau = 0.83: MSI >= 0.83, MSS < 0.83)"]
+        THRESH --> SQLITE["SQLite Persistence (crc_workstation.db v4 & crc_batch_runs.db v3)"]
+        SQLITE --> EVAL["CohortEvaluationEngine (Confusion Matrix, ROC-AUC, PR-AUC)"]
+        SQLITE --> ANALYTICS["ResearchAnalyticsEngine (Margin & Latency Profiling)"]
+        SQLITE --> PDF["PdfReportGenerator & BatchReportGenerator (A4 PDF + SHA-256)"]
     end
 ```
 
 ---
 
-## Deep Neural Network Architecture
+## 6. End-to-End Data Flow
 
-### 1. Vision Feature Extraction (Phikon-v2)
-Histopathology patches ($224 \times 224$ pixels, 10× magnification) are normalized using Reinhard stain normalization and processed through **Phikon-v2** (`owkin/phikon-v2`), a Vision Transformer (ViT-L/16) pre-trained on millions of histology tiles using self-supervised DINOv2:
-- Patch size: $16 \times 16$ (producing 196 visual tokens + 1 `[CLS]` token per patch).
-- Embedding Dimension: $d_v = 1024$ across 24 Transformer layers.
-- For a patient with $N$ viable tissue patches, the vision feature bank is:
+```mermaid
+sequenceDiagram
+    participant Py as Python Exporter
+    participant SAF as Android SAF Picker
+    participant Loader as AuthenticBundleLoader
+    participant Store as BundleStorageManager
+    participant ORT as CrcMultimodalClassifier
+    participant DB as SqliteWorkstationRepository
+    participant Report as PdfReportGenerator
 
-$$V \in \mathbb{R}^{N \times 1024}, \quad 1 \le N \le 1000$$
-
-### 2. Clinical Text Feature Extraction (ClinicalBERT)
-The patient's clinical narrative (pathology findings, primary anatomic site, histological grade, differentiation) is tokenized (maximum 512 tokens) and passed through **Bio_ClinicalBERT** (`emilyalsentzer/Bio_ClinicalBERT`):
-- Architecture: 12 Transformer blocks, 768 hidden dimension, 12 attention heads.
-- The pooled `[CLS]` representation is extracted:
-
-$$T \in \mathbb{R}^{1 \times 768}$$
-
-### 3. Summary-To-Patch Cross-Attention (`SummaryToPatchCrossAttention`)
-The cross-attention module allows clinical notes to guide the spatial inspection of histological tissue.
-
-```
-Text Embedding T [1 x 768]
-       │
-       ▼
-Linear(768 -> 1024) ──► Query (Q) [1 x 1 x 1024]
-                            │
-Patch Bank V [1 x N x 1024] ─┴─► Key (K), Value (V) [1 x N x 1024]
-                                 │
-                   nn.MultiheadAttention (8 Heads, d_k = 128)
-                   Attention Weights: A = softmax(Q K^T / sqrt(1024)) ∈ R^(1 x 1 x N)
-                   Attended Context: C = A · V ∈ R^(1 x 1 x 1024)
-                                 │
-                                 ▼
-                     Residual Connection: C_res = C + Q
-                                 │
-                                 ▼
-                     LayerNorm(1024)
-                                 │
-                                 ▼
-                     Linear(1024 -> 256) ──► ReLU ──► Dropout(p=0.3)
-                                 │
-                                 ▼
-                     Linear(256 -> 1)
-                                 │
-                                 ▼
-                     Sigmoid ──► Probability p ∈ (0, 1)
+    Py->>SAF: Transfer <CASE_ID>.crcbundle (USB / MTP / ADB)
+    SAF->>Loader: Stream Little-Endian CRCB v2 bytes
+    Loader->>Loader: Verify magic, schema=2, dims (1024, 768), SHA-256, finite floats
+    Loader->>Store: Atomic write via .tmp rename to filesDir/specimen_bundles/
+    Store->>DB: Insert ResearchCase (READY_FOR_ANALYSIS) + SPECIMEN_INGESTED audit row
+    DB->>ORT: Load DirectByteBuffers vision_seq [1,N,1024] & text_summary [1,768]
+    ORT->>ORT: Run fusion_model_fp32.onnx -> logit, probability, attention_weights
+    ORT->>DB: Apply tau=0.83, transactionally record InferenceRun & INFERENCE_EXECUTED
+    DB->>Report: Compile A4 PDF v2.0.0 + Provenance Manifest + REPORT_COMPILED audit row
 ```
 
-#### Attention Formulation:
+---
 
-$$\text{Head}_i = \text{softmax}\left(\frac{Q W_i^Q (K W_i^K)^T}{\sqrt{d_k}}\right) (V W_i^V)$$
+## 7. Multimodal Input Architecture and Tensor Specifications
 
-$$\text{MultiHead}(Q, K, V) = \left[\text{Head}_1, \dots, \text{Head}_8\right] W^O$$
+The fusion model requires **both** modalities simultaneously and fails closed if either modality is missing, empty, or contains non-finite values (`NaN`, `+Infinity`, `-Infinity`).
 
-Because $Q \in \mathbb{R}^{1 \times 1024}$ is derived solely from the pathology report, the attention weights $A \in \mathbb{R}^{1 \times N}$ quantify the precise relevance of each morphological patch to the text query.
+| Modality | ONNX Input Name | Tensor Shape | Data Type | Endianness (Serialized) | Upstream Source Encoder | Semantic Meaning |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **Vision** | `vision_seq` | `[1, N, 1024]` | `Float32` | Little-Endian (`<f4`) | `owkin/phikon-v2` (DINOv2 ViT-L/16) | Sequence of `N` tissue-patch `[CLS]` embeddings (`1024` features per `224x224` patch) |
+| **Clinical Text** | `text_summary` | `[1, 768]` | `Float32` | Little-Endian (`<f4`) | `emilyalsentzer/Bio_ClinicalBERT` | Pooled `[CLS]` token representation (`max_length=512` WordPiece tokens) of pathology summary |
 
-### Architectural Contrast: Cross-Attention vs. Late Fusion Baseline
+### Modality Details
 
-| Dimension | Late Fusion (AB-MIL Baseline) | Cross-Attention Fusion (Primary) |
+1. **Vision Tensor (`[1, N, 1024]`):**
+   - `1` is the single-specimen batch dimension enforced during sequential edge evaluation.
+   - `N` (`num_patches`) is the dynamic tissue-patch count for a specimen (`N >= 1`). Under `PROTOCOL_1_CAPPED`, `1 <= N <= 1000`; under `PROTOCOL_2_UNCAPPED`, `N >= 1` is uncapped up to `SafeFileValidator.MAX_ALLOWED_PATCH_COUNT` (`10,000` patches in file validation; `DirectByteBuffer` theoretical bound `524,287` patches).
+   - `1024` is the Phikon-v2 hidden feature dimension (`InputValidator.VISION_FEATURE_DIM = 1024`).
+   - Upstream extraction (`src/inference/image_preprocessing.py` and `vision_encoder.py`) performs tissue tiling, optional Reinhard stain normalization, and ViT-L/16 `[CLS]` extraction (`outputs.last_hidden_state[:, 0, :]`). None of these image-processing steps occur inside the Android app.
+
+2. **Clinical-Text Tensor (`[1, 768]`):**
+   - `768` is the Bio_ClinicalBERT hidden dimension (`InputValidator.TEXT_FEATURE_DIM = 768`).
+   - Upstream extraction (`src/inference/report_encoder.py`) tokenizes clinical pathology narratives (`max_length=512`, `padding="max_length"`, `truncation=True`) and extracts `outputs.last_hidden_state[:, 0, :]`.
+   - Any free-text notes typed into the Android `NewSpecimenFragment` (`Specimen Description` or `Research Context`) are persisted strictly as **human-readable case metadata** in SQLite—they are **not** tokenized or converted into `768`-D embeddings on the phone.
+
+---
+
+## 8. Feature-Bundle Formats and Import Workflow
+
+`AuthenticBundleLoader.kt` (`android/app/src/main/java/org/crc/multimodal/inference/AuthenticBundleLoader.kt`) is a custom binary/JSON/NPY parser (**not** a ZIP archive). One bundle corresponds strictly to **one research specimen**.
+
+### 8.1 Primary Binary Format: `.crcbundle` (`CRCB` Schema v2)
+
+All integer headers and IEEE-754 `Float32` payloads are serialized in **Little-Endian** byte order (`ByteOrder.LITTLE_ENDIAN`). Note that the **text payload precedes the vision payload** in the binary stream:
+
+| Byte Offset | Field | Type | Size (Bytes) | Validation Constraint |
+| :--- | :--- | :--- | :--- | :--- |
+| `0` | `magic` | ASCII | `4` | Exact bytes `'C', 'R', 'C', 'B'` (`0x43 0x52 0x43 0x42`) |
+| `4` | `version` | `int32` LE | `4` | Must equal `2` (`CURRENT_SCHEMA_VERSION`) |
+| `8` | `idLen` | `int32` LE | `4` | `1 <= idLen <= 256` |
+| `12` | `specimenId` | UTF-8 | `idLen` | Trimmed string must be non-blank |
+| `12 + idLen` | `descLen` | `int32` LE | `4` | `0 <= descLen <= 8192` |
+| `16 + idLen` | `description` | UTF-8 | `descLen` | Optional specimen metadata description |
+| `16 + idLen + descLen` | `patchCount` (`N`) | `int32` LE | `4` | `N > 0` |
+| `20 + idLen + descLen` | `visionDim` | `int32` LE | `4` | Must equal `1024` |
+| `24 + idLen + descLen` | `textDim` | `int32` LE | `4` | Must equal `768` |
+| `28 + idLen + descLen` | `dataType` | `int32` LE | `4` | Must equal `1` (`Float32` Little-Endian) |
+| `32 + idLen + descLen` | `visionSha256` | Raw Digest | `32` | 32-byte binary SHA-256 of `visionBytes` |
+| `64 + idLen + descLen` | `textSha256` | Raw Digest | `32` | 32-byte binary SHA-256 of `textBytes` |
+| `96 + idLen + descLen` | `textBytes` | `float32[]` LE | `3,072` | `768 * 4` bytes; all values finite |
+| `3168 + idLen + descLen` | `visionBytes` | `float32[]` LE | `N * 4,096` | `N * 1024 * 4` bytes; all values finite; exact EOF (`remaining == 0`) |
+
+### 8.2 Additional Supported Formats
+
+1. **`CRCT` Binary v1 (Legacy Benchmark `.bin` Format):**
+   - Magic `'C', 'R', 'C', 'T'`, `version = 1`, containing `specimenId`, `patchCount`, `gtLabel`, `refLogit`, `refProb`, `refCall`, `3,072`-byte LE text tensor, and `N * 4,096`-byte LE vision tensor. Used by the 7 frozen parity benchmark assets in `android/app/src/main/assets/reference_tensors/`.
+2. **Portable JSON Bundle (`.crcmanifest.json`, Schema v2.0):**
+   - Leading `'{'` parsed by a zero-dependency recursive-descent parser (`AuthenticBundleLoader.JsonParser`). Supports `vision_tensor` (`[1, N, 1024]`) and `text_tensor` (`[1, 768]`) encoded via `data_base64` (LE Float32 bytes) or numeric `data` arrays. *(Note: SHA-256 strings in JSON bundles are recorded as metadata without cryptographic recomputation on load, whereas `CRCB` v2 binary bundles recompute and enforce SHA-256 digests.)*
+3. **Paired NumPy Arrays (`_vision.npy` + `_text.npy`):**
+   - `NpyTensorLoader.kt` parses NumPy `.npy` v1.0 and v2.0 files (`magic = \x93NUMPY`, `descr` in `{'<f4', '|f4', 'float32'}`, `fortran_order = False`), validates shapes (`[N, 1024]` / `[1, N, 1024]` and `[768]` / `[1, 768]`), computes SHA-256 digests, and converts the pair into a canonical `CRCB` v2 `.crcbundle` via `BundleStorageManager`.
+
+### 8.3 Atomic Storage and Validation Rules
+
+- Imported bundles are persisted by `BundleStorageManager` (`android/app/src/main/java/org/crc/multimodal/inference/BundleStorageManager.kt`) inside app-internal storage at `context.filesDir/specimen_bundles/<sanitized_id>.crcbundle` using a `.tmp` write-then-atomic-rename pattern protected by `SafeFileValidator.validateSafePath`.
+- Corrupted headers, unsupported versions, dimension mismatches, SHA-256 mismatches, trailing garbage bytes, or `NaN`/`Inf` tensor elements immediately throw `IllegalArgumentException` and reject the bundle before inference.
+
+---
+
+## 9. Cross-Attention Fusion Architecture
+
+Defined in `src/architectures/cross_attention_fusion.py` (`SummaryToPatchCrossAttention`), the trainable fusion head (`5,250,561` parameters) executes the following forward sequence:
+
+1. **Text Projection (`nn.Linear(768, 1024)`):** Projects the clinical summary embedding $T \in \mathbb{R}^{B \times 1 \times 768}$ into the `1024`-D histological feature space to form the attention **Query** $Q \in \mathbb{R}^{B \times 1 \times 1024}$.
+2. **Multi-Head Cross-Attention (`nn.MultiheadAttention(embed_dim=1024, num_heads=8, batch_first=True)`):** Uses $Q$ (clinical text) to attend over all $N$ patch embeddings acting as **Keys** $K \in \mathbb{R}^{B \times N \times 1024}$ and **Values** $V \in \mathbb{R}^{B \times N \times 1024}$ ($d_k = 128$ per head), yielding attended context $C \in \mathbb{R}^{B \times 1 \times 1024}$ and patch attention weights $A \in \mathbb{R}^{B \times 1 \times N}$.
+3. **Residual Addition & Layer Normalization (`nn.LayerNorm(1024)`):** Computes $\text{LayerNorm}(Q + C)$ and squeezes the sequence axis to $[B, 1024]$.
+4. **Classification MLP Head (`nn.Sequential`):**
+   - `nn.Linear(1024, 256)` $\rightarrow$ `nn.ReLU()` $\rightarrow$ `nn.Dropout(0.3)` $\rightarrow$ `nn.Linear(256, 1)` (`logit`) $\rightarrow$ `nn.Sigmoid()` (`probability` $\in [0, 1]$).
+
+### Architectural Comparison Against Baseline (`src/architectures/late_fusion_model.py`)
+
+| Property | Late-Fusion Baseline (`MultimodalFusionNetwork`) | Primary Model (`SummaryToPatchCrossAttention`) |
 | :--- | :--- | :--- |
-| **Class Definition** | `MultimodalFusionNetwork` (`late_fusion_model.py`) | `SummaryToPatchCrossAttention` (`cross_attention_fusion.py`) |
-| **Vision Aggregation** | Self-attention AB-MIL ($A_{vision}^T V$) | Cross-attention query-guided ($Q=T', K=V, V=V$) |
-| **Cross-Modal Interaction**| **None** (Static concatenation of vectors) | **Dynamic** (Text actively queries histology patches) |
-| **Combined Dimension** | Linear(1024+512=1536 $\to$ 256 $\to$ 1) | Residual LayerNorm(1024) $\to$ Linear(1024 $\to$ 256 $\to$ 1) |
-| **Trainable Parameters** | 5,255,861 | 5,250,561 |
-| **Operating Threshold** | $\tau = 0.70$ | $\tau = 0.83$ (Optimized for MSI precision & recall) |
-| **MSI Recall on Holdout**| 44.0% (7/16 MSI cases detected) | **75.0% (12/16 MSI cases detected)** |
-| **MSI F1-Score** | 0.50 | **0.77 (+54% relative improvement)** |
+| **Cross-Modal Mechanism** | Static vector concatenation after unimodal pooling | Dynamic 8-head Text-to-Patch Cross-Attention ($Q=\text{Text}, K=V=\text{Vision}$) |
+| **Trainable Parameters** | `5,255,861` | `5,250,561` |
+| **Operating Threshold ($\tau$)** | `0.70` | **`0.83`** |
+| **Holdout Accuracy (66 cases)** | `81.82%` | **`89.39%`** (Protocol 1) |
+| **Holdout MSI Recall (16 MSI)** | `43.75%` (`7 / 16`) | **`75.00%` (`12 / 16`)** |
+| **Holdout MSI F1-Score** | `0.5600` | **`0.7742`** (Protocol 1) |
 
 ---
 
-## Training, Loss & Optimization
+## 10. ONNX Export and Android Inference Architecture
 
-### Dataset Composition & Isolation
-- **Total Patients in Cohort:** 326 unique TCGA-COAD patients (`data/patient_registry.json`).
-- **Class Balance:** 63 MSI (19.3%) vs. 263 MSS (80.7%) — approximately 1:4.17 imbalance.
-- **Strict Data Contract:** An 80/20 stratified split locked 66 isolated patients into `results/actual_validation_keys.json` (50 MSS, 16 MSI). This holdout set was never seen during gradient optimization.
-- **Dynamic Patch Subsampling:** Patches per slide vary between 1 and 2,888. During training, slides exceeding 1,000 patches are dynamically subsampled with `torch.randperm` to prevent VRAM overflow.
+### 10.1 Why Export Wrapper & ONNX Were Used
 
-### Class-Weighted Binary Cross-Entropy Loss
-To counteract the 1:4.17 class imbalance, the loss function applies a positive class weight:
+Line 48 of `src/architectures/cross_attention_fusion.py` contains an unused CPU NumPy conversion (`attn_weights[0].detach().cpu().numpy()`) that breaks TorchScript/ONNX tracing, and passing identical Python tensor references `key=vision_seq, value=vision_seq` causes TorchScript to bake static patch shapes into internal `Reshape` nodes. `CrossAttentionExportWrapper` (`src/eval/export_onnx.py`) cleanly bypasses the unused NumPy call and clones `value` during tracing (`opset_version = 17`) so `num_patches` remains genuinely dynamic (`N = 1` through `N = 4,305+`) with `0.0` numerical drift against the base PyTorch module.
 
-$$\mathcal{L}_{wBCE} = -\frac{1}{B} \sum_{i=1}^{B} \left[ w_{pos} \cdot y_i \log(\hat{p}_i + \epsilon) + (1 - y_i) \log(1 - \hat{p}_i + \epsilon) \right]$$
+### 10.2 Embedded Android Model Asset & Runtime Contract
 
-- Positive Weight: $w_{pos} = \frac{263}{63} \approx 4.17$
-- Numerical Stabilizer: $\epsilon = 10^{-7}$ (clamped log probabilities)
-- Expected Convergence Equilibrium: The loss naturally stabilizes around ~4.17 as the model achieves separation.
+- **Bundled Asset:** `android/app/src/main/assets/models/fusion_model_fp32.onnx` (kept uncompressed via `noCompress.addAll(listOf("onnx"))` in `android/app/build.gradle.kts`).
+- **Exact File Size:** `21,015,452` bytes (`20.04 MiB`).
+- **SHA-256 Digest:** `0402f6c522beac5733e30eeecad908927957b5d4164b6b896663f43ba3702d73` (verified at session startup by `OnnxRuntimeManager` and embedded in provenance manifests by `ProvenanceAuditManager`).
+- **Runtime Dependency:** `com.microsoft.onnxruntime:onnxruntime-android:1.18.0`.
+- **Session Configuration (`CrcMultimodalClassifier.kt`):**
+  - Environment: `OrtEnvironment.getEnvironment("CrcClassifierEnv")`
+  - Execution Provider: `CPUExecutionProvider` (local deterministic FP32 execution; no NNAPI/GPU delegate drift)
+  - Threading & Optimization: `setIntraOpNumThreads(2)`, `OptLevel.ALL_OPT`
+  - Memory Allocation: Native-order `ByteBuffer.allocateDirect(...)` mapped into `OnnxTensor` instances and deterministically closed in a `finally` block under `synchronized(executionLock)`.
 
-### Hyperparameter Specifications
-- **Optimizer:** AdamW (`lr=1e-4`, `weight_decay=1e-4`)
-- **Batch Size:** 1 patient per step (variable patch sequence lengths)
-- **Epochs:** 30
-- **Encoder Status:** Frozen (gradients propagated exclusively through the 5.25M fusion parameters)
-- **Primary Checkpoint:** [`models/fusion_model_v1_1.pth`](models/fusion_model_v1_1.pth) (21,007,347 bytes, SHA-256: `e9a7bbcd...`)
+| Direction | Tensor Name | Shape | ONNX Type | Kotlin Extraction & Validation |
+| :--- | :--- | :--- | :--- | :--- |
+| **Input 0** | `vision_seq` | `[1, N, 1024]` | `FLOAT` (FP32) | `DirectByteBuffer` (`N * 1024 * 4` bytes); finite check via `InputValidator` |
+| **Input 1** | `text_summary` | `[1, 768]` | `FLOAT` (FP32) | `DirectByteBuffer` (`3,072` bytes); finite check via `InputValidator` |
+| **Output 0** | `logit` | `[1, 1]` | `FLOAT` (FP32) | Pre-sigmoid scalar `Float`; checked finite |
+| **Output 1** | `probability` | `[1, 1]` | `FLOAT` (FP32) | In-graph sigmoid scalar `Float`; checked finite and in `[0.0f, 1.0f]` |
+| **Output 2** | `attention_weights` | `[1, 1, N]` | `FLOAT` (FP32) | Head-averaged patch attention `FloatArray(N)`; checked finite and `>= 0.0f` |
 
----
+### 10.3 Dual Evaluation Protocols (`InferenceProtocol.kt`)
 
-## Evaluation & Diagnostic Performance
-
-The final evaluation was conducted on the locked 66-patient holdout set (`results/actual_validation_keys.json`).
-
-### Diagnostic Metric Comparison
-
-| Diagnostic Metric | Late Fusion Baseline ($\tau=0.70$) | Cross-Attention Fusion ($\tau=0.83$) | Absolute $\Delta$ | Relative Improvement |
-| :--- | :---: | :---: | :---: | :---: |
-| **Overall Accuracy** | 81.82% | **89.39%** | +7.57 pp | +9.2% |
-| **ROC-AUC** | 0.8950 | **0.9150** | +0.020 | +2.2% |
-| **MSI Sensitivity (Recall)** | 43.75% (7 / 16) | **75.00% (12 / 16)** | **+31.25 pp** | **+71.4%** |
-| **MSI Precision (PPV)** | 77.78% (7 / 9) | **80.00% (12 / 15)** | +2.22 pp | +2.8% |
-| **MSI F1-Score** | 0.5600 | **0.7742** | **+0.2142** | **+38.2%** |
-| **MSS Specificity (Recall)**| 94.00% (47 / 50) | 94.00% (47 / 50) | 0.00 pp | Maintained |
-| **MSS Negative Pred. Value**| 83.93% (47 / 56) | **92.16% (47 / 51)** | +8.23 pp | +9.8% |
-| **Macro Average F1** | 0.7250 | **0.8521** | +0.1271 | +17.5% |
-
-### Holdout Confusion Matrix Breakdown
-
-```
-                    CROSS-ATTENTION MODEL (tau = 0.83)
-                             Predicted Condition
-                         Negative (MSS)   Positive (MSI)
-     Actual  Negative (MSS)    47 (TN)          3 (FP)        Total: 50
-     Status  Positive (MSI)     4 (FN)         12 (TP)        Total: 16
-                              Total: 51        Total: 15     Grand: 66
-
-     - False Negative Reduction: Dropped from 9 misses (baseline) to only 4 misses.
-     - Specificity Preservation: Correctly identified 47 out of 50 non-MSI slides.
-```
-
-### Optimal Operating Threshold ($\tau = 0.83$)
-A threshold sweep from 0.30 to 0.90 revealed that the standard cutoff ($\tau = 0.50$) produces excessive false positives due to the positive class weighting. Setting $\tau = 0.83$ maximizes precision (0.80) while preserving 75% recall, establishing the optimal balance for clinical decision support.
-
-### Perturbation Verification Test
-To confirm that the cross-attention module genuinely uses pathology text rather than collapsing into an image-only classifier, a text perturbation experiment was conducted (`src/eval/verify_cross_attention.py`):
-- **Experiment:** Ground-truth clinical text embeddings $T$ were replaced with Gaussian noise $T_{noise} \sim \mathcal{N}(0, I)$.
-- **Result:** Top-5 patch attention indices shifted substantially across all test cases (Jensen-Shannon divergence $> 0$). Under the baseline late fusion model, patch rankings remained completely static ($JSD = 0$), proving cross-attention dynamically couples text semantics with morphology.
+- **`PROTOCOL_1_CAPPED`:** Enforces `1 <= N <= 1000` patches. If `N > 1000`, `InputValidator` rejects execution rather than performing non-deterministic on-device random subsampling (all manifest-based patch capping happens upstream).
+- **`PROTOCOL_2_UNCAPPED`:** Evaluates the complete uncapped patch sequence (`N >= 1`) using the dynamic `num_patches` axis of `fusion_model_fp32.onnx`.
 
 ---
 
-## Explainable AI (XAI) Suite
+## 11. Classification Logic and Decision Threshold
 
-To ensure trustworthiness in clinical workflows, the model implements a three-tier explainability hierarchy:
+Verified in `ThresholdLogic.kt` (`android/app/src/main/java/org/crc/multimodal/inference/ThresholdLogic.kt`) and `MultimodalPredictor` (`src/inference/multimodal_predictor.py`):
 
-```
-┌─────────────────────────────────────────────────────────────────────────────────┐
-│                           THREE-TIER XAI ARCHITECTURE                           │
-├─────────────────┬───────────────────────────────────┬───────────────────────────┤
-│ Tier            │ Method                            │ Clinical Purpose          │
-├─────────────────┼───────────────────────────────────┼───────────────────────────┤
-│ 1. Macroscopic  │ Cross-Attention Patch Weighting   │ Pinpoint top-5 suspicious │
-│    (Where?)     │ A = softmax(Q K^T / sqrt(d))      │ tissue regions on slide   │
-├─────────────────┼───────────────────────────────────┼───────────────────────────┤
-│ 2. Microscopic  │ DINOv2 ViT Attention Rollout      │ Highlight atypical nuclei,│
-│    (What inside?)│ Stacked last 6 layers + Otsu mask │ mitosis, mucin pools      │
-├─────────────────┼───────────────────────────────────┼───────────────────────────┤
-│ 3. Linguistic   │ Ollama Qwen 2.5 LLM Scribe        │ Generate auditable, human-│
-│    (What means?) │ Structured prompt + fallback      │ readable diagnostic notes │
-└─────────────────┴───────────────────────────────────┴───────────────────────────┘
-```
+- **Class `0` = `MSS`** (*Microsatellite Stable* — negative reference class)
+- **Class `1` = `MSI`** (*Microsatellite Instability* — positive target class)
+- **Frozen Operating Threshold:** $\tau = 0.83$ (`ThresholdLogic.OPERATING_THRESHOLD = 0.83f`)
 
-1. **Macroscopic Patch Gallery:** Extracts the raw attention tensor $A \in \mathbb{R}^{1 \times 1 \times N}$, averages across the 8 heads, and ranks patches descending by attention mass. The top-5 most heavily weighted tiles are rendered with attention coefficients.
-2. **Microscopic Cellular Heatmap:** The top-ranked patch is passed through Phikon-v2 with `output_attentions=True`. Self-attention matrices from the final 6 Transformer blocks are aggregated via attention rollout, reshaped to a $14 \times 14$ grid, smoothed via Gaussian filtering, and thresholded at the 70th and 80th percentiles to generate jet colormaps with anti-aliased yellow contours.
-3. **Linguistic LLM Scribe:** The predicted probability, attention statistics, and original clinical text are composed into a strict JSON payload sent to an on-premise **Ollama instance** running `qwen2.5-coder:7b`. The LLM synthesizes an auditable 3-part note (Diagnostic Summary, Morphological Findings, and Recommendation). If Ollama is offline, a deterministic rule-based template automatically activates.
+$$\text{Predicted Class} = \begin{cases} 1 \ (\text{MSI}) & \text{if } P_{\text{MSI}} \ge 0.83 \\ 0 \ (\text{MSS}) & \text{if } P_{\text{MSI}} < 0.83 \end{cases}$$
+
+**Why $\tau = 0.83$?** During training on the imbalanced TCGA-COAD cohort (`63` MSI vs. `263` MSS, positive BCE weight $w_{\text{pos}} \approx 4.17$), raw sigmoid probabilities are shifted upward toward the positive class. Calibrating the operating boundary at $\tau = 0.83$ suppresses false-positive calls (`94.0%` specificity, `80.0%` precision) while maintaining `75.0%` MSI sensitivity. The signed decision margin is recorded as `margin = probability - 0.83f`.
 
 ---
 
-## Computational Complexity & Hardware Profiling
+## 12. Android Application Modules and UI Screens
 
-Full single-precision (FP32) profiling on host CPU (Intel Core i7 / 16 GB RAM) verified the computational distribution across model components:
+The Android UI is implemented using **Android Views (`Fragment` + XML layouts + Material Components `1.12.0` + custom `Canvas` view `ProbabilityThresholdBarView`)** hosted inside a single `MainActivity` (`WorkstationNavigationHost`) with a 4-tab `BottomNavigationView` (`Workspace`, `Cases`, `New Analysis`, `Settings`).
 
-```
-┌─────────────────────────────────────────────────────────────────────────────────┐
-│                    FP32 COMPUTATIONAL DISTRIBUTION PROFILE                      │
-├──────────────────────────┬──────────────┬──────────────┬──────────────┬─────────┤
-│ Component                │ Parameters   │ FP32 Memory  │ FLOPs / Work │ Latency │
-├──────────────────────────┼──────────────┼──────────────┼──────────────┼─────────┤
-│ Phikon-v2 (ViT-L/16)     │ 303.35 M     │ 1,157.20 MB  │ 123.1 GFLOPs │ 1.64 s  │
-│ (Single Patch Forward)   │              │              │ (per patch)  │ /patch  │
-├──────────────────────────┼──────────────┼──────────────┼──────────────┼─────────┤
-│ Phikon-v2 Slide (500 p)  │ 303.35 M     │ 1,157.20 MB  │ 61.56 TFLOPs │ ~2.5 s* │
-├──────────────────────────┼──────────────┼──────────────┼──────────────┼─────────┤
-│ ClinicalBERT (128 tok)   │ 108.31 M     │ 413.17 MB    │ 22.35 GFLOPs │ 318 ms  │
-├──────────────────────────┼──────────────┼──────────────┼──────────────┼─────────┤
-│ Cross-Attention Head     │   5.25 M     │   20.03 MB   │  4.20 GFLOPs │ 44.8 ms │
-│ (1,000 Patches)          │              │              │ (per slide)  │ /slide  │
-├──────────────────────────┼──────────────┼──────────────┼──────────────┼─────────┤
-│ Total Pipeline Footprint │ 416.91 M     │ 1,590.40 MB  │ --           │ --      │
-└──────────────────────────┴──────────────┴──────────────┴──────────────┴─────────┘
-* Estimated on workstation GPU (RTX 3060/4060).
-```
+| # | Screen / Fragment | Toolbar Title | Primary Inputs & Controls | Outputs & Persistence | Source File |
+| :-: | :--- | :--- | :--- | :--- | :--- |
+| 1 | `WorkspaceFragment` | *CRC Multimodal Research Workstation* | Engine status card (tap to retry), workflow launch cards, seed reference cases | Case status counters, live `OnnxRuntimeState`, 4 recent cases | `ui/fragments/WorkspaceFragment.kt` |
+| 2 | `NewSpecimenFragment` | *New Specimen Analysis* | Case ID, description, context, `.crcbundle` SAF picker, 2-step `.npy` pair picker | Validated `.crcbundle` in `filesDir/specimen_bundles/`, `cases` & `specimen_inputs` rows | `ui/fragments/NewSpecimenFragment.kt` |
+| 3 | `SpecimenReviewFragment` | *Specimen Review* | Pre-inference checklist verification for vision, text, protocol, and ONNX engine | Fail-closed gate enabling/disabling *Configure & Run Inference* | `ui/fragments/SpecimenReviewFragment.kt` |
+| 4 | `InferenceExecutionFragment` | *Inference Configuration* | Protocol toggle (`Protocol 1` vs `Protocol 2`), inline bundle import, *Run Inference* | Sequential background ONNX execution, parity check, `inference_runs` commit | `ui/fragments/InferenceExecutionFragment.kt` |
+| 5 | `FindingsFragment` | *Analysis Findings* | Diagnostics expand/collapse, shortcuts to Review Notes and Research Report | MSI/MSS badge, probability, signed margin, `ProbabilityThresholdBarView`, latency | `ui/fragments/FindingsFragment.kt` |
+| 6 | `ReportFragment` | *Research Report* | Preview PDF, Save PDF (SAF), Share PDF (`FileProvider`), Report History, Regenerate | Multi-page A4 PDF v2.0.0, text report, SHA-256 provenance, `report_history` rows | `ui/fragments/ReportFragment.kt` |
+| 7 | `ReviewNotesFragment` | *Review Questions & Notes* | 5 note category chips, author label, note text, *Mark Under Review* / *Reviewed* | Categorized `review_notes` rows and updated `cases.status` | `ui/fragments/ReviewNotesFragment.kt` |
+| 8 | `CasesFragment` | *Case Management* | Live search bar, 6 status filter chips, cyclic sort (*Newest*, *Oldest*, *Case ID*) | Filtered `CaseAdapter` list with count summary | `ui/fragments/CasesFragment.kt` |
+| 9 | `CaseDetailsFragment` | *Case Details* | Run Inference, View Findings, Manage Notes, View Report, cascading Delete Case | Full specimen metadata and chronological `InferenceRun` history | `ui/fragments/CaseDetailsFragment.kt` |
+| 10 | `BatchAnalysisFragment` | *Batch Specimen Analysis* | Multi-file `.crcbundle` picker, Execute/Cancel Batch, search/chips, bulk PDF/Archive/Delete | Sequential cohort execution, case sync, combined PDF/JSON/SHA-256 reports | `ui/fragments/BatchAnalysisFragment.kt` |
+| 11 | `CohortEvaluationFragment` | *Cohort Evaluation* | *Load TCGA Labels* (`66` cases), *Clear*, search, TP/TN/FP/FN/Misclassified chips, sort | 2x2 confusion matrix, 7 metrics, ROC-AUC, PR-AUC, small-sample warning banner | `ui/fragments/CohortEvaluationFragment.kt` |
+| 12 | `AnalyticsDashboardFragment` | *Research Analytics* | Search bar, 5 filter chips (incl. *Near Threshold*), cyclic sort | 6 probability buckets, 4 margin brackets, latency & patch distributions, explorer | `ui/fragments/AnalyticsDashboardFragment.kt` |
+| 13 | `SettingsFragment` | *Settings & About* | System/Light/Dark theme toggle, Seed Reference Cases, Clear All Workstation Data | Live `AppCompatDelegate` night mode, frozen model specs, DB/audit counts | `ui/fragments/SettingsFragment.kt` |
 
-### Architectural Takeaways:
-- **Vision Bottleneck:** Feature extraction with Phikon-v2 accounts for **>99.9%** of the computational FLOPs. Offline batch feature extraction is mandatory for large datasets.
-- **Edge Feasibility:** The cross-attention fusion head requires only **20 MB of RAM** and runs in **<45 ms on CPU** and **<2 ms in ONNX Runtime**, making real-time edge evaluation of precomputed slide representations viable even on resource-constrained mobile hardware.
+> [!NOTE]
+> **Completed vs. Placeholder Controls in `SettingsFragment`:** Theme switching, reference-case seeding, and workstation data clearing are fully functional. However, `res/layout/fragment_settings.xml` also renders an optional `BACKEND CONNECTION (OPTIONAL)` text field (`@+id/etRemoteEndpoint`, *"Remote Inference Server Base URL"*). Source inspection confirms this input field is an **unwired UI placeholder**—no Kotlin code reads it, and `AndroidManifest.xml` declares zero network permissions. All inference is strictly local.
 
 ---
 
-## Edge AI & Android Deployment
+## 13. SQLite Database Architecture and Verified Schema
 
-To bring multimodal diagnostics to bedside tablets and pathology laboratory point-of-care devices, the model was ported to an embedded Android architecture.
+The Android workstation persists research data across **two** local SQLite databases managed via `SQLiteOpenHelper` with synchronized access and explicit transactional cleanup:
 
-### 1. ONNX Model Export & Quantization
+1. **`crc_workstation.db` (Schema Version `4`)** — `SqliteWorkstationRepository.kt` (`8` tables)
+2. **`crc_batch_runs.db` (Schema Version `3`)** — `BatchRepository.kt` (`2` tables)
 
-| Model Artifact | Precision | File Size | Output Logit Max Error vs PyTorch | Cohort Label Agreement |
-| :--- | :---: | :---: | :---: | :---: |
-| [`models/fusion_model_fp32.onnx`](models/fusion_model_fp32.onnx) | Float32 | 21.0 MB | **$2.86 \times 10^{-6}$** (Bit-exact) | **100.0% (66/66, 0 flips)** |
-| [`models/fusion_model_fp16.onnx`](models/fusion_model_fp16.onnx) | Float16 | **10.5 MB** | $3.41 \times 10^{-3}$ | **100.0% (66/66, 0 flips)** |
+### 13.1 Entity-Relationship Diagram
 
-Both graphs utilize dynamic axes on the patch dimension:
-- Input 1: `vision_embeddings` $\to$ shape `[1, num_patches, 1024]`
-- Input 2: `text_embedding` $\to$ shape `[1, 768]`
-- Output 1: `probability` $\to$ shape `[1, 1]`
-- Output 2: `attention_weights` $\to$ shape `[1, 1, num_patches]`
+```mermaid
+erDiagram
+    CASES ||--o{ SPECIMEN_INPUTS : "has_inputs"
+    CASES ||--o{ INFERENCE_RUNS : "records_runs"
+    CASES ||--o{ REVIEW_NOTES : "has_notes"
+    CASES ||--o| RESEARCH_REPORTS : "latest_text_report"
+    CASES ||--o{ REPORT_HISTORY : "pdf_versions"
+    BATCH_RUNS ||--o{ BATCH_ITEMS : "contains_items"
 
-### 2. Native Android Module (`android/`)
-The Android subsystem is written in modern **Kotlin** targeting **Android SDK 34** with Jetpack Compose:
-- **Zero Network Permissions:** Manifest defines 0 permissions; all inference executes entirely on-device via ONNX Runtime Mobile.
-- **Direct ByteBuffer Memory:** Avoids JVM heap thrashing by mapping native float buffers directly into the ONNX Runtime C++ engine.
-- **Strict Protocol Support:**
-  - *Protocol 1 (`PROTOCOL_1_CAPPED`):* Enforces standard evaluation cap ($1 \le N \le 1000$ patches).
-  - *Protocol 2 (`PROTOCOL_2_UNCAPPED`):* Dynamically processes arbitrary patch lengths without truncation (validated up to 3,914 patches on CASE_20).
-- **Formal Parity Verification:** 31 host JVM unit and integration tests verify bit-level parity, buffer validation, and threshold logic against the Python gold standard.
-
-### Evidence Partitioning Ledger
-Adhering to strict clinical validation standards, evidence is categorized to prevent conflation of host tests with physical device benchmarks:
-
+    CASES {
+        int id PK
+        text case_identifier UK
+        text specimen_description
+        text research_context
+        text status
+        int patch_count
+        text protocol
+        int created_at
+        int updated_at
+    }
+    SPECIMEN_INPUTS {
+        int id PK
+        int case_id FK
+        text input_type
+        text local_uri
+        text filename
+        text validation_status
+        int created_at
+    }
+    INFERENCE_RUNS {
+        int id PK
+        int case_id FK
+        text model_identifier
+        text inference_architecture
+        text protocol
+        int predicted_class
+        text predicted_label
+        real probability
+        real logit
+        real threshold
+        real margin
+        real latency_ms
+        int num_patches
+        text diagnostics_summary
+        int execution_timestamp
+        text status
+    }
+    REVIEW_NOTES {
+        int id PK
+        int case_id FK
+        text category
+        text author_label
+        text content
+        int created_at
+        int updated_at
+    }
+    RESEARCH_REPORTS {
+        int id PK
+        int case_id FK_UK
+        int inference_run_id
+        int generated_at
+        text report_content
+        text findings_summary
+    }
+    REPORT_HISTORY {
+        int id PK
+        text report_id UK
+        int case_id FK
+        int inference_run_id
+        text template_version
+        int created_at
+        text export_status
+        text file_uri
+        text file_path
+        text model_version
+        text sha256_hash
+        text error_message
+    }
+    REFERENCE_LABELS {
+        text specimen_id PK
+        int ground_truth_label
+        text ground_truth_class
+        text cohort_id
+        text source
+        int imported_at
+    }
+    AUDIT_TRAIL {
+        int id PK
+        int event_timestamp
+        text action_type
+        text specimen_id
+        text details
+        text sha256_fingerprint
+        text performed_by
+    }
+    BATCH_RUNS {
+        text batch_id PK
+        text title
+        int created_at
+        int updated_at
+        text status
+        text model_sha256
+        text app_version
+        text execution_provider
+        real decision_threshold
+        int total_duration_ms
+    }
+    BATCH_ITEMS {
+        int id PK
+        text batch_id FK
+        text specimen_id
+        text file_name
+        int file_size_bytes
+        text bundle_sha256
+        text vision_sha256
+        text text_sha256
+        int patch_count
+        text status
+        real logit
+        real probability
+        int predicted_class
+        text predicted_label
+        real threshold
+        int inference_latency_ms
+        text protocol
+        text protocol_reason
+        int is_archived
+    }
 ```
-┌──────────────────────────────────────────────────────────────────────────────────┐
-│                           EVIDENCE CATEGORIES STATUS                             │
-├─────────────────────────────────────────────────┬────────────────────────────────┤
-│ Category A: Python PyTorch vs ONNX Reference    │ [VERIFIED PASS]                │
-│             Parity (Host CPU Benchmark)         │ 66/66 Holdout, 100% Agreement  │
-├─────────────────────────────────────────────────┼────────────────────────────────┤
-│ Category B: Kotlin Unit Tests, Synthetic        │ [VERIFIED PASS]                │
-│             Inference & Holdout Parity (JVM)    │ 31/31 Tests, 0 Flips, 100% Agr │
-├─────────────────────────────────────────────────┼────────────────────────────────┤
-│ Category C: Android Build Validation            │ [VERIFIED PASS]                │
-│             (Gradle APK Assembly)               │ app-debug.apk Built (72.7 MB)  │
-├─────────────────────────────────────────────────┼────────────────────────────────┤
-│ Category D: Android Runtime Smoke Testing       │ [BLOCKED_PHYSICAL_DEVICE]      │
-│             (Emulator / Physical Device)        │ 0 Devices, Host VT-x Disabled  │
-├─────────────────────────────────────────────────┼────────────────────────────────┤
-│ Category E: Full Android Holdout Parity         │ [NOT CLAIMED / BLOCKED_RUNTIME]│
-│             (On-Device 66-Case Execution)       │ Awaiting Physical Device       │
-└─────────────────────────────────────────────────┴────────────────────────────────┘
+
+### 13.2 Verified Table Specifications & Lifecycle Behavior
+
+| Database | Table | Primary Key / Unique | Indexes | Purpose & Operational Behavior |
+| :--- | :--- | :--- | :--- | :--- |
+| `crc_workstation.db` | `cases` | `id` PK, `case_identifier` UNIQUE | `idx_cases_updated`, `idx_cases_status` | Master specimen registry; case-insensitive uniqueness enforced (`COLLATE NOCASE`). |
+| `crc_workstation.db` | `specimen_inputs` | `id` PK | `idx_inputs_case(case_id)` | Tracks imported `.crcbundle` URI, filename, and validation state per case. |
+| `crc_workstation.db` | `inference_runs` | `id` PK | `idx_runs_case(case_id)` | Immutable log of ONNX runs (`logit`, `probability`, `margin`, `latency_ms`, `protocol`). |
+| `crc_workstation.db` | `review_notes` | `id` PK | `idx_notes_case(case_id)` | Pathologist notes across 5 categories; adding a note moves `ANALYZED` $\rightarrow$ `UNDER_REVIEW`. |
+| `crc_workstation.db` | `research_reports` | `id` PK, `case_id` UNIQUE | — | Stores latest deterministic ASCII text report (`CONFLICT_REPLACE`). |
+| `crc_workstation.db` | `report_history` | `id` PK, `report_id` UNIQUE | `idx_reports_case`, `idx_reports_uid` | Tracks generated PDF files; dynamically flags `MISSING_FILE` if deleted from disk. |
+| `crc_workstation.db` | `reference_labels` | `specimen_id` PK | `idx_ref_cohort(cohort_id)` | Stores ground-truth labels (`0` = MSS, `1` = MSI) for offline cohort benchmarking. |
+| `crc_workstation.db` | `audit_trail` | `id` PK | `idx_audit_time`, `idx_audit_specimen` | Append-only governance log recording 11 `AuditActionType` events with SHA-256 digests. |
+| `crc_batch_runs.db` | `batch_runs` | `batch_id` PK | `idx_batch_created(created_at DESC)` | Header metadata, model digest, threshold, and duration for multi-specimen runs. |
+| `crc_batch_runs.db` | `batch_items` | `id` PK | `idx_items_batch`, `idx_items_specimen` | Per-specimen parse/validation/inference telemetry, protocol routing reason, `is_archived`. |
+
+- **Startup Crash Recovery:** On launch, `MainActivity` executes `recoverInterruptedCases()` (reverting orphan `ANALYZED` cases without a `SUCCESS` run back to `READY_FOR_ANALYSIS`) and `recoverInterruptedBatches()` (marking interrupted `PROCESSING` batches as `PARTIALLY_COMPLETED` and pending items as `CANCELLED`).
+- **Transactional Deletion:** `deleteCase(caseId)` explicitly deletes child rows across `specimen_inputs`, `inference_runs`, `review_notes`, `research_reports`, and `report_history` inside a database transaction before deleting the `cases` record and logging `SPECIMEN_DELETED`.
+
+---
+
+## 14. Batch Specimen Analysis Workflow
+
+`BatchCoordinator.kt` (`android/app/src/main/java/org/crc/multimodal/batch/BatchCoordinator.kt`) orchestrates multi-specimen evaluation:
+
+1. **Multi-Bundle Ingestion (`MAX_BATCH_SIZE = 100`):** Users select up to `100` `.crcbundle` files via Android's Storage Access Framework (`OpenMultipleDocuments`). Each file is hashed (`bundle_sha256`), parsed, and validated independently.
+2. **Fault & Duplicate Isolation:** Malformed bundles or duplicate specimen IDs within the same batch are marked `REJECTED` with a specific `validation_error` without aborting valid specimens. Valid bundles are persisted via `BundleStorageManager` so tensors are streamed sequentially from disk rather than exhausting RAM.
+3. **Sequential Execution & Dynamic Protocol 2 Routing:**
+   - Specimens with `patchCount <= 1000` execute under `PROTOCOL_1_CAPPED` (`"Within Protocol 1 cap (N <= 1000)"`).
+   - Specimens with `patchCount > 1000` automatically route to `PROTOCOL_2_UNCAPPED` when `allowProtocol2Fallback = true` (default) (`"Exceeded Protocol 1 cap (N > 1000); routed to Protocol 2 Uncapped"`).
+   - Cooperative cancellation (`btnCancelBatch`) cleanly halts execution between specimens.
+4. **Case Synchronization & Bulk Management:** Completed active specimens are idempotently synced into `crc_workstation.db` (`syncBatchToCases`). Long-pressing any specimen row opens the selection toolbar supporting **Bulk Combined PDF Export**, **Soft Archive / Restore** (`is_archived = 1/0`), and **Permanent Delete** (removing the batch item, synced case, and stored `.crcbundle`).
+
+---
+
+## 15. Cohort Evaluation Methodology and Metrics
+
+`CohortEvaluationEngine.kt` (`android/app/src/main/java/org/crc/multimodal/evaluation/CohortEvaluationEngine.kt`) benchmarks local predictions against ground-truth pathology labels stored in `android/app/src/main/assets/reference_labels/tcga_holdout_reference_labels.json` (`TCGA_HOLDOUT_66`: `66` patient-disjoint cases — `50` MSS [`0`], `16` MSI [`1`]).
+
+### 15.1 Matching & Confusion Matrix Rules
+- Specimen IDs are matched case-insensitively after whitespace trimming (`specimenId.trim().lowercase()`), tracking `matchedCount`, `unmatchedReferenceCount`, and `unmatchedPredictionCount`.
+- At $\tau = 0.8300$, with **MSI (`1`) as Positive** and **MSS (`0`) as Negative**:
+  - `TP`: Actual `1` & Predicted `1` | `TN`: Actual `0` & Predicted `0`
+  - `FP`: Actual `0` & Predicted `1` | `FN`: Actual `1` & Predicted `0`
+- Zero-denominator edge cases return `MetricValue.Undefined(reason)` (displayed as `N/A` rather than `NaN`), and dynamic warning banners alert users whenever `matchedCount == 0`, `matchedCount < 10`, or `unmatchedReferenceCount > matchedCount`.
+
+### 15.2 Verified 66-Case Holdout Benchmark (`reports/mobile_deployment/cohort_evaluation_reference_metrics.json`)
+
+| Evaluation Metric | Formula | Protocol 1 (Manifest-Capped $N \le 1000$) | Protocol 2 (Uncapped Full Slide Bag) |
+| :--- | :--- | :---: | :---: |
+| **Confusion Matrix (`TP / TN / FP / FN`)** | Threshold $\tau = 0.8300$ | `12 / 47 / 3 / 4` | `12 / 46 / 4 / 4` |
+| **Overall Accuracy** | $(TP + TN) / \text{Total}$ | `89.39%` (`0.8939`) | `87.88%` (`0.8788`) |
+| **Balanced Accuracy** | $(\text{Sensitivity} + \text{Specificity}) / 2$ | `84.50%` (`0.8450`) | `83.50%` (`0.8350`) |
+| **MSI Precision (`PPV`)** | $TP / (TP + FP)$ | `80.00%` (`0.8000`) | `75.00%` (`0.7500`) |
+| **MSI Sensitivity (`Recall`)** | $TP / (TP + FN)$ | `75.00%` (`0.7500`) | `75.00%` (`0.7500`) |
+| **MSS Specificity (`TNR`)** | $TN / (TN + FP)$ | `94.00%` (`0.9400`) | `92.00%` (`0.9200`) |
+| **Negative Predictive Value (`NPV`)** | $TN / (TN + FN)$ | `92.16%` (`0.9216`) | `92.00%` (`0.9200`) |
+| **MSI F1-Score** | $2 \cdot P \cdot R / (P + R)$ | `0.7742` | `0.7500` |
+| **ROC-AUC (Trapezoidal Integration)** | Tie-grouped FPR/TPR curve | `0.92625` *(1)* | `0.93375` |
+| **PR-AUC (Step-Wise Average Precision)** | Tie-grouped Recall/Precision step sum | `0.82205` | `0.83683` |
+
+*(1) Historical note: An early random-subsampling evaluation in `results/Cross_Attention_Model_Evaluation_Report.txt` recorded `0.9150` ROC-AUC (`TP=12, TN=47, FP=3, FN=4`), whereas the frozen deterministic `protocol1_patch_selection_manifest.json` yields `0.92625` ROC-AUC (`scikit-learn` parity within `1e-6`).*
+
+---
+
+## 16. Reporting and Research Analytics
+
+### 16.1 Individual & Batch PDF Report Generation
+- **Single-Specimen PDF (`PdfReportGenerator.kt`, Template `v2.0.0`):** Uses Android's native `android.graphics.pdf.PdfDocument` (`595 x 842 pt` A4 geometry) to render multi-page, word-wrapped clinical research reports featuring shaded two-column metadata tables, visual MSI/MSS probability bars relative to $\tau = 0.8300$, deterministic narrative explanations (`ResultExplanationService.kt`), categorized review notes, full SHA-256 model/tensor/manifest provenance, and investigative disclaimers. Saved to `filesDir/reports/CRC_Report_<caseId>_<timestamp>.pdf`, hashed with SHA-256, tracked in `report_history`, and shared via `FileProvider`.
+- **Batch Combined & Summary Reports (`BatchReportGenerator.kt`):** Generates cohort JSON + 1-page summary PDF + `.sha256` manifest (`exportReport`), as well as multi-page combined PDFs (`exportCombinedReport`, 2 detailed specimen cards per page after the cohort overview) for arbitrary multi-selected specimens.
+
+### 16.2 Research Analytics Dashboard (`ResearchAnalyticsEngine.kt`)
+- Aggregates single-case and batch runs into a unified cohort view:
+  - **6 Probability Histogram Bins:** `[0.00 - 0.20)`, `[0.20 - 0.40)`, `[0.40 - 0.60)`, `[0.60 - 0.80)`, `[0.80 - 0.83)` (sub-threshold MSS zone), and `[0.83 - 1.00]` (MSI positive zone).
+  - **4 Decision-Margin Brackets ($|P - 0.83|$):** `[0.00 - 0.05]` (*Near-Threshold* flag when $|P - 0.83| \le 0.05$, i.e., $P \in [0.78, 0.88]$), `(0.05 - 0.15]`, `(0.15 - 0.30]`, and `> 0.30`.
+  - **Latency & Patch Profiling:** Min, median (`P50`), mean, and max ONNX latency plus patch-count distribution across `1 - 100`, `101 - 500`, `501 - 1000`, and `> 1000` patches.
+
+---
+
+## 17. Technology Stack
+
+### 17.1 Android Edge Workstation (`android/`)
+
+| Layer | Technology / Dependency | Verified Version | Source Verification |
+| :--- | :--- | :--- | :--- |
+| **Language & JVM** | Kotlin / Java Compatibility | `1.9.24` / JVM `17` | `android/build.gradle.kts`, `android/app/build.gradle.kts` |
+| **Build System** | Gradle Wrapper / Android Gradle Plugin | `8.10.2` / `8.4.2` | `gradle-wrapper.properties`, `android/build.gradle.kts` |
+| **Android SDK** | `minSdk` / `targetSdk` / `compileSdk` | `24` / `34` / `34` | `android/app/build.gradle.kts` |
+| **Edge ML Runtime** | ONNX Runtime Android (`CPUExecutionProvider`) | `1.18.0` | `com.microsoft.onnxruntime:onnxruntime-android:1.18.0` |
+| **UI Framework** | AndroidX Core KTX / AppCompat / Material | `1.13.1` / `1.6.1` / `1.12.0` | `android/app/build.gradle.kts` |
+| **Persistence & PDF** | Android `SQLiteOpenHelper` / `PdfDocument` | Android Framework API | `SqliteWorkstationRepository.kt`, `PdfReportGenerator.kt` |
+| **Testing** | JUnit 4 / `kotlin-test` / AndroidX Runner & Ext | `4.13.2` / `1.9.24` / `1.5.2` / `1.1.5` | `android/app/build.gradle.kts` |
+
+### 17.2 Python Research & Export Suite (`requirements.txt`, `Dockerfile`)
+
+| Layer | Package | Verified Version | Purpose |
+| :--- | :--- | :--- | :--- |
+| **Deep Learning** | `torch` / `torchvision` / `pytorch-lightning` | `2.9.1` / `0.24.1` / `2.6.0` | Cross-attention training, checkpoints, and export tracing |
+| **Foundation Hub** | `huggingface_hub` / `safetensors` / `timm` | `1.2.3` / `0.7.0` / `1.0.22` | Upstream Phikon-v2 and Bio_ClinicalBERT weight management |
+| **Scientific & Vision** | `numpy` / `pandas` / `opencv-python` / `pillow` / `monai` | `2.2.6` / `2.3.3` / `4.12.0.88` / `12.0.0` / `1.5.1` | Patch preprocessing, `.crcbundle` packing, and metrics |
+| **Desktop UI & Container** | `streamlit` / `python:3.10-slim` (`Dockerfile`) | `1.52.2` / Python `3.10+` | Workstation web UI and containerized deployment |
+
+*(Additional optional Python packages used by export/test scripts: `transformers`, `onnx`, `onnxruntime`, `scikit-learn`, `scipy`, `matplotlib`, `seaborn`, `pytest`.)*
+
+---
+
+## 18. Repository Directory Structure
+
+```text
+EdgeCRC-AI/
+├── android/                                        # Native Offline Android Edge AI Workstation
+│   ├── app/
+│   │   ├── build.gradle.kts                        # SDK 24-34, ONNX Runtime 1.18.0, Material 1.12.0
+│   │   └── src/
+│   │       ├── main/
+│   │       │   ├── AndroidManifest.xml             # Zero-permission offline manifest + FileProvider
+│   │       │   ├── assets/
+│   │       │   │   ├── models/fusion_model_fp32.onnx                # Frozen 21.0 MB FP32 ONNX graph
+│   │       │   │   ├── reference_labels/tcga_holdout_reference_labels.json # 66 holdout ground-truth labels
+│   │       │   │   └── reference_tensors/*.bin                      # 7 CRCT v1 parity benchmark cases
+│   │       │   ├── java/org/crc/multimodal/
+│   │       │   │   ├── analytics/                  # ResearchAnalyticsEngine & histogram/margin models
+│   │       │   │   ├── batch/                      # BatchCoordinator, SqliteBatchRepository, BatchReportGenerator
+│   │       │   │   ├── data/                       # SqliteWorkstationRepository (crc_workstation.db v4) & entities
+│   │       │   │   ├── evaluation/                 # CohortEvaluationEngine & ReferenceLabelImporter
+│   │       │   │   ├── inference/                  # OnnxRuntimeManager, CrcMultimodalClassifier, AuthenticBundleLoader
+│   │       │   │   ├── performance/                # EdgePerformanceMonitor & release gate models
+│   │       │   │   ├── report/                     # PdfReportGenerator (v2.0.0), ReportGenerator, ResultExplanationService
+│   │       │   │   ├── security/                   # SafeFileValidator, ProvenanceAuditManager, SensitiveLogRedactor
+│   │       │   │   └── ui/                         # MainActivity, ProbabilityThresholdBarView, adapters, 13 fragments
+│   │       │   └── res/                            # Material Day/Night XML layouts, drawables, color selectors, themes
+│   │       ├── test/java/org/crc/multimodal/       # 23 host JVM unit, parity, SQLite, security & PDF test suites
+│   │       └── androidTest/java/org/crc/multimodal/# 7 physical-device / instrumentation benchmark & parity tests
+│   ├── build.gradle.kts                            # Root AGP 8.4.2 & Kotlin 1.9.24 configuration
+│   ├── settings.gradle.kts                         # Root project CrcMultimodalEdge (:app)
+│   └── gradlew.bat                                 # Windows Gradle 8.10.2 wrapper
+│
+├── assets/medical_images/                          # Sample pre-generated XAI pathology visual reports
+├── data/
+│   ├── DATASET.md                                  # Dataset layout and placement instructions
+│   ├── Download_DataSet.pdf                        # TCGA-COAD dataset download guide
+│   └── patient_registry.json                       # De-identified 326-case TCGA-COAD metadata & labels
+├── docs/
+│   ├── ARCHITECTURE.md                             # Detailed upstream model & XAI architecture reference
+│   ├── HANDOFF.md                                  # Reproducibility & operations guide
+│   └── diagrams/                                   # 10 SVG/PNG system, sequence, ER, and XAI diagrams
+├── models/
+│   ├── fusion_model_v1_1.pth                       # Primary trained PyTorch cross-attention checkpoint
+│   ├── fusion_model_fp32.onnx                      # Exported FP32 ONNX fusion graph (21.0 MB)
+│   ├── fusion_model_fp16.onnx                      # Quantized FP16 ONNX fusion graph (10.5 MB)
+│   └── late_fusion_model_v1_0.pth                  # AB-MIL late-fusion baseline checkpoint
+├── reports/
+│   ├── audit/                                      # Baseline dataset, encoder, and tensor audits
+│   ├── edge_deployment/                            # Raw-input & edge architecture readiness reports
+│   └── mobile_deployment/                          # Phase-by-phase parity, benchmark, and device validation logs
+├── results/
+│   ├── actual_validation_keys.json                 # Locked 66-patient holdout split contract
+│   └── Cross_Attention_Model_Evaluation_Report.txt # Holdout classification metrics & confusion matrix
+├── scripts/                                        # GitHub release automation utilities
+├── src/
+│   ├── architectures/                              # SummaryToPatchCrossAttention & MultimodalFusionNetwork
+│   ├── eval/                                       # export_onnx.py, parity & computational power benchmarks
+│   ├── inference/                                  # MultimodalPredictor, Phikon-v2 & ClinicalBERT wrappers
+│   ├── ui/app.py                                   # Streamlit clinical research web workstation
+│   └── generate_pixel_xai.py                       # DINOv2 ViT self-attention rollout heatmap generator
+├── tests/                                          # 9 Python pytest regression & mobile contract modules
+├── tools/                                          # export_specimen_bundle.py, export_reference_labels.py & audits
+├── Dockerfile                                      # Streamlit container specification (port 8501)
+├── PB05_Report_8thSem.pdf                          # 89-page academic project report
+├── requirements.txt                                # Pinned Python dependencies
+└── README.md                                       # Comprehensive project documentation (this file)
 ```
 
 ---
 
-## Repository File Map
+## 19. Prerequisites and Setup Instructions
 
-```
-CRC Edge deployment/
-├── MULTIMODAL-FUSION-FOR-DETECTION-OF-COLORECTAL-CANCER-USING-CLINICAL-BERT-AND-PHIKONV2/
-│   ├── android/                                    # Native Android Edge Application
-│   │   ├── app/
-│   │   │   ├── build.gradle.kts                    # App module dependencies (ONNX Runtime, Compose)
-│   │   │   └── src/
-│   │   │       ├── main/
-│   │   │       │   ├── AndroidManifest.xml         # Zero-permission local manifest
-│   │   │       │   ├── assets/models/
-│   │   │       │   │   └── fusion_model_fp32.onnx  # Embedded ONNX FP32 weights (21.0 MB)
-│   │   │       │   └── java/org/crc/multimodal/
-│   │   │       │       ├── inference/              # CrcMultimodalClassifier, InputValidator, ThresholdLogic
-│   │   │       │       └── ui/MainActivity.kt      # Edge inspection Jetpack Compose UI
-│   │   │       └── test/                           # JVM unit test suite (31 tests)
-│   │   ├── build.gradle.kts                        # Root Gradle build configuration
-│   │   └── gradlew.bat                             # Gradle executable wrapper
-│   │
-│   ├── assets/medical_images/                      # Pre-generated sample XAI patient reports
-│   ├── data/
-│   │   ├── patient_registry.json                   # 326 patient records with labels, text, and metadata
-│   │   ├── clean_tensors/                          # Precomputed *_vision.pt & *_text.pt embeddings
-│   │   └── Download_DataSet.pdf                    # Kaggle dataset synchronization guide
-│   │
-│   ├── docs/
-│   │   ├── ARCHITECTURE.md                         # Comprehensive 13-section technical specification
-│   │   ├── HANDOFF.md                              # Operations manual and reproducibility guide
-│   │   ├── generate_diagrams.py                    # Script generating all 10 high-res diagrams
-│   │   └── diagrams/                               # Architecture, DFD, Sequence, and Flowchart PNGs
-│   │
-│   ├── models/
-│   │   ├── fusion_model_v1_1.pth                   # ★ Primary trained checkpoint (Best ROC-AUC)
-│   │   ├── fusion_model_fp32.onnx                  # Exported single-precision ONNX model (21.0 MB)
-│   │   ├── fusion_model_fp16.onnx                  # Quantized half-precision ONNX model (10.5 MB)
-│   │   ├── best_fusion_model.pth                   # Baseline best model checkpoint
-│   │   └── late_fusion_model_v1_0.pth              # Late-fusion AB-MIL comparison checkpoint
-│   │
-│   ├── reports/
-│   │   ├── edge_deployment/                        # Architecture & raw input readiness audits
-│   │   └── mobile_deployment/                      # 37 phase-by-phase validation reports & signoffs
-│   │
-│   ├── results/
-│   │   ├── actual_validation_keys.json             # Locked validation contract (66 holdout patient IDs)
-│   │   ├── Cross_Attention_Model_Evaluation_Report.txt # Full precision/recall/F1 holdout report
-│   │   ├── Confusion_Matrix_C.png                  # Cross-attention confusion matrix plot
-│   │   ├── ROC_Curve_C.png                         # Receiver Operating Characteristic plot
-│   │   ├── Real_Cross_Attention_Matrix.png         # Multi-head attention activation heatmap
-│   │   ├── computational_power_fp32.txt            # Component-level FLOPs & parameter audit
-│   │   └── computational_power_fp32.json           # Structured machine-readable benchmark metrics
-│   │
-│   ├── src/
-│   │   ├── architectures/
-│   │   │   ├── cross_attention_fusion.py           # ★ Primary SummaryToPatchCrossAttention module
-│   │   │   └── late_fusion_model.py                # AB-MIL late fusion baseline module
-│   │   ├── eval/                                   # ONNX export, parity, and power benchmark scripts
-│   │   ├── inference/                              # Decoupled production inference package
-│   │   │   ├── multimodal_predictor.py             # High-level Python inference API
-│   │   │   ├── image_preprocessing.py              # Reinhard stain normalization & patch cropping
-│   │   │   ├── vision_encoder.py                   # Phikon-v2 wrapper
-│   │   │   ├── report_encoder.py                   # ClinicalBERT wrapper
-│   │   │   └── input_validation.py                 # Shape, type, and bounds validation
-│   │   ├── ui/
-│   │   │   └── app.py                              # Production Streamlit clinical application
-│   │   ├── cross_attentiion_train.py               # Cross-attention training loop
-│   │   ├── cross_attention_eval.py                 # Holdout evaluation script
-│   │   ├── generate_xai.py                         # Top-5 attention ranking script
-│   │   └── generate_pixel_xai.py                   # ViT attention rollout cellular heatmap engine
-│   │
-│   ├── tests/                                      # Automated Python test suite (63 unit tests)
-│   ├── Dockerfile                                  # Containerized deployment specification
-│   ├── PB05_Report_8thSem.pdf                      # Comprehensive 89-page university thesis report
-│   ├── PROJECT_HANDOFF_AUDIT.md                    # Forensic repository audit & engineering log
-│   ├── REPOSITORY_FILE_MAP.md                      # Detailed file catalog with checksums
-│   └── requirements.txt                            # Pinned Python package dependencies
-└── README.md                                       # Top-level workspace documentation
-```
+### 19.1 Development Prerequisites
+- **OS:** Windows 10/11 (PowerShell 5.1+ / 7+), Linux, or macOS.
+- **Android Build Toolchain:** **JDK 17** (`JavaVersion.VERSION_17`), **Android Studio** (or Android Command-Line Tools) with **Android SDK Platform 34**, Build-Tools `34.0.0`, and `adb` (`platform-tools`) on `PATH`.
+- **Python Toolchain (for training, Streamlit UI, or exporting `.crcbundle` files):** Python `3.10`–`3.13`, `pip`, and `venv` (`16 GB` RAM recommended; CUDA GPU optional and only needed for raw WSI patch encoding).
 
----
+### 19.2 Clone and Python Environment Setup (Windows PowerShell)
 
-## Quick Start & Installation
+```powershell
+# 1. Clone the repository
+git clone https://github.com/PrajwalGN1/EdgeCRC-AI.git
+Set-Location EdgeCRC-AI
 
-### 1. Prerequisites
-- **Operating System:** Linux, macOS, or Windows 10/11
-- **Python:** 3.10, 3.11, 3.12, or 3.13
-- **Hardware:** 16 GB System RAM recommended. NVIDIA GPU with $\ge 8$ GB VRAM recommended for raw patch extraction; CPU supported for fusion inference.
-- **Java/Android (Optional, for Android build):** OpenJDK 17 or 21/23, Android SDK 34, Android Build Tools 34.0.0.
-- **Ollama (Optional, for live LLM Scribe):** [Ollama](https://ollama.com/) with `qwen2.5-coder:7b`.
-
-### 2. Environment Setup
-
-```bash
-# Clone the repository
-git clone https://github.com/Mokshithc/MULTIMODAL-FUSION-FOR-DETECTION-OF-COLORECTAL-CANCER-USING-CLINICAL-BERT-AND-PHIKONV2.git
-cd MULTIMODAL-FUSION-FOR-DETECTION-OF-COLORECTAL-CANCER-USING-CLINICAL-BERT-AND-PHIKONV2
-
-# Create and activate virtual environment
+# 2. Create and activate a Python virtual environment
 python -m venv .venv
+.\.venv\Scripts\Activate.ps1
 
-# On Linux / macOS:
-source .venv/bin/activate
-# On Windows:
-.venv\Scripts\activate
-
-# Install dependencies
-pip install --upgrade pip
+# 3. Install pinned dependencies and ONNX / testing extras
+python -m pip install --upgrade pip
 pip install -r requirements.txt
 pip install transformers scikit-learn matplotlib seaborn scipy onnx onnxruntime pytest
 ```
 
 ---
 
-## Running Inference & Applications
+## 20. Android Build and Deployment Guide
 
-### 1. Launching the Clinical Streamlit UI
+All Gradle commands must be executed from the `android` subdirectory:
 
-The Streamlit app provides an intuitive web interface for pathologists and oncologists:
+```powershell
+# Navigate to the Android project root
+Set-Location .\android
 
-```bash
-streamlit run src/ui/app.py --server.port 8501
-```
-
-Open your browser at `http://localhost:8501`. Features include:
-- **Patient Selector:** Load any patient from the 326-case registry or test holdout.
-- **Real-Time Classification:** Instant probability, classification tag, and confidence score.
-- **Macroscopic Top-5 Gallery:** Inspect the 5 most heavily attended histology patches.
-- **Microscopic Rollout Heatmap:** View nuclear-density overlays for cellular analysis.
-- **AI Clinical Scribe:** Automated pathology report generated via local Ollama LLM.
-
-*(Optional) Start Ollama for Live AI Reporting:*
-```bash
-ollama serve
-ollama pull qwen2.5-coder:7b
-```
-
-### 2. Python Modular Inference API
-
-Use the decoupled inference package directly in your Python code:
-
-```python
-import torch
-from src.inference.multimodal_predictor import MultimodalPredictor
-
-# Initialize predictor with model checkpoint
-predictor = MultimodalPredictor(
-    checkpoint_path="models/fusion_model_v1_1.pth",
-    device="cuda" if torch.cuda.is_available() else "cpu",
-    threshold=0.83
-)
-
-# Synthetic embeddings (or load from data/clean_tensors/)
-num_patches = 150
-vision_embeddings = torch.randn(1, num_patches, 1024)
-text_embedding = torch.randn(1, 768)
-
-# Run prediction
-result = predictor.predict(vision_embeddings, text_embedding)
-
-print(f"Classification: {result['label']}")       # "MSI" or "MSS"
-print(f"Probability:    {result['probability']:.4f}")
-print(f"Attention shape:{result['attention_weights'].shape}")
-```
-
-### 3. Docker Deployment
-
-```bash
-# Build Docker image
-docker build -t crc-multimodal:latest .
-
-# Run container on port 8501
-docker run -p 8501:8501 crc-multimodal:latest
-```
-
----
-
-## Android Edge Build & Verification
-
-The Android module builds an edge APK that runs on-device inference using ONNX Runtime Mobile.
-
-```bash
-cd android
-
-# Run all 31 Kotlin unit, protocol, and parity tests
-.\gradlew.bat testDebugUnitTest
-
-# Assemble the debug APK
+# Assemble the Debug APK
 .\gradlew.bat assembleDebug
 ```
 
-- Output APK: `android/app/build/outputs/apk/debug/app-debug.apk` (~72.7 MB)
-- Bundled Model: `assets/models/fusion_model_fp32.onnx` (Bit-identical to repository model)
+- **Generated APK Path:** `android\app\build\outputs\apk\debug\app-debug.apk`
+- **Application ID:** `org.crc.multimodal` (`versionName = "1.0.2"`, `versionCode = 3`)
+
+### Installing and Running on a Physical Android Device or Emulator
+
+1. Enable **Developer Options** and **USB Debugging** on an Android phone/tablet running **Android 7.0 (API 24) or newer** (or start an `arm64-v8a` / `x86_64` Android 14 emulator).
+2. Verify device connectivity and install in-place (`-r` preserves existing SQLite databases and imported bundles):
+
+```powershell
+# Verify connected device is in 'device' state
+adb devices -l
+
+# Install or update the debug APK while preserving research data
+adb install -r "app\build\outputs\apk\debug\app-debug.apk"
+
+# Launch the workstation MainActivity
+adb shell am start -n org.crc.multimodal/org.crc.multimodal.ui.MainActivity
+```
 
 ---
 
-## Automated Test Suite
+## 21. Workstation Usage Guide
 
-The repository includes a comprehensive 63-test automated regression suite:
+### 21.1 Exporting and Transferring Feature Bundles (`.crcbundle`)
+If you have upstream precomputed PyTorch tensors (`<CASE_ID>_vision.pt` and `<CASE_ID>_text.pt` in `data/clean_tensors/`), generate verified `.crcbundle` files from the repository root:
 
-```bash
-# Run the entire test suite from repository root
+```powershell
+# Export a single specimen bundle (CRCB v2 binary with SHA-256 verification)
+python tools\export_specimen_bundle.py --case TCGA-A6-3807 --format crcbundle --out data\specimen_bundles
+
+# Or export all 66 holdout validation cases
+python tools\export_specimen_bundle.py --keys results\actual_validation_keys.json --format crcbundle --out data\specimen_bundles
+
+# Push bundles to your Android device Downloads folder via ADB
+adb push data\specimen_bundles\TCGA-A6-3807.crcbundle /sdcard/Download/
+```
+
+*(Even without external `.crcbundle` files, the app includes two built-in benchmark reference cases—`TCGA-D5-6540` [MSI, `N=345`] and `TCGA-CM-6675` [MSS, `N=541`]—seeded automatically on first launch for immediate end-to-end verification.)*
+
+### 21.2 Running Individual Specimen Inference
+1. Open the **Workspace** tab or **New Analysis** tab and tap **New Specimen Analysis** (or select a seeded case in **Cases**).
+2. Tap **Import Authentic Feature Bundle (`.crcbundle`)** (or **Import Separate Vision & Text `.npy`**) and pick a bundle from device storage. Case ID, patch count `N`, and recommended protocol auto-populate.
+3. Tap **Confirm Specimen Import**, then either **Start Inference Now** or **Continue to Review** (`SpecimenReviewFragment` verifies tensor dimensions and ONNX engine readiness).
+4. On **Inference Configuration**, select **Protocol 1 (Capped `<= 1000`)** or **Protocol 2 (Uncapped)** and tap **Run Research Inference**.
+5. Inspect the predicted class (`MSI` vs `MSS`), probability, signed margin vs. `0.83`, latency, and `ProbabilityThresholdBarView` on **Analysis Findings**, and optionally attach categorized pathologist notes via **Review Notes**.
+
+### 21.3 Running Batch Specimen Analysis
+1. From **Workspace**, tap **Batch Cohort Analysis**.
+2. Tap **Import Authentic Feature Bundles** and multi-select up to `100` `.crcbundle` files.
+3. Tap **Run Batch Evaluation**. Validated bundles execute sequentially (`N > 1000` automatically routes to `Protocol 2 Uncapped`) and sync completed specimens to **Cases**.
+4. Use search/filter chips (`All`, `MSI Predicted`, `MSS Predicted`, `Rejected/Failed`, `Archived`) or tap **Select** (or long-press rows) to use **EXPORT PDF**, **ARCHIVE** / **RESTORE**, or **DELETE**.
+
+### 21.4 Inspecting Cohort Evaluation and Research Analytics
+1. **Cohort Evaluation:** From **Workspace**, open **Cohort Evaluation & Ground Truth** and tap **Load TCGA Labels** to load the 66 reference labels (`tcga_holdout_reference_labels.json`). Matched specimens immediately populate the 2x2 confusion matrix (`TP`, `TN`, `FP`, `FN`), Accuracy, Balanced Accuracy, Precision, Sensitivity, Specificity, F1, NPV, ROC-AUC, and PR-AUC.
+2. **Research Analytics:** From **Workspace**, open **Research Analytics & Margins** to inspect cohort MSI/MSS ratios, probability histograms, near-threshold (`|P - 0.83| <= 0.05`) margin brackets, latency/patch distributions, and the unified Specimen Prediction Explorer.
+
+### 21.5 Generating and Accessing Research Reports
+- **Individual Case PDF:** Open **View Research Report** from **Analysis Findings** or **Case Details**. The app compiles an A4 PDF (`v2.0.0`) into `filesDir/reports/`. Use **Preview PDF**, **Save PDF** (exports to Downloads/Documents via SAF), **Share PDF**, **Copy Report Text**, or **Report History** to inspect prior versions.
+- **Batch Reports:** Tap **Export Research Report (PDF & JSON)** on the Batch summary card for a full-cohort JSON + PDF + `.sha256` package, or select specific specimens and tap **EXPORT PDF** for a multi-page combined PDF.
+
+### 21.6 Running Python Inference & Streamlit Workstation (Desktop)
+
+```powershell
+# Launch the desktop Streamlit research UI on http://localhost:8501
+streamlit run src\ui\app.py --server.port 8501
+```
+
+Direct Python ONNX Runtime fusion example matching the verified graph contract:
+
+```python
+import numpy as np
+import onnxruntime as ort
+
+session = ort.InferenceSession("models/fusion_model_fp32.onnx", providers=["CPUExecutionProvider"])
+
+vision_seq = np.random.randn(1, 150, 1024).astype(np.float32)   # Replace with authentic [1, N, 1024] tensor
+text_summary = np.random.randn(1, 768).astype(np.float32)       # Replace with authentic [1, 768] tensor
+
+logit, probability, attn_weights = session.run(
+    ["logit", "probability", "attention_weights"],
+    {"vision_seq": vision_seq, "text_summary": text_summary},
+)
+
+prob = float(probability[0, 0])
+label = "MSI" if prob >= 0.83 else "MSS"
+print(f"Predicted: {label} | P(MSI)={prob:.4f} | Logit={float(logit[0, 0]):.4f} | Attn={attn_weights.shape}")
+```
+
+---
+
+## 22. Configuration and Model Asset Contract
+
+| Asset / Parameter | Required Value / Path | Verified Location |
+| :--- | :--- | :--- |
+| **Android ONNX Asset** | `assets/models/fusion_model_fp32.onnx` (`21,015,452` bytes, uncompressed) | `OnnxRuntimeManager.kt` |
+| **Expected Model SHA-256** | `0402f6c522beac5733e30eeecad908927957b5d4164b6b896663f43ba3702d73` | `ProvenanceAuditManager.kt` |
+| **Holdout Labels Asset** | `assets/reference_labels/tcga_holdout_reference_labels.json` (`66` cases) | `CohortEvaluationFragment.kt` |
+| **Benchmark Tensor Assets** | `assets/reference_tensors/*.bin` (`7` `CRCT` v1 cases) | `ReferenceTensorLoader.kt` |
+| **Decision Threshold ($\tau$)** | `0.83f` (frozen; not user-mutable in UI) | `ThresholdLogic.kt` |
+| **Max File / Patch Guard** | `100 MB` (`SafeFileValidator`) / `150 MB` stream cap (`NewSpecimenFragment`), `10,000` patches | `SafeFileValidator.kt` |
+
+---
+
+## 23. Error Handling and Troubleshooting
+
+| Symptom / Error Message | Root Cause | Resolution |
+| :--- | :--- | :--- |
+| `Invalid CRCB magic header` / `Unsupported CRCB schema version` | File is not a v2 `.crcbundle`, v1 `CRCT`, or v2 JSON manifest | Re-export from `.pt` tensors using `python tools\export_specimen_bundle.py --format crcbundle`. |
+| `SHA-256 integrity mismatch` on bundle import | Binary payload truncated during transfer or corrupted | Re-transfer the `.crcbundle` file and verify byte size matches source. |
+| `Fortran-ordered (column-major) NPY arrays are not supported` | NumPy array was saved in column-major order or `float64` | Save C-contiguous Little-Endian `float32`: `np.save(path, np.ascontiguousarray(arr, dtype="<f4"))`. |
+| `Patch count (N) exceeds Protocol 1 cap (1000)` | Single-specimen inference was run with `Protocol 1` selected on a slide with `N > 1000` | Switch the protocol toggle on *Inference Configuration* to **Protocol 2 (Uncapped)**. |
+| `Inference Engine: Failed` on Workspace card | Asset missing or corrupted in custom build | Confirm `android/app/src/main/assets/models/fusion_model_fp32.onnx` (`21,015,452` bytes) exists, then tap the engine card to retry. |
+| Cohort Evaluation metrics show `N/A` | Zero matched specimens, or matched subset lacks at least 1 MSI and 1 MSS case | Tap **Load TCGA Labels** and run inference on TCGA holdout `.crcbundle` specimens. |
+
+---
+
+## 24. Testing Instructions and Coverage
+
+### 24.1 Android Host JVM Unit Tests (`23` Test Suites in `android/app/src/test/`)
+
+```powershell
+Set-Location .\android
+.\gradlew.bat testDebugUnitTest
+```
+
+Key verified JVM test suites include:
+- **Inference & Numerical Parity:** `OnnxRuntimeManagerTest`, `CrcMultimodalClassifierInferenceTest`, `CrcMultimodalHoldoutParityTest`, `ReferenceTensorLoaderTest`, `InputValidatorTest`, `ThresholdLogicTest`, `InferenceResultTest`.
+- **Bundle & NPY Parsing:** `AuthenticBundleLoaderTest`, `NpyTensorLoaderTest`.
+- **SQLite, Workflow & Persistence:** `OfflineInferenceAndPersistenceTest`, `WorkstationWorkflowTest`, `ReportPersistenceMigrationTest`.
+- **Batch, Cohort & Analytics:** `BatchCoordinatorTest`, `BatchSpecimenManagementTest`, `BatchProtocol2AndStatusColorTest`, `CohortEvaluationTest` (validates exact parity against `scikit-learn` ROC-AUC & PR-AUC), `ResearchAnalyticsTest`.
+- **PDF, Provenance & Release Gates:** `PdfReportGeneratorTest`, `ResultExplanationServiceTest`, `ProtocolAndReportRegressionTest`, `SecurityProvenanceAuditTest`, `EdgePerformanceMonitoringTest`, `FinalReleaseGateTest`.
+
+### 24.2 Android Connected Instrumentation Tests (`7` Suites in `android/app/src/androidTest/`)
+
+*(Requires a connected Android device via `adb`; benchmark suites reading `assets/bundles/` expect test `.crcbundle` assets staged under `android/app/src/main/assets/bundles/`):*
+
+```powershell
+Set-Location .\android
+.\gradlew.bat connectedDebugAndroidTest
+```
+
+Suites: `CrcPhysicalOnDeviceParityTest`, `CrcPerformanceBenchmarkTest`, `CrcBatchPerformanceBenchmarkTest`, `CrcPhysicalBatchInferenceTest`, `CrcPhysicalBatchProtocol2AndStatusColorTest`, `CrcPhysicalPdfGenerationTest`, and `CrcPhysicalTcgaHoldout66ExecutionTest`.
+
+### 24.3 Python Test Suite (`9` Modules in `tests/`)
+
+```powershell
+# From repository root
 pytest tests/ -v
 ```
 
-### Test Coverage Highlights:
-- **`test_fusion_and_predictor.py`:** Verifies PyTorch forward pass, output shapes, and predictor API.
-- **`test_onnx_export_and_parity.py`:** Tests ONNX export and asserts float32 error $< 10^{-5}$ across dynamic patch counts.
-- **`test_fp16_export_and_drift.py`:** Checks half-precision numerical stability and threshold safety.
-- **`test_mobile_inference_contract.py`:** Verifies direct byte buffers, threshold logic, and error boundaries.
-- **`test_input_validation.py`:** Validates rejection of non-finite numbers, corrupted dimensions, and empty tensors.
-- **`test_sampling_manifest.py`:** Asserts cryptographic reproducibility of patient patch manifests.
+Modules: `test_encoders_interface.py`, `test_export_wrapper.py`, `test_fp16_export_and_drift.py`, `test_fusion_and_predictor.py`, `test_image_preprocessing.py`, `test_input_validation.py`, `test_mobile_inference_contract.py`, `test_onnx_export_and_parity.py`, and `test_sampling_manifest.py`.
 
 ---
 
-## Regulatory & Clinical Disclaimer
+## 25. Performance Gates and Device Considerations
 
-> [!CAUTION]
-> **RESEARCH USE ONLY (RUO). NOT FOR CLINICAL DIAGNOSTIC USE.**
-> This software and its associated models are experimental research prototypes developed for computational pathology research.
-> - **Regulatory Status:** This system is **not FDA-cleared, CE-marked, or certified by any health regulatory authority** for medical diagnosis or clinical decision-making.
-> - **Clinical Protocol:** Predictions generated by this system must **never** be used as a substitute for standard clinical diagnostic procedures, including Immunohistochemistry (IHC) or molecular PCR/NGS mismatch repair testing.
-> - **Patient Privacy:** All patient data used in this work originates from the publicly accessible, de-identified TCGA-COAD cohort with stripped Protected Health Information (PHI) in compliance with the TCGA Data Access Policy.
+- **Upstream vs. Edge Split:** Precomputing Phikon-v2 (`~123.1 GFLOPs/patch`) and ClinicalBERT (`~22.35 GFLOPs`) embeddings upstream eliminates `>99.9%` of raw inference compute from the mobile device.
+- **On-Device Release Gates (`EdgePerformanceMonitor.kt`):**
+  - **Gate 1 (Warm Fusion Latency):** Median (`P50`) warm ONNX fusion latency at `N = 385` patches target `<= 80.0 ms`.
+  - **Gate 2 (Peak Process Memory):** Java + Native heap (`Debug.getNativeHeapAllocatedSize()`) target `<= 300.0 MB`.
+  - **Gate 3 (Numerical Parity):** `0` classification label flips relative to the Python FP32 baseline across holdout cases.
+  - **Gate 4 (Runtime Stability):** `0` crashes or `OutOfMemoryError` failures under sequential execution.
+- **Sequential Memory Discipline:** Both single-case and batch inference execute under a single mutex (`executionLock`) with `2` intra-op CPU threads, streaming one `.crcbundle` at a time into reusable `DirectByteBuffer` memory and closing native `OnnxTensor` handles immediately after each forward pass.
 
 ---
 
-## Citation & Acknowledgments
+## 26. Security, Privacy, and Provenance Governance
 
-### Project Provenance
-- **Academic Mentor:** Mr Nageshwara Guptha
-- **Institutional Context:** 8th Semester Capstone Project (Project PB-05) — *Multimodal Fusion for Detection of Colorectal Cancer Using ClinicalBERT and Phikon-v2*
-- **Full Report:** Comprehensive 89-page documentation available at [`PB05_Report_8thSem.pdf`](PB05_Report_8thSem.pdf).
+- **Air-Gapped Zero-Permission Manifest:** `AndroidManifest.xml` declares **no `<uses-permission>` tags** (`0 bytes` transmitted over any network; `android:allowBackup="false"` disables cloud/ADB automatic backup extraction).
+- **Scoped File Sharing:** Report exports use `androidx.core.content.FileProvider` (`org.crc.multimodal.fileprovider`) restricted exclusively to `filesDir/reports/` and `cacheDir/reports/`.
+- **Filesystem Hardening (`SafeFileValidator.kt`):** Enforces canonical path prefix checks (`SecurityException` on `..` path traversal or Zip Slip) and sanitizes specimen IDs (`[^a-zA-Z0-9._-]` $\rightarrow$ `_`).
+- **Automated Log Redaction (`SensitiveLogRedactor.kt`):** Every `CrcLogger` message scrubs email addresses, phone numbers, patient/MRN/SSN/DOB key-value tokens, and clinical pathology narrative phrases before writing to Android `Logcat`, truncating output at `500` characters.
+- **Truthful Cryptographic Provenance (`ProvenanceAuditManager.kt`):** Embeds plaintext SHA-256 digests of the ONNX model, vision tensor, text tensor, and report payload into `audit_trail` and PDF reports while explicitly stating `isDigitalSignature = false` (integrity checksums, not PKI digital signatures) and `encoderStatus = "UPSTREAM_PRECOMPUTED_UNVERIFIED"`.
+- **Research Data Hygiene:** All repository cohorts originate from publicly available, de-identified TCGA-COAD records. No private patient data, hospital MRNs, or credentials are stored in this repository.
 
-### Foundational Works
-- **Phikon-v2:** Owkin team (*"Scaling Vision Transformers for Whole-Slide Histopathology with DINOv2"*).
-- **Bio_ClinicalBERT:** Alsentzer et al. (*"Publicly Available Clinical BERT Embeddings"*, NAACL Clinical NLP).
-- **TCGA-COAD:** The Cancer Genome Atlas Colorectal Adenocarcinoma research network.
+---
+
+## 27. Known Limitations and Source-Verified Nuances
+
+1. **No On-Device Raw WSI or Free-Text Encoding:** The Android app consumes precomputed `[1, N, 1024]` and `[1, 768]` tensors; raw `.svs`/`.tif` slides and clinical narratives must be encoded upstream via `src/inference/` and packaged with `tools/export_specimen_bundle.py`.
+2. **Unwired Optional Remote Server Field in Settings:** `fragment_settings.xml` includes an optional *"Remote Inference Server Base URL"* `TextInputEditText` (`etRemoteEndpoint`), which is currently an unwired UI placeholder with no networking backend.
+3. **Session-Scoped Theme Selection:** Light/Dark/System theme selection in `SettingsFragment` calls `AppCompatDelegate.setDefaultNightMode(...)` in-memory and resets to system default after a cold app process restart.
+4. **Cohort Reference UI Picker Scope:** While `ReferenceLabelImporter.kt` supports parsing arbitrary JSON and CSV label files, `CohortEvaluationFragment` currently exposes buttons for loading the bundled `66`-case TCGA holdout cohort and clearing labels rather than an arbitrary SAF file picker.
+5. **Soft-Archive Scope Across Modules:** Archiving a specimen in Batch Analysis sets `batch_items.is_archived = 1` (hiding it from active Batch counts and chips), whereas `ResearchAnalyticsEngine.buildUnifiedRecords()` includes completed records in Analytics and Cohort Evaluation until **Permanent Delete** is used.
+6. **Minor Static Display Strings:** `SettingsFragment.kt` displays a static string `"crc_workstation.db (v3)"` (actual schema is `v4`), and static descriptive text in `SettingsFragment` / `PdfReportGenerator` labels Phikon-v2 as `"ViT-B/16"` in prose (actual `1024`-D Phikon-v2 architecture is `ViT-L/16`), without affecting tensor dimensions or inference math. Similarly, `AuthenticBundleLoader.parseCrcbBinary` checks `!isZeroHash(visionHashBytes)` when guarding both vision and text SHA-256 checks (both hashes are non-zero in all standard exported bundles).
+
+---
+
+## 28. Proposed Future Improvements
+
+*(The items below are **proposed future work** and are **not** currently implemented in the repository:)*
+
+- Persist user theme preference (`System` / `Light` / `Dark`) in `SharedPreferences` across cold app restarts.
+- Add a Storage Access Framework (`OpenDocument`) button on `CohortEvaluationFragment` to wire `ReferenceLabelImporter.parseJson` / `parseCsv` for custom external validation cohorts.
+- Propagate `batch_items.is_archived` filtering into `ResearchAnalyticsEngine.buildUnifiedRecords()` so soft-archived batch specimens are also excluded from Cohort Evaluation and Analytics without requiring permanent deletion.
+- Render patch-level `attention_weights` (`[1, 1, N]`) returned by `CrcMultimodalClassifier` as an interactive top-attended patch index chart inside `FindingsFragment`.
+- Evaluate optional quantized encoder distillation or server-assisted preprocessing while preserving strict offline-first operation.
+
+---
+
+## 29. Visual Diagrams and Optional Screenshots
+
+### Architecture & Pipeline Diagrams Included in Repository
+High-resolution vector and raster diagrams are available under [`docs/diagrams/`](docs/diagrams/) and sample desktop XAI outputs under [`assets/medical_images/`](assets/medical_images/):
+- [`docs/diagrams/01_system_architecture.svg`](docs/diagrams/01_system_architecture.svg) — End-to-end multimodal pipeline
+- [`docs/diagrams/03_model_architecture_comparison.svg`](docs/diagrams/03_model_architecture_comparison.svg) — Late-Fusion AB-MIL vs. Cross-Attention comparison
+- [`docs/diagrams/05_deployment_architecture.svg`](docs/diagrams/05_deployment_architecture.svg) — Desktop & Android ONNX deployment topology
+- [`docs/diagrams/08_xai_stack.svg`](docs/diagrams/08_xai_stack.svg) — Three-tier Explainable AI hierarchy
+- [`assets/medical_images/XAI_Report_TCGA-D5-6928.png`](assets/medical_images/XAI_Report_TCGA-D5-6928.png) — Sample TCGA-COAD XAI visual output
+
+### Optional: Adding Android Device Screenshots Later
+No physical-device UI screenshots are currently tracked in `docs/` so the repository remains lightweight. To add screenshots later:
+1. Create a screenshot directory and capture a frame over `adb` without personal status-bar notifications:
+   ```powershell
+   New-Item -ItemType Directory -Force -Path docs\screenshots
+   adb exec-out screencap -p > docs\screenshots\workspace.png
+   ```
+2. Reference the committed image using standard relative Markdown syntax:
+   ```markdown
+   ![Android Workspace Screen](docs/screenshots/workspace.png)
+   ```
+
+---
+
+## 30. Research-Use and Medical Disclaimer
+
+> [!WARNING]
+> **INVESTIGATIONAL COMPUTATIONAL PATHOLOGY SOFTWARE — NOT FOR CLINICAL USE**
+> - EdgeCRC-AI is developed strictly for academic research, algorithmic benchmarking, and educational exploration of multimodal edge AI.
+> - It is **not** a certified medical device and has **not** undergone clinical trials or regulatory clearance (FDA, CE-IVDR, CDSCO, or equivalent).
+> - Model predictions (`MSI` / `MSS` classifications, probabilities, decision margins, and generated PDF/JSON reports) must **never** be used to diagnose patients, guide immunotherapy or chemotherapy selection, or replace gold-standard clinical Immunohistochemistry (`IHC`), `PCR`, or `NGS` mismatch-repair testing.
+
+---
+
+## 31. Author
+
+**Prajwal G N**
+- GitHub: https://github.com/PrajwalGN1/
+- Project: EdgeCRC-AI
+- Repository: https://github.com/PrajwalGN1/EdgeCRC-AI
+
+Project developer of the **EdgeCRC-AI** multimodal colorectal cancer detection and offline Android ONNX Runtime edge workstation repository.
+
+---
+
+## 32. Acknowledgements and References
+
+- **Academic Guidance:** Mr Nageshwara Guptha (8th Semester Capstone Project Mentor, documented in [`PB05_Report_8thSem.pdf`](PB05_Report_8thSem.pdf)).
+- **Phikon-v2 Vision Foundation Model:** Filiot et al., Owkin — *Scaling Self-Supervised Learning for Histopathology with Masked Image Modeling / Phikon-v2* (`owkin/phikon-v2`).
+- **Bio_ClinicalBERT Language Model:** Alsentzer et al. — *Publicly Available Clinical BERT Embeddings*, Clinical NLP Workshop / NAACL (`emilyalsentzer/Bio_ClinicalBERT`).
+- **Cohort Data Source:** The Cancer Genome Atlas Colorectal Adenocarcinoma (**TCGA-COAD**) Research Network (publicly accessible de-identified histopathology and clinical records).
+- **Inference Engine:** Microsoft **ONNX Runtime** (`onnxruntime` & `onnxruntime-android` `1.18.0`).
+
+---
+
+## 33. License Status
+
+No `LICENSE` file is currently present in this repository. Under standard copyright law and GitHub policy, all rights remain reserved by default unless and until an explicit license file is added by the repository owner.

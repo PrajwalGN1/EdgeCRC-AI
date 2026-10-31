@@ -1,64 +1,133 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Brand / Clinical Primary: Midnight Navy & Deep Slate -->
-    <color name="primary">#0F172A</color>
-    <color name="primary_variant">#1E293B</color>
-    <color name="on_primary">#FFFFFF</color>
+    <!-- ================================================================= -->
+    <!-- HUMAN-CENTRED HEALTHCARE PALETTE: LIGHT THEME TOKENS              -->
+    <!-- Restrained clinical palette inspired by hospital digital systems  -->
+    <!-- ================================================================= -->
 
-    <!-- Accent: Medical Teal / Deep Teal -->
-    <color name="secondary">#0D9488</color>
-    <color name="secondary_variant">#0F766E</color>
-    <color name="on_secondary">#FFFFFF</color>
-    <color name="teal_light">#CCFBF1</color>
-    <color name="teal_dark">#0F766E</color>
+    <!-- Surfaces & Backgrounds -->
+    <color name="bg_light">#F5F8FC</color>
+    <color name="surface_light">#FFFFFF</color>
+    <color name="surface_variant_light">#EEF3F8</color>
+    <color name="card_stroke_light">#D6E0EA</color>
+    <color name="border_light">#D6E0EA</color>
+    <color name="divider_light">#D6E0EA</color>
+
+    <!-- Typography Tokens (High Contrast) -->
+    <color name="text_primary_light">#172B4D</color>     <!-- Contrast on #FFFFFF: 13.5:1 (AAA) -->
+    <color name="text_secondary_light">#52657A</color>   <!-- Contrast on #FFFFFF: 6.3:1 (AA) -->
+    <color name="text_supporting_light">#5E7186</color>  <!-- Contrast on #FFFFFF: 5.1:1 (AA) -->
+    <color name="text_muted_light">#5E7186</color>
+
+    <!-- Clinical Brand Tokens -->
+    <color name="clinical_blue_light">#1769AA</color>    <!-- Primary clinical blue -->
+    <color name="clinical_blue_dark_light">#124E7A</color> <!-- Dark blue for selected emphasis -->
+    <color name="clinical_teal_light">#16877A</color>    <!-- Restrained teal accent -->
 
     <!-- Operational Status Indicators -->
-    <color name="status_success">#10B981</color>
-    <color name="status_success_bg">#D1FAE5</color>
-    <color name="status_pending">#F59E0B</color>
+    <color name="status_success_light">#18794E</color>
+    <color name="status_success_bg_light">#E6F4EA</color>
+    <color name="status_warning_light">#946200</color>
+    <color name="status_warning_bg_light">#FEF3C7</color>
+    <color name="status_error_light">#B42318</color>
+    <color name="status_error_bg_light">#FEE2E2</color>
+
+    <!-- Diagnostic Markers -->
+    <color name="msi_color_light">#16877A</color>
+    <color name="msi_bg_light">#E6F7F5</color>
+    <color name="mss_color_light">#1769AA</color>
+    <color name="mss_bg_light">#EFF6FC</color>
+    <color name="threshold_marker_light">#946200</color>
+    <color name="gauge_track_light">#D6E0EA</color>
+
+    <!-- ================================================================= -->
+    <!-- DEFAULT SEMANTIC RESOLUTION (LIGHT MODE)                          -->
+    <!-- These semantic tokens adapt automatically across Day / Night      -->
+    <!-- ================================================================= -->
+    <color name="app_background">@color/bg_light</color>
+    <color name="app_surface">@color/surface_light</color>
+    <color name="app_surface_variant">@color/surface_variant_light</color>
+    <color name="card_stroke">@color/card_stroke_light</color>
+    <color name="border_color">@color/border_light</color>
+    <color name="divider_color">@color/divider_light</color>
+
+    <color name="text_primary">@color/text_primary_light</color>
+    <color name="text_secondary">@color/text_secondary_light</color>
+    <color name="text_supporting">@color/text_supporting_light</color>
+    <color name="text_muted">@color/text_supporting_light</color>
+
+    <color name="primary">@color/clinical_blue_light</color>
+    <color name="primary_variant">@color/clinical_blue_dark_light</color>
+    <color name="on_primary">#FFFFFF</color>
+    <color name="secondary">@color/clinical_teal_light</color>
+    <color name="secondary_variant">#0F766E</color>
+    <color name="on_secondary">#FFFFFF</color>
+    <color name="teal_light">#E6F7F5</color>
+    <color name="teal_dark">#0F766E</color>
+    <color name="primary_dark">@color/clinical_blue_dark_light</color>
+
+    <color name="status_success">@color/status_success_light</color>
+    <color name="status_success_bg">@color/status_success_bg_light</color>
+    <color name="status_warning">@color/status_warning_light</color>
+    <color name="status_warning_bg">@color/status_warning_bg_light</color>
+    <color name="status_error">@color/status_error_light</color>
+    <color name="status_error_bg">@color/status_error_bg_light</color>
+    <color name="status_pending">#946200</color>
     <color name="status_pending_bg">#FEF3C7</color>
-    <color name="status_warning">#B45309</color>
-    <color name="status_warning_bg">#FFEDD5</color>
-    <color name="status_error">#B91C1C</color>
-    <color name="status_error_bg">#FEE2E2</color>
+    <color name="status_failed">@color/status_error_light</color>
+    <color name="status_failed_bg">@color/status_error_bg_light</color>
 
-    <!-- Light Theme Surface & Text Palette -->
-    <color name="background_light">#F8FAFC</color>
-    <color name="surface_light">#FFFFFF</color>
-    <color name="surface_variant_light">#F1F5F9</color>
-    <color name="text_primary_light">#0F172A</color>
-    <color name="text_secondary_light">#475569</color>
-    <color name="text_muted_light">#64748B</color>
-    <color name="card_stroke_light">#E2E8F0</color>
-    <color name="border_light">#E2E8F0</color>
-    <color name="divider_light">#E2E8F0</color>
+    <!-- Batch Analysis Healthcare Status Tokens -->
+    <color name="batch_status_mss">#2ECC9A</color>       <!-- Green -->
+    <color name="batch_status_msi">#F56B70</color>       <!-- Coral Red -->
+    <color name="batch_status_failed">#F59E0B</color>    <!-- Amber Orange -->
+    <color name="batch_status_rejected">#D6A83D</color>  <!-- Gold -->
+    <color name="batch_status_text">#101820</color>      <!-- Dark Navy for High Contrast (AAA) -->
 
-    <!-- Dark Theme Surface & Text Palette -->
-    <color name="background_dark">#0B0F17</color>
-    <color name="surface_dark">#151C28</color>
-    <color name="surface_variant_dark">#1E293B</color>
-    <color name="text_primary_dark">#F8FAFC</color>
-    <color name="text_secondary_dark">#94A3B8</color>
-    <color name="text_muted_dark">#64748B</color>
-    <color name="card_stroke_dark">#334155</color>
-    <color name="border_dark">#334155</color>
-    <color name="divider_dark">#334155</color>
+    <color name="msi_color">@color/msi_color_light</color>
+    <color name="msi_bg">@color/msi_bg_light</color>
+    <color name="mss_color">@color/mss_color_light</color>
+    <color name="mss_bg">@color/mss_bg_light</color>
+    <color name="threshold_marker">@color/threshold_marker_light</color>
+    <color name="gauge_track">@color/gauge_track_light</color>
 
-    <!-- Decision & Diagnostic Tokens -->
-    <color name="msi_color">#0D9488</color>
-    <color name="msi_bg_light">#E6FFFA</color>
+    <color name="console_bg">#172B4D</color>
+    <color name="console_text">#F5F8FC</color>
+
+    <!-- Raw Constants -->
+    <color name="background_light">@color/bg_light</color>
+    <color name="background_dark">#101820</color>
+    <color name="surface_dark">#18232E</color>
+    <color name="surface_variant_dark">#202E3B</color>
+    <color name="text_primary_dark">#F4F7FA</color>
+    <color name="text_secondary_dark">#D1DBE5</color>
+    <color name="text_muted_dark">#B8C7D6</color>
+    <color name="card_stroke_dark">#435364</color>
+    <color name="border_dark">#435364</color>
+    <color name="divider_dark">#435364</color>
     <color name="msi_bg_dark">#042F2E</color>
-    <color name="mss_color">#2563EB</color>
-    <color name="mss_bg_light">#EFF6FF</color>
     <color name="mss_bg_dark">#172554</color>
-    <color name="threshold_marker">#D97706</color>
-    <color name="gauge_track">#E2E8F0</color>
-    <color name="gauge_track_dark">#334155</color>
-
-    <!-- Console / Code Surfaces -->
-    <color name="console_bg">#0F172A</color>
-    <color name="console_text">#E2E8F0</color>
+    <color name="gauge_track_dark">#435364</color>
 
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
+
+    <!-- Specimen Ingestion Input Field Tokens -->
+    <color name="field_stroke_default">#60758A</color>
+    <color name="field_stroke_focused">#1976D2</color>
+    <color name="field_stroke_error">#D32F2F</color>
+    <color name="field_bg">#F8FAFC</color>
+    <color name="field_text_primary">#0F172A</color>
+    <color name="field_text_hint">#64748B</color>
+
+    <!-- Batch Selection Action Button Tokens (Light Mode) -->
+    <color name="bulk_action_surface">#FFFFFF</color>
+    <color name="bulk_action_outline">#60758A</color>
+    <color name="bulk_action_outline_disabled">#B8C7D6</color>
+    <color name="bulk_action_fg">#172B4D</color>
+    <color name="bulk_action_fg_disabled">#6E8094</color>
+    <color name="bulk_delete_fg">#B42318</color>
+    <color name="bulk_delete_fg_disabled">#D47A74</color>
+    <color name="bulk_delete_outline">#D32F2F</color>
+    <color name="bulk_delete_outline_disabled">#E5A19C</color>
 </resources>

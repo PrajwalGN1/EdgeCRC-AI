@@ -1,0 +1,6 @@
+specimen_id,format,patch_count,file_size_bytes,tensor_memory_bytes,avg_parse_time_ms,avg_validation_time_ms,avg_onnx_inference_ms,avg_end_to_end_ms,msi_probability,predicted_class
+TCGA-A6-3807,CRCB_v2,613,2514028,2513920,1.118,7.8,22.451,31.37,0.002325,MSS
+TCGA-A6-6138,CRCB_v2,113,466028,465920,0.139,1.481,4.09,5.71,0.762421,MSS
+TCGA-CM-6675,CRCB_v2,541,2219116,2219008,0.971,5.569,18.102,24.642,0.16225,MSS
+TCGA-D5-6540,CRCB_v2,345,1416300,1416192,0.516,3.513,10.626,14.655,0.990385,MSI
+TCGA-A6-3807,JSON_v2,613,3352483,2513920,30.05,8.978,18.62,57.647,0.002325,MSS

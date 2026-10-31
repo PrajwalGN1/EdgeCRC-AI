@@ -1,0 +1,161 @@
+{
+  "phase": "PHASE_5",
+  "benchmark_type": "AUTHENTIC_BUNDLE_INGESTION_AND_INFERENCE",
+  "model_path": "android/app/src/main/assets/models/fusion_model_fp32.onnx",
+  "model_sha256": "0402f6c522beac5733e30eeecad908927957b5d4164b6b896663f43ba3702d73",
+  "threshold": 0.83,
+  "intra_op_threads": 2,
+  "execution_provider": "CPUExecutionProvider",
+  "results": [
+    {
+      "specimen_id": "TCGA-A6-3807",
+      "bundle_file": "TCGA-A6-3807.crcbundle",
+      "format": "CRCB_v2",
+      "file_size_bytes": 2514028,
+      "patch_count": 613,
+      "vision_shape": [
+        1,
+        613,
+        1024
+      ],
+      "text_shape": [
+        1,
+        768
+      ],
+      "tensor_memory_bytes": 2513920,
+      "avg_parse_time_ms": 1.118,
+      "std_parse_time_ms": 0.177,
+      "avg_validation_time_ms": 7.8,
+      "std_validation_time_ms": 2.343,
+      "avg_onnx_inference_ms": 22.451,
+      "std_onnx_inference_ms": 3.71,
+      "p95_onnx_inference_ms": 30.05,
+      "avg_end_to_end_ms": 31.37,
+      "output_logit": -6.061559,
+      "msi_probability": 0.002325,
+      "predicted_class": "MSS",
+      "threshold": 0.83,
+      "provenance": "AUTHENTIC_IMPORTED"
+    },
+    {
+      "specimen_id": "TCGA-A6-6138",
+      "bundle_file": "TCGA-A6-6138.crcbundle",
+      "format": "CRCB_v2",
+      "file_size_bytes": 466028,
+      "patch_count": 113,
+      "vision_shape": [
+        1,
+        113,
+        1024
+      ],
+      "text_shape": [
+        1,
+        768
+      ],
+      "tensor_memory_bytes": 465920,
+      "avg_parse_time_ms": 0.139,
+      "std_parse_time_ms": 0.057,
+      "avg_validation_time_ms": 1.481,
+      "std_validation_time_ms": 0.264,
+      "avg_onnx_inference_ms": 4.09,
+      "std_onnx_inference_ms": 0.796,
+      "p95_onnx_inference_ms": 6.045,
+      "avg_end_to_end_ms": 5.71,
+      "output_logit": 1.165999,
+      "msi_probability": 0.762421,
+      "predicted_class": "MSS",
+      "threshold": 0.83,
+      "provenance": "AUTHENTIC_IMPORTED"
+    },
+    {
+      "specimen_id": "TCGA-CM-6675",
+      "bundle_file": "TCGA-CM-6675.crcbundle",
+      "format": "CRCB_v2",
+      "file_size_bytes": 2219116,
+      "patch_count": 541,
+      "vision_shape": [
+        1,
+        541,
+        1024
+      ],
+      "text_shape": [
+        1,
+        768
+      ],
+      "tensor_memory_bytes": 2219008,
+      "avg_parse_time_ms": 0.971,
+      "std_parse_time_ms": 0.131,
+      "avg_validation_time_ms": 5.569,
+      "std_validation_time_ms": 0.571,
+      "avg_onnx_inference_ms": 18.102,
+      "std_onnx_inference_ms": 3.095,
+      "p95_onnx_inference_ms": 25.674,
+      "avg_end_to_end_ms": 24.642,
+      "output_logit": -1.641585,
+      "msi_probability": 0.16225,
+      "predicted_class": "MSS",
+      "threshold": 0.83,
+      "provenance": "AUTHENTIC_IMPORTED"
+    },
+    {
+      "specimen_id": "TCGA-D5-6540",
+      "bundle_file": "TCGA-D5-6540.crcbundle",
+      "format": "CRCB_v2",
+      "file_size_bytes": 1416300,
+      "patch_count": 345,
+      "vision_shape": [
+        1,
+        345,
+        1024
+      ],
+      "text_shape": [
+        1,
+        768
+      ],
+      "tensor_memory_bytes": 1416192,
+      "avg_parse_time_ms": 0.516,
+      "std_parse_time_ms": 0.116,
+      "avg_validation_time_ms": 3.513,
+      "std_validation_time_ms": 0.307,
+      "avg_onnx_inference_ms": 10.626,
+      "std_onnx_inference_ms": 2.027,
+      "p95_onnx_inference_ms": 15.062,
+      "avg_end_to_end_ms": 14.655,
+      "output_logit": 4.634805,
+      "msi_probability": 0.990385,
+      "predicted_class": "MSI",
+      "threshold": 0.83,
+      "provenance": "AUTHENTIC_IMPORTED"
+    },
+    {
+      "specimen_id": "TCGA-A6-3807",
+      "bundle_file": "TCGA-A6-3807.crcmanifest.json",
+      "format": "JSON_v2",
+      "file_size_bytes": 3352483,
+      "patch_count": 613,
+      "vision_shape": [
+        1,
+        613,
+        1024
+      ],
+      "text_shape": [
+        1,
+        768
+      ],
+      "tensor_memory_bytes": 2513920,
+      "avg_parse_time_ms": 30.05,
+      "std_parse_time_ms": 0.0,
+      "avg_validation_time_ms": 8.978,
+      "std_validation_time_ms": 0.0,
+      "avg_onnx_inference_ms": 18.62,
+      "std_onnx_inference_ms": 2.746,
+      "p95_onnx_inference_ms": 24.851,
+      "avg_end_to_end_ms": 57.647,
+      "output_logit": -6.061559,
+      "msi_probability": 0.002325,
+      "predicted_class": "MSS",
+      "threshold": 0.83,
+      "provenance": "AUTHENTIC_IMPORTED"
+    }
+  ]
+}

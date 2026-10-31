@@ -87,12 +87,52 @@ class CrcMultimodalClassifier private constructor(
             require(outputNames.contains(OUTPUT_ATTENTION_NAME)) {
                 "Model is missing required output: $OUTPUT_ATTENTION_NAME (found: $outputNames)"
             }
+
+            CrcLogger.i("[MODEL_VALIDATE_SUCCESS] Session inputs: $inputNames | Session outputs: $outputNames")
+            try {
+                for (name in inputNames) {
+                    val info = session.inputInfo[name]
+                    CrcLogger.i("[ONNX_INPUT_CONTRACT] Input '$name': $info")
+                }
+                for (name in outputNames) {
+                    val info = session.outputInfo[name]
+                    CrcLogger.i("[ONNX_OUTPUT_CONTRACT] Output '$name': $info")
+                }
+            } catch (t: Throwable) {
+                CrcLogger.d("Detailed node info extraction unavailable: ${t.message}")
+            }
         }
     }
 
     private val executionLock = Any()
     @Volatile
     private var isClosed = false
+
+    /**
+     * Executes authentic specimen multimodal fusion inference.
+     * Enforces that the input tensors originate from a verified authentic feature bundle or benchmark reference.
+     * Fails closed if synthetic or demonstration data is passed.
+     */
+    fun predictAuthentic(
+        visionData: FloatArray,
+        numPatches: Int,
+        textData: FloatArray,
+        caseId: String,
+        provenance: InputProvenance,
+        protocol: InferenceProtocol = InferenceProtocol.PROTOCOL_1_CAPPED
+    ): InferenceResult {
+        require(provenance == InputProvenance.AUTHENTIC_IMPORTED || provenance == InputProvenance.BENCHMARK_REFERENCE) {
+            "Authentic feature embeddings are required. Import a validated vision and clinical-text tensor pair before running inference."
+        }
+        return predict(
+            visionData = visionData,
+            numPatches = numPatches,
+            textData = textData,
+            caseId = caseId,
+            protocol = protocol,
+            provenance = provenance
+        )
+    }
 
     /**
      * Executes single-patient multimodal fusion inference under an explicit protocol.
@@ -102,17 +142,23 @@ class CrcMultimodalClassifier private constructor(
      * @param textData Flattened float array representing [1, 768].
      * @param caseId Optional patient or deidentified case identifier.
      * @param protocol Explicit evaluation protocol (default: PROTOCOL_1_CAPPED).
-     * @return InferenceResult containing probability, logit, predicted class, and attention weights.
+     * @param provenance Provenance of input tensors (default: AUTHENTIC_IMPORTED).
+     * @return InferenceResult containing probability, logit, predicted class, attention weights, and provenance.
      */
     fun predict(
         visionData: FloatArray,
         numPatches: Int,
         textData: FloatArray,
         caseId: String? = null,
-        protocol: InferenceProtocol = InferenceProtocol.PROTOCOL_1_CAPPED
+        protocol: InferenceProtocol = InferenceProtocol.PROTOCOL_1_CAPPED,
+        provenance: InputProvenance = InputProvenance.AUTHENTIC_IMPORTED
     ): InferenceResult {
         if (isClosed) {
             throw IllegalStateException("Classifier session is already closed.")
+        }
+
+        if (provenance == InputProvenance.DEMONSTRATION_SIMULATED) {
+            CrcLogger.w("[SIMULATED_DEMO_WARNING] Case: ${caseId ?: "ANONYMOUS"} executed with DEMONSTRATION vectors. NOT VALID CLINICAL OR PARITY INFERENCE.")
         }
 
         // 1. Strict input validation with explicit protocol policy
@@ -120,6 +166,11 @@ class CrcMultimodalClassifier private constructor(
         InputValidator.validateText(textData)
 
         val startTime = System.currentTimeMillis()
+        CrcLogger.i(
+            "[INFERENCE_START] Case: ${caseId ?: "ANONYMOUS"} | Protocol: ${protocol.name} | Provenance: ${provenance.name} | " +
+            "Patches: $numPatches | ExpectedVisionShape: [1, $numPatches, 1024] (Float32) | " +
+            "ExpectedTextShape: [1, 768] (Float32)"
+        )
 
         // 2. Synchronized execution to enforce single-case execution and thread safety
         synchronized(executionLock) {
@@ -195,6 +246,15 @@ class CrcMultimodalClassifier private constructor(
                 val predictedClass = ThresholdLogic.classify(probabilityValue)
                 val predictedLabel = ThresholdLogic.labelFor(predictedClass)
 
+                CrcLogger.i(
+                    "[INFERENCE_COMPLETE] Case: ${caseId ?: "ANONYMOUS"} | Protocol: ${protocol.name} | " +
+                    "Patches: $numPatches | RawLogit: ${String.format(java.util.Locale.US, "%.5f", logitValue)} | " +
+                    "MSIProbability: ${String.format(java.util.Locale.US, "%.5f", probabilityValue)} | " +
+                    "Threshold: ${ThresholdLogic.OPERATING_THRESHOLD} | " +
+                    "Class: $predictedClass ($predictedLabel) | " +
+                    "Latency: ${latency}ms"
+                )
+
                 return InferenceResult(
                     caseId = caseId,
                     predictedClass = predictedClass,
@@ -204,10 +264,15 @@ class CrcMultimodalClassifier private constructor(
                     threshold = ThresholdLogic.OPERATING_THRESHOLD,
                     numPatches = numPatches,
                     protocol = protocol,
+                    provenance = provenance,
                     attentionWeights = attentionArray,
                     latencyMs = latency
                 )
             } catch (e: Exception) {
+                CrcLogger.e(
+                    "[INFERENCE_FAILED] Case: ${caseId ?: "ANONYMOUS"} | Protocol: ${protocol.name} | Error: ${e.message}",
+                    e
+                )
                 if (e is IllegalArgumentException) throw e
                 if (e is InferenceException) throw e
                 throw InferenceException("Failed executing ONNX inference for case $caseId: ${e.message}", e)

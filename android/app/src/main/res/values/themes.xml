@@ -1,67 +1,118 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base Application Theme inheriting from MaterialComponents DayNight NoActionBar -->
+    <!-- Base Healthcare Application Theme -->
     <style name="Theme.CrcMultimodal" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <!-- Primary Brand Tokens -->
-        <item name="colorPrimary">@color/secondary</item>
-        <item name="colorPrimaryVariant">@color/secondary_variant</item>
-        <item name="colorOnPrimary">@color/white</item>
+        <!-- Brand & Clinical Tokens -->
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryVariant">@color/primary_variant</item>
+        <item name="colorOnPrimary">@color/on_primary</item>
 
-        <!-- Secondary Tokens -->
-        <item name="colorSecondary">@color/primary</item>
-        <item name="colorSecondaryVariant">@color/primary_variant</item>
-        <item name="colorOnSecondary">@color/white</item>
+        <item name="colorSecondary">@color/secondary</item>
+        <item name="colorSecondaryVariant">@color/secondary_variant</item>
+        <item name="colorOnSecondary">@color/on_secondary</item>
 
-        <!-- Background & Surface -->
-        <item name="android:colorBackground">@color/background_light</item>
-        <item name="colorSurface">@color/surface_light</item>
-        <item name="colorOnSurface">@color/text_primary_light</item>
+        <!-- Semantic Surfaces and Backgrounds -->
+        <item name="android:colorBackground">@color/app_background</item>
+        <item name="colorSurface">@color/app_surface</item>
+        <item name="colorOnSurface">@color/text_primary</item>
+        <item name="android:textColorPrimary">@color/text_primary</item>
+        <item name="android:textColorSecondary">@color/text_secondary</item>
 
-        <!-- System Bars (Light Mode: subtle status bar with dark icons) -->
-        <item name="android:statusBarColor">@color/background_light</item>
+        <!-- System Window Decor (Clean, Flat, Professional) -->
+        <item name="android:statusBarColor">@color/app_surface</item>
         <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
-        <item name="android:navigationBarColor">@color/surface_light</item>
+        <item name="android:navigationBarColor">@color/app_surface</item>
         <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">true</item>
-        <item name="android:windowBackground">@color/background_light</item>
+        <item name="android:windowBackground">@color/app_background</item>
 
-        <!-- Component Styling Overrides -->
+        <!-- Component Theme Defaults -->
         <item name="materialCardViewStyle">@style/Widget.CrcMultimodal.CardView</item>
         <item name="materialButtonStyle">@style/Widget.CrcMultimodal.Button.Primary</item>
+        <item name="textInputStyle">@style/Widget.CrcMultimodal.TextInputLayout</item>
     </style>
 
-    <!-- Custom Material Card Default Style -->
+    <!-- Clean Healthcare Card: subtle border, zero exaggerated glow, crisp background -->
     <style name="Widget.CrcMultimodal.CardView" parent="Widget.MaterialComponents.CardView">
         <item name="cardCornerRadius">@dimen/card_corner_radius</item>
         <item name="cardElevation">@dimen/card_elevation</item>
         <item name="strokeWidth">@dimen/card_stroke_width</item>
-        <item name="strokeColor">@color/card_stroke_light</item>
-        <item name="cardBackgroundColor">@color/surface_light</item>
+        <item name="strokeColor">@color/card_stroke</item>
+        <item name="cardBackgroundColor">@color/app_surface</item>
     </style>
 
-    <!-- Primary Action Button Style -->
+    <!-- Primary Clinical Action Button -->
     <style name="Widget.CrcMultimodal.Button.Primary" parent="Widget.MaterialComponents.Button">
-        <item name="backgroundTint">@color/secondary</item>
+        <item name="backgroundTint">@color/primary</item>
         <item name="android:textColor">@color/white</item>
-        <item name="cornerRadius">@dimen/card_corner_radius_sm</item>
+        <item name="cornerRadius">@dimen/button_corner_radius</item>
         <item name="android:minHeight">@dimen/min_touch_target</item>
-        <item name="android:letterSpacing">0.02</item>
+        <item name="android:letterSpacing">0.01</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">14sp</item>
+        <item name="elevation">0dp</item>
+    </style>
+
+    <!-- Secondary Outlined Healthcare Button -->
+    <style name="Widget.CrcMultimodal.Button.Outlined" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="strokeColor">@color/border_color</item>
+        <item name="strokeWidth">1dp</item>
+        <item name="cornerRadius">@dimen/button_corner_radius</item>
+        <item name="android:minHeight">@dimen/min_touch_target</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <!-- Text / Flat Action Button -->
+    <style name="Widget.CrcMultimodal.Button.Text" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:textColor">@color/primary</item>
+        <item name="cornerRadius">@dimen/button_corner_radius</item>
+        <item name="android:minHeight">@dimen/min_touch_target</item>
+        <item name="android:textSize">13sp</item>
         <item name="android:textStyle">bold</item>
     </style>
 
-    <!-- Secondary Outlined Button Style -->
-    <style name="Widget.CrcMultimodal.Button.Outlined" parent="Widget.MaterialComponents.Button.OutlinedButton">
-        <item name="android:textColor">@color/secondary</item>
-        <item name="strokeColor">@color/secondary</item>
-        <item name="strokeWidth">1dp</item>
-        <item name="cornerRadius">@dimen/card_corner_radius_sm</item>
-        <item name="android:minHeight">@dimen/min_touch_target</item>
+    <!-- Clean Outlined TextInputLayout with readable labels and helpers -->
+    <style name="Widget.CrcMultimodal.TextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="boxStrokeColor">@color/border_color</item>
+        <item name="boxStrokeWidth">1dp</item>
+        <item name="boxCornerRadiusTopStart">@dimen/card_corner_radius_sm</item>
+        <item name="boxCornerRadiusTopEnd">@dimen/card_corner_radius_sm</item>
+        <item name="boxCornerRadiusBottomStart">@dimen/card_corner_radius_sm</item>
+        <item name="boxCornerRadiusBottomEnd">@dimen/card_corner_radius_sm</item>
+        <item name="hintTextColor">@color/primary</item>
+        <item name="helperTextTextColor">@color/text_supporting</item>
     </style>
 
-    <!-- Section Header Text -->
+    <!-- High-Visibility Specimen Ingestion TextInputLayout (Light Mode) -->
+    <style name="Widget.CrcMultimodal.TextInputLayout.SpecimenField" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="boxBackgroundMode">outline</item>
+        <item name="boxBackgroundColor">@color/field_bg</item>
+        <item name="boxStrokeColor">@color/field_box_stroke_selector</item>
+        <item name="boxStrokeErrorColor">@color/field_stroke_error</item>
+        <item name="boxStrokeWidth">@dimen/input_field_stroke_width</item>
+        <item name="boxStrokeWidthFocused">@dimen/input_field_stroke_width_focused</item>
+        <item name="boxCornerRadiusTopStart">@dimen/input_field_corner_radius</item>
+        <item name="boxCornerRadiusTopEnd">@dimen/input_field_corner_radius</item>
+        <item name="boxCornerRadiusBottomStart">@dimen/input_field_corner_radius</item>
+        <item name="boxCornerRadiusBottomEnd">@dimen/input_field_corner_radius</item>
+        <item name="hintTextColor">@color/field_hint_selector</item>
+        <item name="android:textColorHint">@color/field_text_hint</item>
+        <item name="placeholderTextColor">@color/field_text_hint</item>
+        <item name="helperTextTextColor">@color/text_supporting</item>
+        <item name="errorTextColor">@color/field_stroke_error</item>
+    </style>
+
+    <!-- Section Header Text (Restrained, uppercase, readable) -->
     <style name="TextAppearance.CrcMultimodal.SectionHeader" parent="TextAppearance.MaterialComponents.Subtitle2">
         <item name="android:textSize">12sp</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:textColor">@color/secondary</item>
-        <item name="android:letterSpacing">0.06</item>
+        <item name="android:textColor">@color/text_secondary</item>
+        <item name="android:letterSpacing">0.05</item>
+    </style>
+
+    <!-- Subtitle / Meta Text (High Contrast) -->
+    <style name="TextAppearance.CrcMultimodal.Metadata" parent="TextAppearance.MaterialComponents.Caption">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@color/text_secondary</item>
     </style>
 </resources>

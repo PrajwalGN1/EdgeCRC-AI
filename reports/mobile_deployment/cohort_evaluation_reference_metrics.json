@@ -1,0 +1,1244 @@
+{
+  "protocol_1": {
+    "total_cases": 66,
+    "decision_threshold": 0.83,
+    "confusion_matrix": {
+      "tp": 12,
+      "tn": 47,
+      "fp": 3,
+      "fn": 4
+    },
+    "metrics": {
+      "accuracy": 0.8939393939393939,
+      "precision": 0.8,
+      "recall_sensitivity": 0.75,
+      "specificity": 0.94,
+      "balanced_accuracy": 0.845,
+      "npv": 0.9215686274509803,
+      "f1_score": 0.7741935483870968,
+      "roc_auc_sklearn": 0.92625,
+      "roc_auc_manual": 0.92625,
+      "pr_auc_sklearn": 0.8220459487518146,
+      "pr_auc_manual": 0.8220459487518145
+    },
+    "roc_curve_points_count": 67,
+    "pr_curve_points_count": 66,
+    "specimens": [
+      {
+        "specimen_id": "TCGA-D5-6540",
+        "ground_truth_label": 1,
+        "ground_truth_class": "MSI",
+        "predicted_probability": 0.990385,
+        "predicted_class": 1,
+        "predicted_label": "MSI",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-CM-6675",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.16225,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-AA-3877",
+        "ground_truth_label": 1,
+        "ground_truth_class": "MSI",
+        "predicted_probability": 0.937404,
+        "predicted_class": 1,
+        "predicted_label": "MSI",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-A6-6142",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.013114,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-AA-A03J",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.011473,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-AZ-5403",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.003447,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-AA-3681",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.09123,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-F4-6459",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.017761,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-AA-3989",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.06506,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-AF-2693",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.014129,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-DM-A0X9",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.021346,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-A6-4105",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.006736,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-EI-6507",
+        "ground_truth_label": 1,
+        "ground_truth_class": "MSI",
+        "predicted_probability": 0.994391,
+        "predicted_class": 1,
+        "predicted_label": "MSI",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-CM-6163",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.015399,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-AG-3890",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.006374,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-AG-3882",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.00276,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-AG-3902",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.041518,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-AA-3994",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.558614,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-CM-6674",
+        "ground_truth_label": 1,
+        "ground_truth_class": "MSI",
+        "predicted_probability": 0.985367,
+        "predicted_class": 1,
+        "predicted_label": "MSI",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-AY-A71X",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.728124,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-AG-4015",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.00237,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-AG-3894",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.001834,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-AZ-5407",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.295826,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-D5-6539",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.031855,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-F4-6856",
+        "ground_truth_label": 1,
+        "ground_truth_class": "MSI",
+        "predicted_probability": 0.975944,
+        "predicted_class": 1,
+        "predicted_label": "MSI",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-CM-6167",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.989148,
+        "predicted_class": 1,
+        "predicted_label": "MSI",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-G4-6320",
+        "ground_truth_label": 1,
+        "ground_truth_class": "MSI",
+        "predicted_probability": 0.146424,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-AG-3726",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.051696,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-A6-5664",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.035441,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-F4-6463",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.069602,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-F4-6854",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.065912,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-CM-5348",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.070781,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-A6-6653",
+        "ground_truth_label": 1,
+        "ground_truth_class": "MSI",
+        "predicted_probability": 0.992237,
+        "predicted_class": 1,
+        "predicted_label": "MSI",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-D5-6927",
+        "ground_truth_label": 1,
+        "ground_truth_class": "MSI",
+        "predicted_probability": 0.989086,
+        "predicted_class": 1,
+        "predicted_label": "MSI",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-AD-5900",
+        "ground_truth_label": 1,
+        "ground_truth_class": "MSI",
+        "predicted_probability": 0.860587,
+        "predicted_class": 1,
+        "predicted_label": "MSI",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-D5-6928",
+        "ground_truth_label": 1,
+        "ground_truth_class": "MSI",
+        "predicted_probability": 0.830106,
+        "predicted_class": 1,
+        "predicted_label": "MSI",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-AF-6655",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.070763,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-F5-6464",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.178422,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-AA-3693",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.002019,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-AH-6643",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.377595,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-AA-3811",
+        "ground_truth_label": 1,
+        "ground_truth_class": "MSI",
+        "predicted_probability": 0.319604,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-AA-3666",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.002958,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-A6-6137",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.332312,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-AF-2690",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.911503,
+        "predicted_class": 1,
+        "predicted_label": "MSI",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-CM-6170",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.003557,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-A6-3807",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.002325,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-A6-3809",
+        "ground_truth_label": 1,
+        "ground_truth_class": "MSI",
+        "predicted_probability": 0.991042,
+        "predicted_class": 1,
+        "predicted_label": "MSI",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-AG-3892",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.006376,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-AD-6889",
+        "ground_truth_label": 1,
+        "ground_truth_class": "MSI",
+        "predicted_probability": 0.13022,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-EF-5830",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.0125,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-DC-6683",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.130048,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-A6-6138",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.762421,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-EI-6508",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.090774,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-A6-5662",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.586794,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-AA-3875",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.002443,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-AD-6963",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.938753,
+        "predicted_class": 1,
+        "predicted_label": "MSI",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-F4-6808",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.014741,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-AA-3821",
+        "ground_truth_label": 1,
+        "ground_truth_class": "MSI",
+        "predicted_probability": 0.187694,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-D5-6534",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.817998,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-AA-3696",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.001732,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-CM-6169",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.027655,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-F5-6465",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.005316,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-AA-3845",
+        "ground_truth_label": 1,
+        "ground_truth_class": "MSI",
+        "predicted_probability": 0.986665,
+        "predicted_class": 1,
+        "predicted_label": "MSI",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-AG-A00C",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.011387,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-DC-6682",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.11875,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-AY-6197",
+        "ground_truth_label": 1,
+        "ground_truth_class": "MSI",
+        "predicted_probability": 0.992791,
+        "predicted_class": 1,
+        "predicted_label": "MSI",
+        "decision_threshold": 0.83
+      }
+    ]
+  },
+  "protocol_2": {
+    "total_cases": 66,
+    "decision_threshold": 0.83,
+    "confusion_matrix": {
+      "tp": 12,
+      "tn": 46,
+      "fp": 4,
+      "fn": 4
+    },
+    "metrics": {
+      "accuracy": 0.8787878787878788,
+      "precision": 0.75,
+      "recall_sensitivity": 0.75,
+      "specificity": 0.92,
+      "balanced_accuracy": 0.835,
+      "npv": 0.92,
+      "f1_score": 0.75,
+      "roc_auc_sklearn": 0.93375,
+      "roc_auc_manual": 0.93375,
+      "pr_auc_sklearn": 0.8368329371257595,
+      "pr_auc_manual": 0.8368329371257595
+    },
+    "roc_curve_points_count": 67,
+    "pr_curve_points_count": 66,
+    "specimens": [
+      {
+        "specimen_id": "TCGA-D5-6540",
+        "ground_truth_label": 1,
+        "ground_truth_class": "MSI",
+        "predicted_probability": 0.990385,
+        "predicted_class": 1,
+        "predicted_label": "MSI",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-CM-6675",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.16225,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-AA-3877",
+        "ground_truth_label": 1,
+        "ground_truth_class": "MSI",
+        "predicted_probability": 0.937404,
+        "predicted_class": 1,
+        "predicted_label": "MSI",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-A6-6142",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.013114,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-AA-A03J",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.011473,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-AZ-5403",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.003447,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-AA-3681",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.09123,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-F4-6459",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.017761,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-AA-3989",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.06506,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-AF-2693",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.014129,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-DM-A0X9",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.021346,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-A6-4105",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.006736,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-EI-6507",
+        "ground_truth_label": 1,
+        "ground_truth_class": "MSI",
+        "predicted_probability": 0.994391,
+        "predicted_class": 1,
+        "predicted_label": "MSI",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-CM-6163",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.015399,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-AG-3890",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.006374,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-AG-3882",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.00276,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-AG-3902",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.041518,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-AA-3994",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.558614,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-CM-6674",
+        "ground_truth_label": 1,
+        "ground_truth_class": "MSI",
+        "predicted_probability": 0.986827,
+        "predicted_class": 1,
+        "predicted_label": "MSI",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-AY-A71X",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.84075,
+        "predicted_class": 1,
+        "predicted_label": "MSI",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-AG-4015",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.00237,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-AG-3894",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.001834,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-AZ-5407",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.295826,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-D5-6539",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.031855,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-F4-6856",
+        "ground_truth_label": 1,
+        "ground_truth_class": "MSI",
+        "predicted_probability": 0.975944,
+        "predicted_class": 1,
+        "predicted_label": "MSI",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-CM-6167",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.989063,
+        "predicted_class": 1,
+        "predicted_label": "MSI",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-G4-6320",
+        "ground_truth_label": 1,
+        "ground_truth_class": "MSI",
+        "predicted_probability": 0.146424,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-AG-3726",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.051696,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-A6-5664",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.035441,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-F4-6463",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.069602,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-F4-6854",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.065912,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-CM-5348",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.070781,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-A6-6653",
+        "ground_truth_label": 1,
+        "ground_truth_class": "MSI",
+        "predicted_probability": 0.992237,
+        "predicted_class": 1,
+        "predicted_label": "MSI",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-D5-6927",
+        "ground_truth_label": 1,
+        "ground_truth_class": "MSI",
+        "predicted_probability": 0.989086,
+        "predicted_class": 1,
+        "predicted_label": "MSI",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-AD-5900",
+        "ground_truth_label": 1,
+        "ground_truth_class": "MSI",
+        "predicted_probability": 0.860587,
+        "predicted_class": 1,
+        "predicted_label": "MSI",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-D5-6928",
+        "ground_truth_label": 1,
+        "ground_truth_class": "MSI",
+        "predicted_probability": 0.830106,
+        "predicted_class": 1,
+        "predicted_label": "MSI",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-AF-6655",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.070763,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-F5-6464",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.178422,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-AA-3693",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.002019,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-AH-6643",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.377595,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-AA-3811",
+        "ground_truth_label": 1,
+        "ground_truth_class": "MSI",
+        "predicted_probability": 0.319604,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-AA-3666",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.002958,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-A6-6137",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.312592,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-AF-2690",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.911503,
+        "predicted_class": 1,
+        "predicted_label": "MSI",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-CM-6170",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.003557,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-A6-3807",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.002325,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-A6-3809",
+        "ground_truth_label": 1,
+        "ground_truth_class": "MSI",
+        "predicted_probability": 0.991042,
+        "predicted_class": 1,
+        "predicted_label": "MSI",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-AG-3892",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.006376,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-AD-6889",
+        "ground_truth_label": 1,
+        "ground_truth_class": "MSI",
+        "predicted_probability": 0.471002,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-EF-5830",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.0125,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-DC-6683",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.103183,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-A6-6138",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.762421,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-EI-6508",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.090774,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-A6-5662",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.586794,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-AA-3875",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.002443,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-AD-6963",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.938753,
+        "predicted_class": 1,
+        "predicted_label": "MSI",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-F4-6808",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.014741,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-AA-3821",
+        "ground_truth_label": 1,
+        "ground_truth_class": "MSI",
+        "predicted_probability": 0.187694,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-D5-6534",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.817998,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-AA-3696",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.001732,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-CM-6169",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.027655,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-F5-6465",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.005316,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-AA-3845",
+        "ground_truth_label": 1,
+        "ground_truth_class": "MSI",
+        "predicted_probability": 0.986665,
+        "predicted_class": 1,
+        "predicted_label": "MSI",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-AG-A00C",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.011387,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-DC-6682",
+        "ground_truth_label": 0,
+        "ground_truth_class": "MSS",
+        "predicted_probability": 0.116646,
+        "predicted_class": 0,
+        "predicted_label": "MSS",
+        "decision_threshold": 0.83
+      },
+      {
+        "specimen_id": "TCGA-AY-6197",
+        "ground_truth_label": 1,
+        "ground_truth_class": "MSI",
+        "predicted_probability": 0.993239,
+        "predicted_class": 1,
+        "predicted_label": "MSI",
+        "decision_threshold": 0.83
+      }
+    ]
+  }
+}

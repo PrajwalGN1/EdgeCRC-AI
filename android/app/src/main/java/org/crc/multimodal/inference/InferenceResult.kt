@@ -19,6 +19,7 @@ data class InferenceResult(
     val threshold: Float = 0.83f,
     val numPatches: Int,
     val protocol: InferenceProtocol = InferenceProtocol.PROTOCOL_1_CAPPED,
+    val provenance: InputProvenance = InputProvenance.AUTHENTIC_IMPORTED,
     val attentionWeights: FloatArray? = null,
     val latencyMs: Long = 0L,
     val disclaimer: String = "RESEARCH USE ONLY: Multimodal fusion research output. Not approved for clinical diagnostics."
@@ -49,6 +50,7 @@ data class InferenceResult(
         if (threshold != other.threshold) return false
         if (numPatches != other.numPatches) return false
         if (protocol != other.protocol) return false
+        if (provenance != other.provenance) return false
         if (attentionWeights != null) {
             if (other.attentionWeights == null) return false
             if (!attentionWeights.contentEquals(other.attentionWeights)) return false
@@ -68,6 +70,7 @@ data class InferenceResult(
         result = 31 * result + threshold.hashCode()
         result = 31 * result + numPatches
         result = 31 * result + protocol.hashCode()
+        result = 31 * result + provenance.hashCode()
         result = 31 * result + (attentionWeights?.contentHashCode() ?: 0)
         result = 31 * result + latencyMs.hashCode()
         result = 31 * result + disclaimer.hashCode()

@@ -82,3 +82,48 @@ venv/
 __pycache__/
 .env
 
+# Generated specimen feature bundles and bulk tensor export directories
+*.crcbundle
+*.crcmanifest.json
+artifacts/
+exports/
+data/exports/
+data/specimen_bundles/
+data/test_bundles/
+android/app/src/main/assets/bundles/
+
+# Local crash/runtime logs, device captures, and scratch workspaces
+scratch/
+crc_crash_log.txt
+crc_startup_crash.txt
+s24_runtime_log.txt
+
+# Local prompt/transcript helper scripts (machine-specific)
+tools/dump_directive.py
+tools/extract_full_directive.py
+tools/find_user_inputs.py
+tools/parse_test_summary.py
+tools/read_user_request.py
+tools/phase7_full_directive.md
+tools/phase7_master_directive.md
+
+# Local physical-device debug screenshots and audit scratch folders
+reports/mobile_deployment/*.png
+reports/mobile_deployment/android_debug_persistence_audit/
+reports/mobile_deployment/cohort_evaluation_debug/
+reports/mobile_deployment/cohort_evaluation_ui_repair/
+reports/mobile_deployment/final_validation/
+reports/mobile_deployment/onnx_runtime_status_fix/
+reports/mobile_deployment/phase4_5_audit/
+reports/mobile_deployment/phase5_1_audit/
+reports/mobile_deployment/phase6_1_2_independent_review/
+reports/mobile_deployment/phase6_1_independent_audit/
+reports/mobile_deployment/phase6_1_remediation/
+reports/mobile_deployment/phase6_2_stability_patch/
+reports/mobile_deployment/phase6_evidence/
+reports/mobile_deployment/phase7_architecture_audit/
+reports/mobile_deployment/phase7_tensor_first/
+reports/mobile_deployment/physical_device_verification/
+reports/mobile_deployment/protocol_and_report_bugfix/
+reports/mobile_deployment/ui_redesign/
+reports/mobile_deployment/vivo_y21_audit/

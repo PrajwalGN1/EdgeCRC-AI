@@ -46,6 +46,10 @@ android {
         jvmTarget = "17"
     }
 
+    testOptions {
+        unitTests.isReturnDefaultValues = true
+    }
+
     sourceSets {
         getByName("main") {
             assets.srcDirs("src/main/assets")
@@ -66,4 +70,10 @@ dependencies {
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.jetbrains.kotlin:kotlin-test:1.9.24")
     testImplementation("com.microsoft.onnxruntime:onnxruntime:1.18.0")
+    testImplementation("org.json:json:20240303")
+
+    // Android Connected Instrumentation Testing
+    androidTestImplementation("androidx.test:runner:1.5.2")
+    androidTestImplementation("androidx.test.ext:junit:1.1.5")
+    androidTestImplementation("org.jetbrains.kotlin:kotlin-test:1.9.24")
 }

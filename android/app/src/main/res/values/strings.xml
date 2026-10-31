@@ -1,33 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">CRC Multimodal Edge (Research)</string>
-    <string name="title_edge_ai">CRC Multimodal Edge AI</string>
-    <string name="subtitle_edge_ai">Cross-Attention Fusion · MSI/MSS Research</string>
-    <string name="tag_research_mode">LOCAL RESEARCH ENGINE</string>
+    <string name="app_name">CRC Research Workstation</string>
+    <string name="title_workstation">CRC Multimodal Research Workstation</string>
+    <string name="subtitle_workstation">Pathology Research Workspace</string>
+    <string name="tag_research_mode">LOCAL</string>
+
+    <!-- Navigation Destinations -->
+    <string name="nav_workspace">Workspace</string>
+    <string name="nav_cases">Cases</string>
+    <string name="nav_new_analysis">New Analysis</string>
+    <string name="nav_settings">Settings</string>
 
     <!-- Runtime Engine Statuses -->
+    <string name="status_engine_panel_title">Local Inference Engine</string>
+    <string name="status_engine_panel_model">FP32 ONNX Runtime</string>
     <string name="status_initializing">Initializing ONNX Runtime…</string>
-    <string name="status_engine_ready">ONNX Runtime Engine Ready</string>
+    <string name="status_engine_ready">Local Inference Engine: Ready</string>
+    <string name="status_engine_specs">CPU · Fixed Threshold: 0.83 · On-device · No Network Required</string>
     <string name="status_inference_running">Executing Multimodal Fusion…</string>
-    <string name="status_initialization_failed">Initialization Failed</string>
+    <string name="status_initialization_failed">Engine Unavailable</string>
     <string name="status_inference_failed">Inference Execution Error</string>
 
-    <!-- Action Buttons -->
+    <!-- Case Statuses -->
+    <string name="status_draft">Draft</string>
+    <string name="status_ready">Ready for Analysis</string>
+    <string name="status_analyzed">Analyzed</string>
+    <string name="status_under_review">Under Review</string>
+    <string name="status_reviewed">Reviewed</string>
+
+    <!-- Action Buttons & Subtitles -->
+    <string name="btn_new_specimen_analysis">New Specimen Analysis</string>
+    <string name="desc_new_specimen_analysis">Import precomputed research features and begin an analysis.</string>
+    <string name="btn_batch_analysis">Batch Cohort Analysis</string>
+    <string name="desc_batch_analysis">Validate and process a group of research specimens.</string>
+    <string name="btn_view_cases">Research Cases</string>
+    <string name="desc_view_cases">Review saved specimens and inference results.</string>
+    <string name="btn_analytics_dashboard">Research Analytics &amp; Margins</string>
+    <string name="desc_analytics_dashboard">Review cohort margins and distribution metrics.</string>
+    <string name="btn_cohort_evaluation">Cohort Evaluation &amp; Ground Truth</string>
+    <string name="desc_cohort_evaluation">Benchmark predictions against reference labels.</string>
+
     <string name="btn_run_inference">Run Research Inference</string>
     <string name="btn_run_again">Run Another Analysis</string>
+    <string name="btn_save_draft">Save Draft</string>
+    <string name="btn_continue_to_review">Continue to Review</string>
+    <string name="btn_view_report">View Research Report</string>
+    <string name="btn_manage_notes">Review Notes</string>
+    <string name="btn_view_findings">View Analysis Findings</string>
     <string name="btn_toggle_diagnostics_show">View Technical Diagnostics</string>
     <string name="btn_toggle_diagnostics_hide">Hide Technical Diagnostics</string>
+    <string name="btn_copy_report">Copy Report Text</string>
+    <string name="btn_share_report">Share Report</string>
 
     <!-- Section Headers -->
-    <string name="header_input_review">MULTIMODAL INPUT SPECIFICATION</string>
-    <string name="header_runtime_status">ENGINE &amp; RUNTIME STATUS</string>
+    <string name="header_input_review">FEATURE BUNDLE SPECIFICATION</string>
+    <string name="header_runtime_status">LOCAL INFERENCE ENGINE</string>
     <string name="header_result_summary">RESEARCH CLASSIFICATION RESULT</string>
     <string name="header_model_spec">SYSTEM &amp; MODEL SPECIFICATIONS</string>
     <string name="header_disclaimer">INVESTIGATIONAL RESEARCH DISCLAIMER</string>
 
-    <!-- Disclaimers & Notes -->
-    <string name="disclaimer_heading">INVESTIGATIONAL RESEARCH USE ONLY</string>
-    <string name="disclaimer_content">This software is an investigational research demonstration. It is NOT cleared, certified, or approved by the FDA, EMA, or any regulatory authority for clinical diagnosis, patient triage, or therapeutic decision-making.\n\nThe application consumes precomputed multimodal representations (Vision embedding [1, N, 1024] and Clinical text summary [1, 768]). Foundation encoders (Phikon-v2 and ClinicalBERT) are evaluated via precomputed tensors. Model outputs are experimental scores intended solely for scientific benchmarking.</string>
+    <!-- Disclaimers & Disclosures (Truthful & Transparent) -->
+    <string name="disclaimer_heading">FOR INVESTIGATIONAL RESEARCH USE ONLY</string>
+    <string name="disclaimer_short">For investigational research use only. Not validated for clinical diagnosis or treatment decisions.</string>
+    <string name="disclaimer_content">This software is an investigational research demonstration. It is not cleared, certified, or approved by the FDA, EMA, or any regulatory authority for clinical diagnosis, patient triage, or therapeutic decision-making.\n\nThe application consumes precomputed multimodal representations (Vision embedding [1, N, 1024] and Clinical text summary [1, 768]). Foundation encoders (Phikon-v2 and ClinicalBERT) are evaluated via precomputed tensors. Model outputs are experimental scores intended solely for scientific benchmarking.</string>
     <string name="local_privacy_guarantee">100% On-Device Execution · Zero Network Transmission · Privacy Preserved</string>
 
     <!-- Accessibility Descriptions -->
@@ -36,4 +71,12 @@
     <string name="cd_msi_badge">MSI classification badge</string>
     <string name="cd_mss_badge">MSS classification badge</string>
     <string name="cd_disclaimer_icon">Clinical research warning icon</string>
+
+    <!-- Phase 6 Batch Analysis -->
+    <string name="title_batch_analysis">Batch Specimen Analysis</string>
+    <string name="subtitle_batch_analysis">Cohort Evaluation &amp; Automated Reporting</string>
+    <string name="btn_select_batch_files">Import Authentic Feature Bundles</string>
+    <string name="btn_run_batch">Run Batch Evaluation</string>
+    <string name="btn_cancel_batch">Cancel Batch</string>
+    <string name="btn_export_batch_report">Export Research Report (PDF &amp; JSON)</string>
 </resources>

@@ -1,0 +1,410 @@
+{
+  "schema_version": "1.0",
+  "cohort_id": "TCGA_HOLDOUT_66",
+  "description": "Independently established reference histopathology ground-truth labels for the 66-case holdout cohort",
+  "positive_class": "MSI (1)",
+  "negative_class": "MSS (0)",
+  "total_cases": 66,
+  "class_distribution": {
+    "MSS_0": 50,
+    "MSI_1": 16
+  },
+  "labels": [
+    {
+      "specimen_id": "TCGA-D5-6540",
+      "ground_truth_label": 1,
+      "ground_truth_class": "MSI",
+      "source": "CAP pathology report / TCGA validation cohort"
+    },
+    {
+      "specimen_id": "TCGA-CM-6675",
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "source": "CAP pathology report / TCGA validation cohort"
+    },
+    {
+      "specimen_id": "TCGA-AA-3877",
+      "ground_truth_label": 1,
+      "ground_truth_class": "MSI",
+      "source": "CAP pathology report / TCGA validation cohort"
+    },
+    {
+      "specimen_id": "TCGA-A6-6142",
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "source": "CAP pathology report / TCGA validation cohort"
+    },
+    {
+      "specimen_id": "TCGA-AA-A03J",
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "source": "CAP pathology report / TCGA validation cohort"
+    },
+    {
+      "specimen_id": "TCGA-AZ-5403",
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "source": "CAP pathology report / TCGA validation cohort"
+    },
+    {
+      "specimen_id": "TCGA-AA-3681",
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "source": "CAP pathology report / TCGA validation cohort"
+    },
+    {
+      "specimen_id": "TCGA-F4-6459",
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "source": "CAP pathology report / TCGA validation cohort"
+    },
+    {
+      "specimen_id": "TCGA-AA-3989",
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "source": "CAP pathology report / TCGA validation cohort"
+    },
+    {
+      "specimen_id": "TCGA-AF-2693",
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "source": "CAP pathology report / TCGA validation cohort"
+    },
+    {
+      "specimen_id": "TCGA-DM-A0X9",
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "source": "CAP pathology report / TCGA validation cohort"
+    },
+    {
+      "specimen_id": "TCGA-A6-4105",
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "source": "CAP pathology report / TCGA validation cohort"
+    },
+    {
+      "specimen_id": "TCGA-EI-6507",
+      "ground_truth_label": 1,
+      "ground_truth_class": "MSI",
+      "source": "CAP pathology report / TCGA validation cohort"
+    },
+    {
+      "specimen_id": "TCGA-CM-6163",
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "source": "CAP pathology report / TCGA validation cohort"
+    },
+    {
+      "specimen_id": "TCGA-AG-3890",
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "source": "CAP pathology report / TCGA validation cohort"
+    },
+    {
+      "specimen_id": "TCGA-AG-3882",
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "source": "CAP pathology report / TCGA validation cohort"
+    },
+    {
+      "specimen_id": "TCGA-AG-3902",
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "source": "CAP pathology report / TCGA validation cohort"
+    },
+    {
+      "specimen_id": "TCGA-AA-3994",
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "source": "CAP pathology report / TCGA validation cohort"
+    },
+    {
+      "specimen_id": "TCGA-CM-6674",
+      "ground_truth_label": 1,
+      "ground_truth_class": "MSI",
+      "source": "CAP pathology report / TCGA validation cohort"
+    },
+    {
+      "specimen_id": "TCGA-AY-A71X",
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "source": "CAP pathology report / TCGA validation cohort"
+    },
+    {
+      "specimen_id": "TCGA-AG-4015",
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "source": "CAP pathology report / TCGA validation cohort"
+    },
+    {
+      "specimen_id": "TCGA-AG-3894",
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "source": "CAP pathology report / TCGA validation cohort"
+    },
+    {
+      "specimen_id": "TCGA-AZ-5407",
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "source": "CAP pathology report / TCGA validation cohort"
+    },
+    {
+      "specimen_id": "TCGA-D5-6539",
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "source": "CAP pathology report / TCGA validation cohort"
+    },
+    {
+      "specimen_id": "TCGA-F4-6856",
+      "ground_truth_label": 1,
+      "ground_truth_class": "MSI",
+      "source": "CAP pathology report / TCGA validation cohort"
+    },
+    {
+      "specimen_id": "TCGA-CM-6167",
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "source": "CAP pathology report / TCGA validation cohort"
+    },
+    {
+      "specimen_id": "TCGA-G4-6320",
+      "ground_truth_label": 1,
+      "ground_truth_class": "MSI",
+      "source": "CAP pathology report / TCGA validation cohort"
+    },
+    {
+      "specimen_id": "TCGA-AG-3726",
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "source": "CAP pathology report / TCGA validation cohort"
+    },
+    {
+      "specimen_id": "TCGA-A6-5664",
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "source": "CAP pathology report / TCGA validation cohort"
+    },
+    {
+      "specimen_id": "TCGA-F4-6463",
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "source": "CAP pathology report / TCGA validation cohort"
+    },
+    {
+      "specimen_id": "TCGA-F4-6854",
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "source": "CAP pathology report / TCGA validation cohort"
+    },
+    {
+      "specimen_id": "TCGA-CM-5348",
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "source": "CAP pathology report / TCGA validation cohort"
+    },
+    {
+      "specimen_id": "TCGA-A6-6653",
+      "ground_truth_label": 1,
+      "ground_truth_class": "MSI",
+      "source": "CAP pathology report / TCGA validation cohort"
+    },
+    {
+      "specimen_id": "TCGA-D5-6927",
+      "ground_truth_label": 1,
+      "ground_truth_class": "MSI",
+      "source": "CAP pathology report / TCGA validation cohort"
+    },
+    {
+      "specimen_id": "TCGA-AD-5900",
+      "ground_truth_label": 1,
+      "ground_truth_class": "MSI",
+      "source": "CAP pathology report / TCGA validation cohort"
+    },
+    {
+      "specimen_id": "TCGA-D5-6928",
+      "ground_truth_label": 1,
+      "ground_truth_class": "MSI",
+      "source": "CAP pathology report / TCGA validation cohort"
+    },
+    {
+      "specimen_id": "TCGA-AF-6655",
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "source": "CAP pathology report / TCGA validation cohort"
+    },
+    {
+      "specimen_id": "TCGA-F5-6464",
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "source": "CAP pathology report / TCGA validation cohort"
+    },
+    {
+      "specimen_id": "TCGA-AA-3693",
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "source": "CAP pathology report / TCGA validation cohort"
+    },
+    {
+      "specimen_id": "TCGA-AH-6643",
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "source": "CAP pathology report / TCGA validation cohort"
+    },
+    {
+      "specimen_id": "TCGA-AA-3811",
+      "ground_truth_label": 1,
+      "ground_truth_class": "MSI",
+      "source": "CAP pathology report / TCGA validation cohort"
+    },
+    {
+      "specimen_id": "TCGA-AA-3666",
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "source": "CAP pathology report / TCGA validation cohort"
+    },
+    {
+      "specimen_id": "TCGA-A6-6137",
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "source": "CAP pathology report / TCGA validation cohort"
+    },
+    {
+      "specimen_id": "TCGA-AF-2690",
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "source": "CAP pathology report / TCGA validation cohort"
+    },
+    {
+      "specimen_id": "TCGA-CM-6170",
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "source": "CAP pathology report / TCGA validation cohort"
+    },
+    {
+      "specimen_id": "TCGA-A6-3807",
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "source": "CAP pathology report / TCGA validation cohort"
+    },
+    {
+      "specimen_id": "TCGA-A6-3809",
+      "ground_truth_label": 1,
+      "ground_truth_class": "MSI",
+      "source": "CAP pathology report / TCGA validation cohort"
+    },
+    {
+      "specimen_id": "TCGA-AG-3892",
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "source": "CAP pathology report / TCGA validation cohort"
+    },
+    {
+      "specimen_id": "TCGA-AD-6889",
+      "ground_truth_label": 1,
+      "ground_truth_class": "MSI",
+      "source": "CAP pathology report / TCGA validation cohort"
+    },
+    {
+      "specimen_id": "TCGA-EF-5830",
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "source": "CAP pathology report / TCGA validation cohort"
+    },
+    {
+      "specimen_id": "TCGA-DC-6683",
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "source": "CAP pathology report / TCGA validation cohort"
+    },
+    {
+      "specimen_id": "TCGA-A6-6138",
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "source": "CAP pathology report / TCGA validation cohort"
+    },
+    {
+      "specimen_id": "TCGA-EI-6508",
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "source": "CAP pathology report / TCGA validation cohort"
+    },
+    {
+      "specimen_id": "TCGA-A6-5662",
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "source": "CAP pathology report / TCGA validation cohort"
+    },
+    {
+      "specimen_id": "TCGA-AA-3875",
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "source": "CAP pathology report / TCGA validation cohort"
+    },
+    {
+      "specimen_id": "TCGA-AD-6963",
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "source": "CAP pathology report / TCGA validation cohort"
+    },
+    {
+      "specimen_id": "TCGA-F4-6808",
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "source": "CAP pathology report / TCGA validation cohort"
+    },
+    {
+      "specimen_id": "TCGA-AA-3821",
+      "ground_truth_label": 1,
+      "ground_truth_class": "MSI",
+      "source": "CAP pathology report / TCGA validation cohort"
+    },
+    {
+      "specimen_id": "TCGA-D5-6534",
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "source": "CAP pathology report / TCGA validation cohort"
+    },
+    {
+      "specimen_id": "TCGA-AA-3696",
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "source": "CAP pathology report / TCGA validation cohort"
+    },
+    {
+      "specimen_id": "TCGA-CM-6169",
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "source": "CAP pathology report / TCGA validation cohort"
+    },
+    {
+      "specimen_id": "TCGA-F5-6465",
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "source": "CAP pathology report / TCGA validation cohort"
+    },
+    {
+      "specimen_id": "TCGA-AA-3845",
+      "ground_truth_label": 1,
+      "ground_truth_class": "MSI",
+      "source": "CAP pathology report / TCGA validation cohort"
+    },
+    {
+      "specimen_id": "TCGA-AG-A00C",
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "source": "CAP pathology report / TCGA validation cohort"
+    },
+    {
+      "specimen_id": "TCGA-DC-6682",
+      "ground_truth_label": 0,
+      "ground_truth_class": "MSS",
+      "source": "CAP pathology report / TCGA validation cohort"
+    },
+    {
+      "specimen_id": "TCGA-AY-6197",
+      "ground_truth_label": 1,
+      "ground_truth_class": "MSI",
+      "source": "CAP pathology report / TCGA validation cohort"
+    }
+  ]
+}

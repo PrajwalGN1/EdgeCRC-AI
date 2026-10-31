@@ -1,338 +1,262 @@
 package org.crc.multimodal.ui
 
 import android.os.Bundle
-import android.view.View
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.ProgressBar
-import android.widget.TextView
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
-import com.google.android.material.button.MaterialButton
-import com.google.android.material.button.MaterialButtonToggleGroup
-import com.google.android.material.card.MaterialCardView
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import com.google.android.material.appbar.MaterialToolbar
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import org.crc.multimodal.R
+import org.crc.multimodal.data.CaseStatus
+import org.crc.multimodal.data.SqliteWorkstationRepository
+import org.crc.multimodal.data.WorkstationRepository
 import org.crc.multimodal.inference.CrcMultimodalClassifier
-import org.crc.multimodal.inference.InferenceProtocol
-import org.crc.multimodal.inference.InferenceResult
-import org.crc.multimodal.inference.ThresholdLogic
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
-import kotlin.random.Random
+import org.crc.multimodal.ui.fragments.CaseDetailsFragment
+import org.crc.multimodal.ui.fragments.CasesFragment
+import org.crc.multimodal.ui.fragments.FindingsFragment
+import org.crc.multimodal.ui.fragments.InferenceExecutionFragment
+import org.crc.multimodal.ui.fragments.NewSpecimenFragment
+import org.crc.multimodal.ui.fragments.ReportFragment
+import org.crc.multimodal.ui.fragments.ReviewNotesFragment
+import org.crc.multimodal.ui.fragments.SettingsFragment
+import org.crc.multimodal.ui.fragments.SpecimenReviewFragment
+import org.crc.multimodal.ui.fragments.WorkspaceFragment
+import org.crc.multimodal.inference.CrcLogger
+import org.crc.multimodal.inference.OnnxRuntimeManager
+import org.crc.multimodal.inference.OnnxRuntimeState
 
 /**
- * Enterprise-Grade Multimodal Edge AI Research Workspace.
+ * Enterprise-Grade Multimodal Edge AI Pathology Research Workstation.
  *
- * Demonstrates bit-accurate on-device execution of the frozen Colorectal Cancer Multimodal
- * Fusion model (ClinicalBERT + PHIKON-V2 cross-attention fusion) via ONNX Runtime Mobile.
- *
- * Invariants Enforced:
- * - Operating Threshold: 0.83f (probability >= 0.83f evaluates to MSI / Class 1)
- * - Class Mapping: 0 = MSS, 1 = MSI
- * - Protocol 1 Capped: Evaluates up to 1,000 slide image patches
- * - Protocol 2 Uncapped: Preserves arbitrary candidate patch sequences
- * - Single-patient sequential CPU execution with thread-safe resource isolation
- * - 100% on-device local execution; zero network transmission
+ * Hosts multi-screen navigation across 10 specialized workflow destinations:
+ * 1. Research Workspace Dashboard
+ * 2. Case Management
+ * 3. New Specimen Analysis Intake
+ * 4. Specimen Review Verification
+ * 5. Inference Configuration & Execution
+ * 6. Analysis Findings
+ * 7. Review Questions & Notes
+ * 8. Structured Research Report
+ * 9. Case Details & Run History
+ * 10. Settings & Runtime Specifications
  */
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), WorkstationNavigationHost {
 
-    private var classifier: CrcMultimodalClassifier? = null
-    private val backgroundExecutor: ExecutorService = Executors.newSingleThreadExecutor()
+    private lateinit var toolbar: MaterialToolbar
+    private lateinit var bottomNav: BottomNavigationView
+    private lateinit var repository: WorkstationRepository
+    private lateinit var batchRepository: org.crc.multimodal.batch.BatchRepository
 
-    // Engine & Status Views
-    private lateinit var ivEngineStatusIcon: ImageView
-    private lateinit var tvEngineStatus: TextView
-    private lateinit var tvModelDetails: TextView
-    private lateinit var tvRuntimeDetails: TextView
-    private lateinit var progressBarLoading: ProgressBar
-
-    // Input Configuration Views
-    private lateinit var toggleGroupPatchCount: MaterialButtonToggleGroup
-    private lateinit var tvInputSummary: TextView
-
-    // Execution Controls & Progress
-    private lateinit var btnRunInference: MaterialButton
-    private lateinit var progressBarInference: ProgressBar
-    private lateinit var tvInferenceProgress: TextView
-
-    // Diagnostic Results Card Views
-    private lateinit var cardResult: MaterialCardView
-    private lateinit var tvResultTimestamp: TextView
-    private lateinit var layoutClassificationBadge: LinearLayout
-    private lateinit var ivClassificationIcon: ImageView
-    private lateinit var tvResultClassification: TextView
-    private lateinit var tvResultSubLabel: TextView
-    private lateinit var tvResultScore: TextView
-    private lateinit var tvResultMargin: TextView
-    private lateinit var probabilityBarView: ProbabilityThresholdBarView
-    private lateinit var tvResultLatency: TextView
-    private lateinit var tvResultPatches: TextView
-    private lateinit var btnToggleDiagnostics: MaterialButton
-    private lateinit var layoutTechnicalDiagnostics: LinearLayout
-    private lateinit var tvInferenceResult: TextView
-
-    private var selectedPatchCount: Int = 10
-    private var isDiagnosticsExpanded: Boolean = false
+    private val onnxRuntimeManager: OnnxRuntimeManager = OnnxRuntimeManager.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(R.style.Theme_CrcMultimodal)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        bindViews()
-        setupInputConfiguration()
-        setupDiagnosticsToggle()
+        repository = SqliteWorkstationRepository.getInstance(applicationContext)
+        repository.seedReferenceCases()
+        repository.recoverInterruptedCases()
 
-        btnRunInference.setOnClickListener {
-            executeOnDeviceInference()
+        batchRepository = org.crc.multimodal.batch.SqliteBatchRepository.getInstance(applicationContext)
+        batchRepository.recoverInterruptedBatches()
+
+        toolbar = findViewById(R.id.topToolbar)
+        bottomNav = findViewById(R.id.bottom_navigation)
+
+        setupToolbarNavigation()
+        setupBottomNavigation()
+        setupBackstackListener()
+        setupSystemBackDispatcher()
+
+        onnxRuntimeManager.initializeAsync(applicationContext)
+
+        if (savedInstanceState == null) {
+            navigateToWorkspace()
         }
-
-        // Offload ONNX model reading and native session initialization to background executor
-        initializeModelAsync()
     }
 
-    private fun bindViews() {
-        ivEngineStatusIcon = findViewById(R.id.ivEngineStatusIcon)
-        tvEngineStatus = findViewById(R.id.tvEngineStatus)
-        tvModelDetails = findViewById(R.id.tvModelDetails)
-        tvRuntimeDetails = findViewById(R.id.tvRuntimeDetails)
-        progressBarLoading = findViewById(R.id.progressBarLoading)
-
-        toggleGroupPatchCount = findViewById(R.id.toggleGroupPatchCount)
-        tvInputSummary = findViewById(R.id.tvInputSummary)
-
-        btnRunInference = findViewById(R.id.btnRunInference)
-        progressBarInference = findViewById(R.id.progressBarInference)
-        tvInferenceProgress = findViewById(R.id.tvInferenceProgress)
-
-        cardResult = findViewById(R.id.cardResult)
-        tvResultTimestamp = findViewById(R.id.tvResultTimestamp)
-        layoutClassificationBadge = findViewById(R.id.layoutClassificationBadge)
-        ivClassificationIcon = findViewById(R.id.ivClassificationIcon)
-        tvResultClassification = findViewById(R.id.tvResultClassification)
-        tvResultSubLabel = findViewById(R.id.tvResultSubLabel)
-        tvResultScore = findViewById(R.id.tvResultScore)
-        tvResultMargin = findViewById(R.id.tvResultMargin)
-        probabilityBarView = findViewById(R.id.probabilityBarView)
-        tvResultLatency = findViewById(R.id.tvResultLatency)
-        tvResultPatches = findViewById(R.id.tvResultPatches)
-        btnToggleDiagnostics = findViewById(R.id.btnToggleDiagnostics)
-        layoutTechnicalDiagnostics = findViewById(R.id.layoutTechnicalDiagnostics)
-        tvInferenceResult = findViewById(R.id.tvInferenceResult)
+    private fun setupToolbarNavigation() {
+        toolbar.setNavigationOnClickListener {
+            if (supportFragmentManager.backStackEntryCount > 0) {
+                supportFragmentManager.popBackStack()
+            }
+        }
     }
 
-    private fun setupInputConfiguration() {
-        toggleGroupPatchCount.check(R.id.btnPatches10)
-        selectedPatchCount = 10
-        updateInputSummary()
-
-        toggleGroupPatchCount.addOnButtonCheckedListener { _, checkedId, isChecked ->
-            if (isChecked) {
-                selectedPatchCount = when (checkedId) {
-                    R.id.btnPatches50 -> 50
-                    R.id.btnPatches1000 -> 1000
-                    else -> 10
+    private fun setupBottomNavigation() {
+        bottomNav.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.nav_workspace -> {
+                    clearBackStack()
+                    replaceRootFragment(WorkspaceFragment())
+                    true
                 }
-                updateInputSummary()
+                R.id.nav_cases -> {
+                    clearBackStack()
+                    replaceRootFragment(CasesFragment())
+                    true
+                }
+                R.id.nav_new_analysis -> {
+                    clearBackStack()
+                    replaceRootFragment(NewSpecimenFragment.newInstance())
+                    true
+                }
+                R.id.nav_settings -> {
+                    clearBackStack()
+                    replaceRootFragment(SettingsFragment())
+                    true
+                }
+                else -> false
             }
         }
     }
 
-    private fun updateInputSummary() {
-        val protocolText = if (selectedPatchCount <= 1000) {
-            "Protocol 1 (Capped ≤ 1,000)"
-        } else {
-            "Protocol 2 (Uncapped)"
-        }
-        tvInputSummary.text = String.format(
-            Locale.US,
-            "Vision sequence: [1, %d, 1024] · Text summary: [1, 768] · %s",
-            selectedPatchCount,
-            protocolText
-        )
-    }
-
-    private fun setupDiagnosticsToggle() {
-        btnToggleDiagnostics.setOnClickListener {
-            isDiagnosticsExpanded = !isDiagnosticsExpanded
-            if (isDiagnosticsExpanded) {
-                layoutTechnicalDiagnostics.visibility = View.VISIBLE
-                btnToggleDiagnostics.text = getString(R.string.btn_toggle_diagnostics_hide)
-                btnToggleDiagnostics.setIconResource(R.drawable.ic_expand_less)
-            } else {
-                layoutTechnicalDiagnostics.visibility = View.GONE
-                btnToggleDiagnostics.text = getString(R.string.btn_toggle_diagnostics_show)
-                btnToggleDiagnostics.setIconResource(R.drawable.ic_expand_more)
+    private fun setupBackstackListener() {
+        supportFragmentManager.addOnBackStackChangedListener {
+            val backStackCount = supportFragmentManager.backStackEntryCount
+            if (backStackCount == 0) {
+                // Return to root bottom nav state
+                val currentFragment = supportFragmentManager.findFragmentById(R.id.fragment_container)
+                when (currentFragment) {
+                    is WorkspaceFragment -> bottomNav.menu.findItem(R.id.nav_workspace)?.isChecked = true
+                    is CasesFragment -> bottomNav.menu.findItem(R.id.nav_cases)?.isChecked = true
+                    is NewSpecimenFragment -> bottomNav.menu.findItem(R.id.nav_new_analysis)?.isChecked = true
+                    is SettingsFragment -> bottomNav.menu.findItem(R.id.nav_settings)?.isChecked = true
+                }
             }
         }
     }
 
-    private fun initializeModelAsync() {
-        backgroundExecutor.execute {
-            try {
-                val assetBytes = assets.open("models/fusion_model_fp32.onnx").use { it.readBytes() }
-                val instance = CrcMultimodalClassifier.fromByteArray(assetBytes)
-
-                runOnUiThread {
-                    if (!isFinishing && !isDestroyed) {
-                        classifier = instance
-                        progressBarLoading.visibility = View.GONE
-                        ivEngineStatusIcon.setImageResource(R.drawable.ic_check_circle)
-                        ivEngineStatusIcon.setColorFilter(ContextCompat.getColor(this, R.color.status_success))
-
-                        tvEngineStatus.text = getString(R.string.status_engine_ready)
-                        tvEngineStatus.setTextColor(ContextCompat.getColor(this, R.color.status_success))
-                        tvModelDetails.text = "Loaded: models/fusion_model_fp32.onnx (20.04 MB FP32)\nInput: vision_seq [1, N, 1024], text_summary [1, 768]"
-                        tvRuntimeDetails.text = "Provider: CPUExecutionProvider (Float32)\nDecision Threshold: 0.83 (MSI ≥ 0.83, MSS < 0.83)\nProtocols: Protocol 1 (Capped ≤ 1000) & Protocol 2 (Uncapped)"
-                        btnRunInference.isEnabled = true
+    private fun setupSystemBackDispatcher() {
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (supportFragmentManager.backStackEntryCount > 0) {
+                    supportFragmentManager.popBackStack()
+                } else {
+                    val currentFragment = supportFragmentManager.findFragmentById(R.id.fragment_container)
+                    if (currentFragment !is WorkspaceFragment) {
+                        bottomNav.selectedItemId = R.id.nav_workspace
                     } else {
-                        instance.close()
-                    }
-                }
-            } catch (e: Throwable) {
-                runOnUiThread {
-                    if (!isFinishing && !isDestroyed) {
-                        progressBarLoading.visibility = View.GONE
-                        ivEngineStatusIcon.setImageResource(R.drawable.ic_error_outline)
-                        ivEngineStatusIcon.setColorFilter(ContextCompat.getColor(this, R.color.status_error))
-
-                        tvEngineStatus.text = getString(R.string.status_initialization_failed)
-                        tvEngineStatus.setTextColor(ContextCompat.getColor(this, R.color.status_error))
-                        tvModelDetails.text = "Error loading ONNX model: ${e.message}"
-                        tvInferenceResult.text = "Model initialization failure:\n${e.localizedMessage}"
+                        isEnabled = false
+                        onBackPressedDispatcher.onBackPressed()
                     }
                 }
             }
+        })
+    }
+
+    private fun replaceRootFragment(fragment: Fragment) {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, fragment)
+            .commit()
+    }
+
+    private fun pushFragment(fragment: Fragment) {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, fragment)
+            .addToBackStack(null)
+            .commit()
+    }
+
+    private fun clearBackStack() {
+        if (supportFragmentManager.backStackEntryCount > 0) {
+            supportFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
         }
     }
 
-    private fun executeOnDeviceInference() {
-        val activeClassifier = classifier ?: run {
-            tvInferenceResult.text = "Classifier engine not ready yet."
-            return
-        }
+    // WorkstationNavigationHost implementation
+    override fun navigateToWorkspace() {
+        clearBackStack()
+        bottomNav.selectedItemId = R.id.nav_workspace
+    }
 
-        // Lock button to prevent duplicate submissions
-        btnRunInference.isEnabled = false
-        progressBarInference.visibility = View.VISIBLE
-        tvInferenceProgress.visibility = View.VISIBLE
+    override fun navigateToCases(filterStatus: CaseStatus?) {
+        clearBackStack()
+        bottomNav.selectedItemId = R.id.nav_cases
+    }
 
-        val numPatches = selectedPatchCount
+    override fun navigateToNewSpecimen(caseId: Long?) {
+        pushFragment(NewSpecimenFragment.newInstance(caseId))
+    }
 
-        backgroundExecutor.execute {
-            try {
-                // Generate clean, bounded test tensor representations for research evaluation
-                val rng = Random(System.currentTimeMillis())
-                val visionData = FloatArray(numPatches * 1024) { rng.nextFloat() * 0.1f - 0.05f }
-                val textData = FloatArray(768) { rng.nextFloat() * 0.1f - 0.05f }
+    override fun navigateToSpecimenReview(caseId: Long) {
+        pushFragment(SpecimenReviewFragment.newInstance(caseId))
+    }
 
-                val startNano = System.nanoTime()
-                val result: InferenceResult = activeClassifier.predict(
-                    visionData = visionData,
-                    numPatches = numPatches,
-                    textData = textData,
-                    caseId = "DEVICE_RESEARCH_CASE",
-                    protocol = if (numPatches <= 1000) InferenceProtocol.PROTOCOL_1_CAPPED else InferenceProtocol.PROTOCOL_2_UNCAPPED
-                )
-                val elapsedMs = (System.nanoTime() - startNano) / 1_000_000.0
+    override fun navigateToInferenceExecution(caseId: Long) {
+        pushFragment(InferenceExecutionFragment.newInstance(caseId))
+    }
 
-                val label = ThresholdLogic.labelFor(result.predictedClass)
-                val margin = ThresholdLogic.signedDistanceToThreshold(result.probability)
-                val timestamp = SimpleDateFormat("HH:mm:ss", Locale.US).format(Date())
+    override fun navigateToFindings(caseId: Long, runId: Long?) {
+        pushFragment(FindingsFragment.newInstance(caseId, runId))
+    }
 
-                val diagnosticsText = buildString {
-                    appendLine("=== RESEARCH ON-DEVICE INFERENCE REPORT ===")
-                    appendLine("Execution Status : SUCCESS (Bit-accurate native ONNX)")
-                    appendLine("Case Identifier  : DEVICE_RESEARCH_CASE")
-                    appendLine("Slide Patches (N): $numPatches (dim: 1024)")
-                    appendLine("Text Embedding   : 1 × 768")
-                    appendLine("Evaluation Mod   : ${result.protocol.name}")
-                    appendLine("Output Logit     : ${String.format(Locale.US, "%.5f", result.logit)}")
-                    appendLine("Output Prob      : ${String.format(Locale.US, "%.5f", result.probability)}")
-                    appendLine("Decision Boundary: 0.8300 (Fixed)")
-                    appendLine("Threshold Margin : ${String.format(Locale.US, "%+.5f", margin)} vs 0.83")
-                    appendLine("Classification   : $label (Class ${result.predictedClass})")
-                    appendLine("Attention Dim    : [1, 1, ${result.attentionWeights?.size ?: 0}]")
-                    appendLine("Inference Latency: ${String.format(Locale.US, "%.2f", elapsedMs)} ms")
-                    appendLine("Execution Time   : ${SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US).format(Date())}")
-                    appendLine("Privacy Enforced : 100% on-device CPU execution, 0 bytes transmitted")
-                }
+    override fun navigateToReviewNotes(caseId: Long) {
+        pushFragment(ReviewNotesFragment.newInstance(caseId))
+    }
 
-                runOnUiThread {
-                    if (!isFinishing && !isDestroyed) {
-                        btnRunInference.isEnabled = true
-                        progressBarInference.visibility = View.GONE
-                        tvInferenceProgress.visibility = View.GONE
+    override fun navigateToReport(caseId: Long, runId: Long?) {
+        pushFragment(ReportFragment.newInstance(caseId, runId))
+    }
 
-                        // Render Diagnostic Result Card
-                        cardResult.visibility = View.VISIBLE
-                        tvResultTimestamp.text = timestamp
+    override fun navigateToCaseDetails(caseId: Long) {
+        pushFragment(CaseDetailsFragment.newInstance(caseId))
+    }
 
-                        // Classification Badge
-                        if (result.predictedClass == ThresholdLogic.CLASS_MSI) {
-                            tvResultClassification.text = "MSI (Microsatellite Instability)"
-                            tvResultClassification.setTextColor(ContextCompat.getColor(this, R.color.msi_color))
-                            tvResultSubLabel.text = "Evaluated Class 1 · Score exceeds 0.83 threshold"
-                            ivClassificationIcon.setImageResource(R.drawable.ic_check_circle)
-                            ivClassificationIcon.setColorFilter(ContextCompat.getColor(this, R.color.msi_color))
-                        } else {
-                            tvResultClassification.text = "MSS (Microsatellite Stable)"
-                            tvResultClassification.setTextColor(ContextCompat.getColor(this, R.color.mss_color))
-                            tvResultSubLabel.text = "Evaluated Class 0 · Score below 0.83 threshold"
-                            ivClassificationIcon.setImageResource(R.drawable.ic_check_circle)
-                            ivClassificationIcon.setColorFilter(ContextCompat.getColor(this, R.color.mss_color))
-                        }
+    override fun navigateToSettings() {
+        clearBackStack()
+        bottomNav.selectedItemId = R.id.nav_settings
+    }
 
-                        // Score & Margin
-                        tvResultScore.text = String.format(Locale.US, "Probability: %.4f", result.probability)
-                        tvResultMargin.text = if (margin >= 0) {
-                            String.format(Locale.US, "+%.4f above 0.83 threshold", margin)
-                        } else {
-                            String.format(Locale.US, "%.4f below 0.83 threshold", margin)
-                        }
+    override fun navigateToBatchAnalysis(batchId: String?) {
+        pushFragment(org.crc.multimodal.ui.fragments.BatchAnalysisFragment.newInstance(batchId))
+    }
 
-                        // Custom Graphical Gauge
-                        probabilityBarView.setProbability(result.probability, result.threshold)
+    override fun navigateToAnalyticsDashboard() {
+        pushFragment(org.crc.multimodal.ui.fragments.AnalyticsDashboardFragment.newInstance())
+    }
 
-                        // 3-Column Metrics
-                        tvResultLatency.text = String.format(Locale.US, "%.2f ms", elapsedMs)
-                        tvResultPatches.text = "$numPatches Patches"
+    override fun navigateToCohortEvaluation(cohortId: String?) {
+        pushFragment(org.crc.multimodal.ui.fragments.CohortEvaluationFragment.newInstance(cohortId))
+    }
 
-                        // Detailed Console Text
-                        tvInferenceResult.text = diagnosticsText
-                    }
-                }
-            } catch (t: Throwable) {
-                runOnUiThread {
-                    if (!isFinishing && !isDestroyed) {
-                        btnRunInference.isEnabled = true
-                        progressBarInference.visibility = View.GONE
-                        tvInferenceProgress.visibility = View.GONE
+    override fun getRepository(): WorkstationRepository = repository
 
-                        cardResult.visibility = View.VISIBLE
-                        tvResultClassification.text = "Inference Execution Error"
-                        tvResultClassification.setTextColor(ContextCompat.getColor(this, R.color.status_error))
-                        tvResultSubLabel.text = "Execution failed safely without crash"
-                        ivClassificationIcon.setImageResource(R.drawable.ic_error_outline)
-                        ivClassificationIcon.setColorFilter(ContextCompat.getColor(this, R.color.status_error))
+    override fun getBatchRepository(): org.crc.multimodal.batch.BatchRepository = batchRepository
 
-                        tvResultScore.text = "Score: N/A"
-                        tvResultMargin.text = "Error: ${t.message}"
-                        probabilityBarView.reset()
-                        tvInferenceResult.text = "Error during on-device inference:\n${t.localizedMessage}"
-                    }
-                }
-            }
+    override fun getClassifier(): CrcMultimodalClassifier? = onnxRuntimeManager.classifier
+
+    override fun isClassifierReady(): Boolean = onnxRuntimeManager.isReady
+
+    override fun getOnnxRuntimeState(): OnnxRuntimeState = onnxRuntimeManager.state
+
+    override fun addOnnxRuntimeStateListener(listener: (OnnxRuntimeState) -> Unit) {
+        onnxRuntimeManager.addListener(listener)
+    }
+
+    override fun removeOnnxRuntimeStateListener(listener: (OnnxRuntimeState) -> Unit) {
+        onnxRuntimeManager.removeListener(listener)
+    }
+
+    override fun retryClassifierInitialization() {
+        onnxRuntimeManager.initializeAsync(applicationContext, forceRetry = true)
+    }
+
+    override fun setTopToolbar(title: String, subtitle: String?, showBackButton: Boolean) {
+        toolbar.title = title
+        toolbar.subtitle = subtitle
+        if (showBackButton) {
+            toolbar.setNavigationIcon(R.drawable.ic_arrow_back)
+        } else {
+            toolbar.setNavigationIcon(R.drawable.ic_science)
         }
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        backgroundExecutor.shutdownNow()
-        classifier?.close()
-        classifier = null
+        if (isFinishing) {
+            onnxRuntimeManager.close()
+        }
     }
 }
