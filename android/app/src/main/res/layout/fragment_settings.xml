@@ -280,7 +280,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="CRC Multimodal Pathology Research Workstation v1.0.2\nOptimized for Edge Deployment · Android API 24–34\nInvestigational Research Use Only"
+            android:text="CRC Multimodal Pathology Research Workstation v1.1.0\nOptimized for Edge Deployment · Android API 24–34\nInvestigational Research Use Only"
             android:textColor="@color/text_supporting"
             android:textSize="12sp"
             android:lineSpacingExtra="3dp" />

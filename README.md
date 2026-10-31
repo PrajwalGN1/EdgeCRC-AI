@@ -50,7 +50,7 @@
 30. [Research-Use and Medical Disclaimer](#30-research-use-and-medical-disclaimer)
 31. [Author](#31-author)
 32. [Acknowledgements and References](#32-acknowledgements-and-references)
-33. [License Status](#33-license-status)
+33. [Licensing, Model Governance, and Attribution](#33-licensing-model-governance-and-attribution)
 
 ---
 
@@ -625,7 +625,8 @@ EdgeCRC-AI/
 ├── reports/
 │   ├── audit/                                      # Baseline dataset, encoder, and tensor audits
 │   ├── edge_deployment/                            # Raw-input & edge architecture readiness reports
-│   └── mobile_deployment/                          # Phase-by-phase parity, benchmark, and device validation logs
+│   ├── mobile_deployment/                          # Phase-by-phase parity, benchmark, and device validation logs
+│   └── release/                                    # Release readiness, licensing, security, and regression audits
 ├── results/
 │   ├── actual_validation_keys.json                 # Locked 66-patient holdout split contract
 │   └── Cross_Attention_Model_Evaluation_Report.txt # Holdout classification metrics & confusion matrix
@@ -638,8 +639,12 @@ EdgeCRC-AI/
 │   └── generate_pixel_xai.py                       # DINOv2 ViT self-attention rollout heatmap generator
 ├── tests/                                          # 9 Python pytest regression & mobile contract modules
 ├── tools/                                          # export_specimen_bundle.py, export_reference_labels.py & audits
+├── DATA_ATTRIBUTION.md                             # TCGA Research Network acknowledgment & cohort governance
 ├── Dockerfile                                      # Streamlit container specification (port 8501)
+├── LICENSE                                         # PolyForm Noncommercial 1.0.0 (original software code only)
+├── MODEL_LICENSE.md                                # Owkin Phikon-v2 & Bio_ClinicalBERT model/results licensing
 ├── PB05_Report_8thSem.pdf                          # 89-page academic project report
+├── THIRD_PARTY_NOTICES.md                          # Verified Python & Android third-party dependency notices
 ├── requirements.txt                                # Pinned Python dependencies
 └── README.md                                       # Comprehensive project documentation (this file)
 ```
@@ -685,7 +690,7 @@ Set-Location .\android
 ```
 
 - **Generated APK Path:** `android\app\build\outputs\apk\debug\app-debug.apk`
-- **Application ID:** `org.crc.multimodal` (`versionName = "1.0.2"`, `versionCode = 3`)
+- **Application ID:** `org.crc.multimodal` (`versionName = "1.1.0"`, `versionCode = 4`)
 
 ### Installing and Running on a Physical Android Device or Emulator
 
@@ -939,6 +944,22 @@ Project developer of the **EdgeCRC-AI** multimodal colorectal cancer detection a
 
 ---
 
-## 33. License Status
+## 33. Licensing, Model Governance, and Attribution
 
-No `LICENSE` file is currently present in this repository. Under standard copyright law and GitHub policy, all rights remain reserved by default unless and until an explicit license file is added by the repository owner.
+EdgeCRC-AI comprises distinct software, model-artifact, third-party library, and cohort-metadata components. It is **not** uniformly governed by a single repository-wide license, and its original code is **source-available under non-commercial terms, not OSI-approved open source**:
+
+1. **Original Project-Authored Software (`LICENSE` — Non-Commercial Source-Available):**
+   - Original Python, Kotlin, XML, SQLite schema, test, and documentation files authored for EdgeCRC-AI (`Copyright (c) 2026 Prajwal G N`) are licensed under the [**PolyForm Noncommercial License 1.0.0**](LICENSE) (`https://polyformproject.org/licenses/noncommercial/1.0.0`).
+   - PolyForm Noncommercial 1.0.0 is a **source-available non-commercial license** (not an OSI-approved open-source license) and is strictly scoped to original project-authored software code only.
+2. **Third-Party Software & Libraries (`THIRD_PARTY_NOTICES.md`):**
+   - All third-party Python dependencies (`requirements.txt`), AndroidX/Material/Kotlin libraries, and **Microsoft ONNX Runtime** (`MIT`) retain their respective upstream licenses and notices without modification. See [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md).
+3. **Foundation Models & Derived Model Artifacts (`MODEL_LICENSE.md`):**
+   - **Owkin Phikon-v2 (`owkin/phikon-v2`):** Precomputed vision patch embeddings (`android/app/src/main/assets/reference_tensors/*.bin`) and downstream fusion checkpoints/ONNX graphs trained on Phikon-v2 features (`models/*.pth`, `models/*.onnx`, and `android/app/src/main/assets/models/fusion_model_fp32.onnx`) qualify as **`Results`** under the [**Owkin Phikon-v2 License Terms and Conditions**](https://huggingface.co/owkin/phikon-v2/blob/main/LICENSE.pdf) (`Non-Commercial` research by non-profit entities only, subject to ShareAlike under Owkin's terms with no additional or conflicting PolyForm restrictions applied).
+   - **Bio_ClinicalBERT (`emilyalsentzer/Bio_ClinicalBERT`):** Upstream clinical text encoder governed by the **MIT License** (`Copyright (c) 2019 Emily Alsentzer`). See [`MODEL_LICENSE.md`](MODEL_LICENSE.md) for full provenance, ShareAlike rules, and public release redistribution status.
+4. **Dataset Attribution & TCGA Open-Access Governance (`DATA_ATTRIBUTION.md`):**
+   - *"The results shown here are in whole or part based upon data generated by the TCGA Research Network: https://www.cancer.gov/tcga."*
+   - Raw slide tiles and full feature archives are excluded from this repository; tracked de-identified `TCGA-COAD` cohort metadata and holdout reference labels must never be used for re-identification attempts. See [`DATA_ATTRIBUTION.md`](DATA_ATTRIBUTION.md).
+5. **Commercial-Use Permission Requirements:**
+   - Commercial or for-profit use is **not** permitted under the default repository terms. Commercial use of original software requires separate written permission from the copyright holder, and any commercial, contract-research, or for-profit entity use/transfer involving **Phikon-v2** or Phikon-v2-derived `Results` requires negotiating a separate commercial license directly with **Owkin Inc.**
+6. **Research Prototype & Non-Clinical Status:**
+   - EdgeCRC-AI is strictly an investigational computational pathology research prototype. It is **not** clinically validated, certified, or approved by any regulatory body for medical diagnosis, patient stratification, or treatment guidance.
